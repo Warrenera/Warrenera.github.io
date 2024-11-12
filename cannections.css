@@ -2,7 +2,13 @@
   background-color: lightGray;
   border-radius: 25px;
   font-weight: bold;
-  height:100px;
-  width:100px;
+  height: 100px;
+  width: 100px;
 }
 
+.selected {
+  content: "test";
+  background-color: lightBlue;
+  height: 95px;
+  width: 95px;
+}
