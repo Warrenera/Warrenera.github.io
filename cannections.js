@@ -1,6 +1,8 @@
 let selectedCount = 0;
 
 document.querySelectorAll('.square').forEach(button => {
+	button.textContent = 'Test';
+	
 	let selected = false;
 	const classes = button.classList;
 	
@@ -8,12 +10,12 @@ document.querySelectorAll('.square').forEach(button => {
 		if (selected) {
 			selected = false;
 			selectedCount--;
-			classes.toggle("selected");
+			classes.toggle('selected');
 		} else if (selectedCount < 4) {
 			selected = true;
 			selectedCount++;
-			classes.toggle("selected");
+			classes.toggle('selected');
 		}
-		console.log("Buttons selected: " + selectedCount);
+		console.log('Buttons selected: ' + selectedCount);
 	});
 });

@@ -7,7 +7,6 @@
 }
 
 .selected {
-  content: "test";
   background-color: lightBlue;
   height: 95px;
   width: 95px;
