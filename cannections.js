@@ -11,7 +11,7 @@ function getNumbers(length) {
 	// Generates unique random numbers
 	const numbers = new Set();
 	while(numbers.size !== categorySize) {
-		numbers.add(Math.floor(Math.random() * length + 1));
+		numbers.add(Math.floor(Math.random() * length) + 1);
 	}
 	return numbers;
 }
@@ -26,6 +26,7 @@ function getCategories(categories, numbers) {
 
 async function main() {	
 	const data = await getData();
+	console.log(data);
 	const numbers = getNumbers(data.length);
 	const categories = getCategories(data, numbers);
 	console.log(categories);
