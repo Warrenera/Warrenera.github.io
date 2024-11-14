@@ -1,20 +1,110 @@
 [
-	{
-		"category": "Health Class Topics",
-		"topics": [
-			"Drugs",
-			"Emotions",
-			"Making Good Choices™",
-			"Sex"
-		]
-	},
-	{
-		"category": "Ann-isms",
-		"topics": [
-			"Culture",
-			"I'm Just A Girl",
-			"Instill Love",
-			"Yeah Yeah Yeah"
-		]
-	}
+  {
+    "category": "Health Class Topics",
+    "topics": [
+      "Drugs",
+      "Emotions",
+      "Making Good Choices™",
+      "Sex"
+  ]
+  },
+  {
+    "category": "Ann-isms",
+    "topics": [
+      "Culture",
+      "I'm Just A Girl",
+      "Instill Love",
+      "Yeah Yeah Yeah"
+    ]
+  },
+  {
+    "category": "First Date Activities",
+    "topics": [
+      "Colada Shop",
+      "Nicecream",
+      "Walk",
+      "Bench"
+    ]
+  },
+  {
+    "category": "Things We Had in Common Early On",
+    "topics": [
+      "Betsy",
+      "Jury Duty",
+      "?????",
+      "1989"
+    ]
+  },
+  {
+    "category": "Spirit Animals",
+    "topics": [
+      "Black Cat",
+      "Giraffe",
+      "Golden Retriever",
+      "Tiger"
+    ]
+  },
+  {
+    "category": "Better Movies Than the Hunger Games",
+    "topics": [
+      "Halloweentown",
+      "Inside Out 2",
+      "Mamma Mia!",
+      "She's the Man"
+    ]
+  },
+  {
+    "category": "Food Ann Hates",
+    "topics": [
+      "Onion",
+      "Peppers",
+      "Sausage",
+      "Tomato"
+    ]
+  },
+  {
+    "category": "What Ann Runs On",
+    "topics": [
+      "Asahi Crazy Rolls",
+      "Peach Mango V8 +ENERGY",
+      "Trader Joe's Frozen Food",
+      "White Screwtop Wine"
+    ]
+  },
+  {
+    "category": "Souvenir Spots",
+    "topics": [
+      "Belize",
+      "Italy",
+      "Louisiana",
+      "Montana"
+    ]
+  },
+  {
+    "category": "Inside Jokes",
+    "topics": [
+      "Dinosaur Noises",
+      "Dumping Andrew Before Going to Hershey",
+      "How Many Tampons?",
+      "??????"
+    ]
+  },
+  {
+    "category": "Emojis",
+    "topics": [
+      "Girl",
+      "Knife",
+      "Rose",
+      "Sunflower"
+    ]
+  },
+  {
+    "category": "Andrew-isms",
+    "topics": [
+      "Never Leave Home Without Protection",
+      "Blankie",
+      "?????",
+      "?????"
+    ]
+  },
 ]
