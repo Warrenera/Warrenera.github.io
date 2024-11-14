@@ -8,6 +8,7 @@
 
 .selected {
   background-color: lightBlue;
+  border-style: double;
   height: 95px;
   width: 95px;
 }
