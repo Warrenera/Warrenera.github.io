@@ -11,30 +11,37 @@ function getNumbers(length) {
 	// Generates unique random numbers
 	const numbers = new Set();
 	while(numbers.size !== categorySize) {
-		numbers.add(Math.floor(Math.random() * length) + 1);
+		numbers.add(Math.floor(Math.random() * length));
 	}
 	return numbers;
 }
 
-function getCategories(categories, numbers) {
-	for (let i = 0; i < categorySize; i++) {
-		for (const n of numbers) {
-			chosenCategories[i] = categories[n];			
-		}
+function getCategories(data, numbers) {
+	const categories = [];
+	for (const i of numbers) {
+		categories.push(data[i]);
 	}
+	return categories;
 }
 
 async function main() {	
 	const data = await getData();
-	console.log(data);
 	const numbers = getNumbers(data.length);
 	const categories = getCategories(data, numbers);
-	console.log(categories);
 	
 	let selectedCount = 0;
 	
-	document.querySelectorAll('.square').forEach((button, i) => {
-		button.textContent = categories[0]['topics'][0];
+	let i = 0;
+	let j = 0;
+	document.querySelectorAll('.square').forEach(button => {
+		// TODO: randomize these so they're not all same category in a row
+		// Reuse and refactor getNumbers() perhaps?
+		button.textContent = categories[i]['topics'][j];
+		j++;
+		if (j == 4) {
+			i++;
+			j = 0;
+		}
 		
 		let selected = false;
 		const classes = button.classList;
@@ -49,7 +56,6 @@ async function main() {
 				selectedCount++;
 				classes.toggle('selected');
 			}
-			console.log('Buttons selected: ' + selectedCount);
 		});
 	});
 
