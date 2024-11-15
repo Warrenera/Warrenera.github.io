@@ -1,5 +1,3 @@
-const categorySize = 4;
-
 async function getData() {	
 	const url = 'https://warrenera.github.io/cannections.json';
 	const request = new Request(url);
@@ -7,36 +5,50 @@ async function getData() {
 	return await response.json();
 }
 
-function getNumbers(length) {
-	// Generates unique random numbers
-	const numbers = new Set();
-	while(numbers.size !== categorySize) {
-		numbers.add(Math.floor(Math.random() * length));
-	}
-	return numbers;
+function chooseFour(data) {
+	const array = shuffleArray(data);
+	return array.slice(0, 4);
 }
 
-function getCategories(data, numbers) {
-	const categories = [];
-	for (const i of numbers) {
-		categories.push(data[i]);
+function shuffleArray(array) {
+    for (let i = array.length -1; i >= 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+	return array;
+}
+
+function shuffle(categories) {
+	shuffledRows = [];
+	for (const category of categories) {
+		shuffledRows.push(shuffleArray(category['topics']));
 	}
-	return categories;
+	const shuffledCategories = [];
+	for (const col in shuffledRows) {
+		const column = [];
+		for (const row in shuffledRows) {
+			column.push(shuffledRows[row][col]);
+		}
+		newColumn = shuffleArray(column);
+		shuffledCategories.push(newColumn);
+	}
+	// Transposes rows of new 2D array back to columns
+	return shuffledCategories[0].map((_, colIndex) => shuffledCategories.map(row => row[colIndex]));
 }
 
 async function main() {	
 	const data = await getData();
-	const numbers = getNumbers(data.length);
-	const categories = getCategories(data, numbers);
+	/*const categories = chooseRandom(data);
+	*/
+	const categories = chooseFour(data);
+	const shuffledCategories = shuffle(categories);
 	
 	let selectedCount = 0;
 	
 	let i = 0;
 	let j = 0;
 	document.querySelectorAll('.square').forEach(button => {
-		// TODO: randomize these so they're not all same category in a row
-		// Reuse and refactor getNumbers() perhaps?
-		button.textContent = categories[i]['topics'][j];
+		button.textContent = shuffledCategories[i][j];
 		j++;
 		if (j == 4) {
 			i++;
