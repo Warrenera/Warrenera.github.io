@@ -6,7 +6,7 @@ async function getData() {
 }
 
 function shuffleArray(array) {
-// Implementation of the Fisher–Yates shuffle
+	// Implementation of the Fisher–Yates shuffle
     for (let i = array.length -1; i >= 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
@@ -15,15 +15,16 @@ function shuffleArray(array) {
 }
 
 function shuffle(categories) {
-	shuffledRows = [];
+	rows = [];
 	for (const category of categories) {
-		shuffledRows.push(shuffleArray(category['topics']));
+		topics = shuffleArray(category['topics'])
+		rows.push(topics);
 	}
 	const shuffledCategories = [];
-	for (const col in shuffledRows) {
+	for (const col in rows) {
 		const column = [];
-		for (const row in shuffledRows) {
-			column.push(shuffledRows[row][col]);
+		for (const row in rows) {
+			column.push(rows[row][col]);
 		}
 		newColumn = shuffleArray(column);
 		shuffledCategories.push(newColumn);
@@ -64,7 +65,6 @@ async function main() {
 			}
 		});
 	});
-
 }
 
 main();
