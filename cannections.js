@@ -5,12 +5,8 @@ async function getData() {
 	return await response.json();
 }
 
-function chooseFour(data) {
-	const array = shuffleArray(data);
-	return array.slice(0, 4);
-}
-
 function shuffleArray(array) {
+// Implementation of the Fisher–Yates shuffle
     for (let i = array.length -1; i >= 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
@@ -38,9 +34,7 @@ function shuffle(categories) {
 
 async function main() {	
 	const data = await getData();
-	/*const categories = chooseRandom(data);
-	*/
-	const categories = chooseFour(data);
+	const categories = shuffleArray(data).slice(0, 4);
 	const shuffledCategories = shuffle(categories);
 	
 	let selectedCount = 0;
