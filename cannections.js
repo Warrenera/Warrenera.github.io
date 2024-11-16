@@ -33,22 +33,28 @@ function shuffle(categories) {
 	return shuffledCategories[0].map((_, colIndex) => shuffledCategories.map(row => row[colIndex]));
 }
 
+function addText(button, shuffledCategories, i, j) {
+	button.textContent = shuffledCategories[i][j];
+	j++;
+	if (j == 4) {
+		i++;
+		j = 0;
+	}
+	return [i, j];
+}
+
 async function main() {	
 	const data = await getData();
 	const categories = shuffleArray(data).slice(0, 4);
-	const shuffledCategories = shuffle(categories);
+	let shuffledCategories = shuffle(categories);
 	
 	let selectedCount = 0;
 	
 	let i = 0;
 	let j = 0;
-	document.querySelectorAll('.square').forEach(button => {
-		button.textContent = shuffledCategories[i][j];
-		j++;
-		if (j == 4) {
-			i++;
-			j = 0;
-		}
+	const squares = document.querySelectorAll('.square');
+	squares.forEach(button => {
+		[i, j] = addText(button, shuffledCategories, i, j);
 		
 		let selected = false;
 		const classes = button.classList;
@@ -63,6 +69,15 @@ async function main() {
 				selectedCount++;
 				classes.toggle('selected');
 			}
+		});
+	});
+	
+	document.querySelector('#shuffle').addEventListener("click", () => {
+		shuffledCategories = shuffle(categories);
+		i = 0;
+		j = 0;
+		squares.forEach(button => {
+			[i, j] = addText(button, shuffledCategories, i, j);
 		});
 	});
 }
