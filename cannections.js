@@ -52,6 +52,8 @@ function deselectAll(selectedSquares) {
 }
 
 async function main() {	
+	// TODO: Figure out why this can't be an anonymous asynchronous function at the top level
+	// Then if you can, clean up function calls needing to return values like i, j
 	const data = await getData();
 	const categories = shuffleArray(data).slice(0, 4);
 	let shuffledCategories = shuffle(categories);
