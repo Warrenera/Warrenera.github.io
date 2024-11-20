@@ -87,6 +87,17 @@ async function main() {
 	deselectButton.addEventListener('click', () => {
 		[selectedCount, selectedSquares] = deselectAll(selectedSquares);
 	});
+	
+	const shuffleButton = document.querySelector('#shuffle');
+	shuffleButton.addEventListener('click', () => {
+		[selectedCount, selectedSquares] = deselectAll(selectedSquares);
+		shuffledCategories = shuffle(categories);
+		i = 0;
+		j = 0;
+		squares.forEach(button => {
+			[i, j] = addText(button, shuffledCategories, i, j);
+		});
+	});
 }
 
 main();
