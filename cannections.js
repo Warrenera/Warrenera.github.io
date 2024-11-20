@@ -43,42 +43,49 @@ function addText(button, shuffledCategories, i, j) {
 	return [i, j];
 }
 
+function deselectAll(selectedSquares) {
+	selectedSquares.forEach(squareID => {
+		const square = document.querySelector('#' + squareID);
+		square.classList.remove('selected');
+	});
+	return [0, []];
+}
+
 async function main() {	
 	const data = await getData();
 	const categories = shuffleArray(data).slice(0, 4);
 	let shuffledCategories = shuffle(categories);
 	
+	let selectedSquares = [];
 	let selectedCount = 0;
-	
 	let i = 0;
 	let j = 0;
+	
 	const squares = document.querySelectorAll('.square');
 	squares.forEach(button => {
 		[i, j] = addText(button, shuffledCategories, i, j);
 		
-		let selected = false;
 		const classes = button.classList;
-		
 		button.addEventListener('click', () => {
-			if (selected) {
-				selected = false;
+			id = button.id;
+			if (selectedSquares.includes(id)) {
+				const index = selectedSquares.indexOf(id);
+				selectedSquares.splice(index, 1);
 				selectedCount--;
 				classes.toggle('selected');
 			} else if (selectedCount < 4) {
-				selected = true;
+				selectedSquares.push(id);
 				selectedCount++;
 				classes.toggle('selected');
 			}
+			console.log('selectedCount: ' + selectedCount);
+			console.log('Selected Squares: ' + selectedSquares);
 		});
 	});
 	
-	document.querySelector('#shuffle').addEventListener("click", () => {
-		shuffledCategories = shuffle(categories);
-		i = 0;
-		j = 0;
-		squares.forEach(button => {
-			[i, j] = addText(button, shuffledCategories, i, j);
-		});
+	const deselectButton = document.querySelector('#deselect');
+	deselectButton.addEventListener('click', () => {
+		[selectedCount, selectedSquares] = deselectAll(selectedSquares);
 	});
 }
 
