@@ -72,7 +72,7 @@ async function main() {
 		button.addEventListener('click', () => {
 			const idsMatch = selectedSquares.some(square => square.id == button.id);
 			if (idsMatch) {
-				const index = selectedSquares.indexOf(button.id);
+				const index = selectedSquares.findIndex(square => square.id == button.id);
 				selectedSquares.splice(index, 1);
 				selectedCount--;
 				classes.toggle('selected');
@@ -107,7 +107,7 @@ async function main() {
 	
 	const submitButton = document.querySelector('#submit');
 	submitButton.addEventListener('click', () => {
-		selectedValues = [];
+		//selectedSquares.forEach()
 	});
 }
 
