@@ -1,7 +1,5 @@
 async function getData() {	
-	const url = 'https://warrenera.github.io/cannections.json';
-	const request = new Request(url);
-	const response = await fetch(request);
+	const response = await fetch('https://warrenera.github.io/cannections.json');
 	return await response.json();
 }
 
@@ -22,12 +20,12 @@ function shuffle(categories) {
 	}
 	const shuffledCategories = [];
 	for (const col in rows) {
-		const column = [];
+		let column = [];
 		for (const row in rows) {
 			column.push(rows[row][col]);
 		}
-		newColumn = shuffleArray(column);
-		shuffledCategories.push(newColumn);
+		column = shuffleArray(column);
+		shuffledCategories.push(column);
 	}
 	// Transposes rows of new 2D array back to columns
 	return shuffledCategories[0].map((_, colIndex) => shuffledCategories.map(row => row[colIndex]));
@@ -43,9 +41,9 @@ function addText(button, shuffledCategories, i, j) {
 	return [i, j];
 }
 
-function deselectAll(selectedSquares) {
-	selectedSquares.forEach(selectedSquare => {
-		const square = document.querySelector('#' + selectedSquare.id);
+function deselectAll(selections) {
+	selections.forEach(selection => {
+		const square = document.querySelector('#' + selection.id);
 		square.classList.remove('selected');
 	});
 	return [0, []];
@@ -59,8 +57,8 @@ async function main() {
 	const categories = shuffleArray(data).slice(0, 4);
 	let shuffledCategories = shuffle(categories);
 	
-	let selectedSquares = [];
-	let selectedCount = 0;
+	let selections = [];
+	let selectCount = 0;
 	let i = 0;
 	let j = 0;
 	
@@ -70,33 +68,33 @@ async function main() {
 		
 		const classes = button.classList;
 		button.addEventListener('click', () => {
-			const idsMatch = selectedSquares.some(square => square.id == button.id);
+			const idsMatch = selections.some(square => square.id == button.id);
 			if (idsMatch) {
-				const index = selectedSquares.findIndex(square => square.id == button.id);
-				selectedSquares.splice(index, 1);
-				selectedCount--;
+				const index = selections.findIndex(square => square.id == button.id);
+				selections.splice(index, 1);
+				selectCount--;
 				classes.toggle('selected');
-			} else if (selectedCount < 4) {
+			} else if (selectCount < 4) {
 				const newSelection = {id: button.id, text: button.textContent};
-				selectedSquares.push(newSelection);
-				selectedCount++;
+				selections.push(newSelection);
+				selectCount++;
 				classes.toggle('selected');
 			}
-			console.log('selectedCount: ' + selectedCount);
-			console.log('Selected Squares: ' + JSON.stringify(selectedSquares));
+			console.log('selectCount: ' + selectCount);
+			console.log('Selected Squares: ' + JSON.stringify(selections));
 			
-			(selectedCount === 4) ? submitButton.disabled = false : submitButton.disabled = true;
+			(selectCount === 4) ? submitButton.disabled = false : submitButton.disabled = true;
 		});
 	});
 	
 	const deselectButton = document.querySelector('#deselect');
 	deselectButton.addEventListener('click', () => {
-		[selectedCount, selectedSquares] = deselectAll(selectedSquares);
+		[selectCount, selections] = deselectAll(selections);
 	});
 	
 	const shuffleButton = document.querySelector('#shuffle');
 	shuffleButton.addEventListener('click', () => {
-		[selectedCount, selectedSquares] = deselectAll(selectedSquares);
+		[selectCount, selections] = deselectAll(selections);
 		shuffledCategories = shuffle(categories);
 		i = 0;
 		j = 0;
@@ -107,7 +105,7 @@ async function main() {
 	
 	const submitButton = document.querySelector('#submit');
 	submitButton.addEventListener('click', () => {
-		//selectedSquares.forEach()
+		//selections.forEach()
 	});
 }
 
