@@ -36,24 +36,25 @@ function shuffle(categories) {
 function addText(button, shuffledCategories, i, j) {
 	button.textContent = shuffledCategories[i][j];
 	j++;
-	if (j == 4) {
+	if (j === 4) {
 		i++;
 		j = 0;
 	}
 	return [i, j];
 }
 
-function deselectAll(selectedSquares) {
-	selectedSquares.forEach(squareID => {
-		const square = document.querySelector('#' + squareID);
+function deselectAll(selectedSquares, selectedValues) {
+	selectedSquares.forEach(selectedSquare => {
+		const square = document.querySelector('#' + selectedSquare.id);
 		square.classList.remove('selected');
 	});
 	return [0, []];
 }
 
 async function main() {	
-	// TODO: Figure out why this can't be an anonymous asynchronous function at the top level
+	// TODO: Figure out why data can't be an anonymous asynchronous function at the top level
 	// Then if you can, clean up function calls needing to return values like i, j
+	// and remove main()
 	const data = await getData();
 	const categories = shuffleArray(data).slice(0, 4);
 	let shuffledCategories = shuffle(categories);
@@ -69,19 +70,22 @@ async function main() {
 		
 		const classes = button.classList;
 		button.addEventListener('click', () => {
-			id = button.id;
-			if (selectedSquares.includes(id)) {
-				const index = selectedSquares.indexOf(id);
+			const idsMatch = selectedSquares.some(square => square.id == button.id);
+			if (idsMatch) {
+				const index = selectedSquares.indexOf(button.id);
 				selectedSquares.splice(index, 1);
 				selectedCount--;
 				classes.toggle('selected');
 			} else if (selectedCount < 4) {
-				selectedSquares.push(id);
+				const newSelection = {id: button.id, text: button.textContent};
+				selectedSquares.push(newSelection);
 				selectedCount++;
 				classes.toggle('selected');
 			}
 			console.log('selectedCount: ' + selectedCount);
-			console.log('Selected Squares: ' + selectedSquares);
+			console.log('Selected Squares: ' + JSON.stringify(selectedSquares));
+			
+			(selectedCount === 4) ? submitButton.disabled = false : submitButton.disabled = true;
 		});
 	});
 	
