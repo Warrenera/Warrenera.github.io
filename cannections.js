@@ -43,7 +43,7 @@ function addText(button, shuffledCategories, i, j) {
 	return [i, j];
 }
 
-function deselectAll(selectedSquares, selectedValues) {
+function deselectAll(selectedSquares) {
 	selectedSquares.forEach(selectedSquare => {
 		const square = document.querySelector('#' + selectedSquare.id);
 		square.classList.remove('selected');
@@ -103,6 +103,11 @@ async function main() {
 		squares.forEach(button => {
 			[i, j] = addText(button, shuffledCategories, i, j);
 		});
+	});
+	
+	const submitButton = document.querySelector('#submit');
+	submitButton.addEventListener('click', () => {
+		selectedValues = [];
 	});
 }
 
