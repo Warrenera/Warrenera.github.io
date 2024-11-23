@@ -41,11 +41,12 @@ function addText(button, shuffledCategories, i, j) {
 	return [i, j];
 }
 
-function deselectAll(selections) {
+function deselectAll(selections, submitButton) {
 	selections.forEach(selection => {
 		const square = document.querySelector('#' + selection.id);
 		square.classList.remove('selected');
 	});
+	submitButton.disabled = true;
 	return [0, []];
 }
 
@@ -89,12 +90,12 @@ async function main() {
 	
 	const deselectButton = document.querySelector('#deselect');
 	deselectButton.addEventListener('click', () => {
-		[selectCount, selections] = deselectAll(selections);
+		[selectCount, selections] = deselectAll(selections, submitButton);
 	});
 	
 	const shuffleButton = document.querySelector('#shuffle');
 	shuffleButton.addEventListener('click', () => {
-		[selectCount, selections] = deselectAll(selections);
+		[selectCount, selections] = deselectAll(selections, submitButton);
 		shuffledCategories = shuffle(categories);
 		i = 0;
 		j = 0;
@@ -107,6 +108,9 @@ async function main() {
 	submitButton.addEventListener('click', () => {
 		//selections.forEach()
 	});
+	/* Needed for Firefox. It keeps button state on page refresh:
+	   https://bugzilla.mozilla.org/show_bug.cgi?id=685657 */
+	submitButton.disabled = true;
 }
 
 main();
