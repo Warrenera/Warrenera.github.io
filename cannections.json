@@ -1,15 +1,15 @@
 [
   {
-    "category": "Health Class Topics",
+    "title": "Health Class Topics",
     "topics": [
       "Drugs",
       "Emotions",
       "Making Good Choices™",
       "Sex"
-  ]
+	]	
   },
   {
-    "category": "Ann-isms",
+    "title": "Ann-isms",
     "topics": [
       "I'm Just A Girl",
       "Instill Love",
@@ -18,7 +18,7 @@
     ]
   },
   {
-    "category": "First Date Activities",
+    "title": "First Date Activities",
     "topics": [
       "Colada Shop",
       "Nicecream",
@@ -27,7 +27,7 @@
     ]
   },
   {
-    "category": "Things We Had in Common Early On",
+    "title": "Things We Had in Common Early On",
     "topics": [
       "Betsy",
       "Jury Duty",
@@ -36,7 +36,7 @@
     ]
   },
   {
-    "category": "Spirit Animals",
+    "title": "Spirit Animals",
     "topics": [
       "Black Cat",
       "Giraffe",
@@ -45,7 +45,7 @@
     ]
   },
   {
-    "category": "Better Movies Than the Hunger Games",
+    "title": "Better Movies Than the Hunger Games",
     "topics": [
       "Halloweentown",
       "Inside Out 2",
@@ -54,7 +54,7 @@
     ]
   },
   {
-    "category": "Food Ann Hates",
+    "title": "Food Ann Hates",
     "topics": [
       "Onion",
       "Peppers",
@@ -63,7 +63,7 @@
     ]
   },
   {
-    "category": "What Ann Runs On",
+    "title": "What Ann Runs On",
     "topics": [
       "Asahi Crazy Rolls",
       "Peach Mango V8 +ENERGY",
@@ -72,7 +72,7 @@
     ]
   },
   {
-    "category": "Souvenir Spots",
+    "title": "Souvenir Spots",
     "topics": [
       "Belize",
       "Italy",
@@ -81,7 +81,7 @@
     ]
   },
   {
-    "category": "Inside Jokes",
+    "title": "Inside Jokes",
     "topics": [
       "Dinosaur Noises",
       "Dumping Andrew Before Going to Hershey",
@@ -90,7 +90,7 @@
     ]
   },
   {
-    "category": "Emojis in Ann's Contact",
+    "title": "Emojis in Ann's Contact",
     "topics": [
       "Girl",
       "Knife",
@@ -99,7 +99,7 @@
     ]
   },
   {
-    "category": "Andrew-isms",
+    "title": "Andrew-isms",
     "topics": [
       "Never Leave Home Without Protection",
       "Blankie",

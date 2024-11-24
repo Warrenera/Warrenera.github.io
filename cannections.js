@@ -1,3 +1,5 @@
+let tries = 4;
+
 async function getData() {	
 	const response = await fetch('https://warrenera.github.io/cannections.json');
 	return await response.json();
@@ -50,6 +52,33 @@ function deselectAll(selections, submitButton) {
 	return [0, []];
 }
 
+function rightGuess(matches) {
+
+}
+
+function wrongGuess(selectionMatches, selections, priorGuesses) {
+	const guessedPrior = priorGuesses.some(priorGuess => {
+		return priorGuess.every(square => square === selections.text);
+	});
+	
+	let popup;
+	if (guessedPrior) {
+		popup = 'Already guessed!';
+	} else {
+		tries--;
+		const tigers = document.querySelector('#tries');
+		// Needs to be -2. Think 🐯 has two Unicode points
+		tigers.textContent = tigers.textContent.slice(0, -2);
+		if (tries <= 0) {
+			console.log('AHHHHHH');
+		} else {
+			popup = (selectionMatches === 3) ? 'One away!' : 'Not quite';
+		}
+	}
+	// Change later
+	alert(popup);
+}
+
 async function main() {	
 	// TODO: Figure out why data can't be an anonymous asynchronous function at the top level
 	// Then if you can, clean up function calls needing to return values like i, j
@@ -59,6 +88,7 @@ async function main() {
 	let shuffledCategories = shuffle(categories);
 	
 	let selections = [];
+	let priorGuesses = [];
 	let selectCount = 0;
 	let i = 0;
 	let j = 0;
@@ -69,9 +99,9 @@ async function main() {
 		
 		const classes = button.classList;
 		button.addEventListener('click', () => {
-			const idsMatch = selections.some(square => square.id == button.id);
+			const idsMatch = selections.some(selection => selection.id == button.id);
 			if (idsMatch) {
-				const index = selections.findIndex(square => square.id == button.id);
+				const index = selections.findIndex(selection => selection.id == button.id);
 				selections.splice(index, 1);
 				selectCount--;
 				classes.toggle('selected');
@@ -106,10 +136,22 @@ async function main() {
 	
 	const submitButton = document.querySelector('#submit');
 	submitButton.addEventListener('click', () => {
-		//selections.forEach()
+		let selectionMatches = 0;
+		const match = categories.some(category => {
+			return category.topics.every(topic => {
+				const textsMatch = selections.some(selection => {
+					return selection.text == topic;
+				});
+				if (textsMatch) {
+					selectionMatches++;
+				}
+				return textsMatch;
+			});
+		});
+		(match) ? rightGuess() : wrongGuess(selectionMatches, selections, priorGuesses);
 	});
-	/* Needed for Firefox. It keeps button state on page refresh:
-	   https://bugzilla.mozilla.org/show_bug.cgi?id=685657 */
+	/* Needed for Firefox. Otherwise, it keeps button state on page
+	   refresh: https://bugzilla.mozilla.org/show_bug.cgi?id=685657 */
 	submitButton.disabled = true;
 }
 
