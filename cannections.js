@@ -1,4 +1,5 @@
 let tries = 4;
+let priorGuesses = [];
 
 async function getData() {	
 	const response = await fetch('https://warrenera.github.io/cannections.json');
@@ -56,9 +57,15 @@ function rightGuess(matches) {
 
 }
 
-function wrongGuess(selectionMatches, selections, priorGuesses) {
+function compareArraysOfObjects(guess, selections) {
+	console.log(guess); 
+	console.log(selections);
+}
+
+//Gotta figure out how to compare these two. Hoping can get guesses to just be text, not ID. May be easier?
+function wrongGuess(selectionMatches, selections) {
 	const guessedPrior = priorGuesses.some(priorGuess => {
-		return priorGuess.every(square => square === selections.text);
+		return priorGuess.every(compareArraysOfObjects(selections));
 	});
 	
 	let popup;
@@ -72,7 +79,8 @@ function wrongGuess(selectionMatches, selections, priorGuesses) {
 		if (tries <= 0) {
 			console.log('AHHHHHH');
 		} else {
-			popup = (selectionMatches === 3) ? 'One away!' : 'Not quite';
+			popup = (selectionMatches === 3) ? 'One away!' : 'Not quite';'
+			priorGuesses.push(selections);
 		}
 	}
 	// Change later
@@ -88,7 +96,6 @@ async function main() {
 	let shuffledCategories = shuffle(categories);
 	
 	let selections = [];
-	let priorGuesses = [];
 	let selectCount = 0;
 	let i = 0;
 	let j = 0;
@@ -148,7 +155,7 @@ async function main() {
 				return textsMatch;
 			});
 		});
-		(match) ? rightGuess() : wrongGuess(selectionMatches, selections, priorGuesses);
+		(match) ? rightGuess() : wrongGuess(selectionMatches, selections);
 	});
 	/* Needed for Firefox. Otherwise, it keeps button state on page
 	   refresh: https://bugzilla.mozilla.org/show_bug.cgi?id=685657 */
