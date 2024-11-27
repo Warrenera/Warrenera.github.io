@@ -57,30 +57,28 @@ function rightGuess(matches) {
 
 }
 
-function compareArraysOfObjects(guess, selections) {
-	console.log(guess); 
-	console.log(selections);
-}
-
 //Gotta figure out how to compare these two. Hoping can get guesses to just be text, not ID. May be easier?
-function wrongGuess(selectionMatches, selections) {
+function wrongGuess(oneAway, selections) {
+	let selectionTexts = [];
+	for (const selection of selections) {
+		selectionTexts.push(selection.text);
+	}
 	const guessedPrior = priorGuesses.some(priorGuess => {
-		return priorGuess.every(compareArraysOfObjects(selections));
+		return priorGuess.every(guess => selectionTexts.includes(guess));
 	});
-	
 	let popup;
 	if (guessedPrior) {
 		popup = 'Already guessed!';
 	} else {
 		tries--;
-		const tigers = document.querySelector('#tries');
+		const tigers = document.querySelector('#tigers');
 		// Needs to be -2. Think 🐯 has two Unicode points
 		tigers.textContent = tigers.textContent.slice(0, -2);
 		if (tries <= 0) {
-			console.log('AHHHHHH');
+			popup = 'Next time';
 		} else {
-			popup = (selectionMatches === 3) ? 'One away!' : 'Not quite';'
-			priorGuesses.push(selections);
+			popup = (oneAway) ? 'One away!' : 'Not quite';
+			priorGuesses.push(selectionTexts);
 		}
 	}
 	// Change later
@@ -143,9 +141,11 @@ async function main() {
 	
 	const submitButton = document.querySelector('#submit');
 	submitButton.addEventListener('click', () => {
-		let selectionMatches = 0;
+		let oneAway = false;
+		// If some selection matches every topic in some category
 		const match = categories.some(category => {
-			return category.topics.every(topic => {
+			let selectionMatches = 0;
+			const topicsMatch = category.topics.every(topic => {
 				const textsMatch = selections.some(selection => {
 					return selection.text == topic;
 				});
@@ -154,8 +154,13 @@ async function main() {
 				}
 				return textsMatch;
 			});
+			// If a category was already one off, don't overwrite it
+			if (!oneAway) {
+				oneAway = (selectionMatches === 3) ? true : false;
+			}
+			return topicsMatch;
 		});
-		(match) ? rightGuess() : wrongGuess(selectionMatches, selections);
+		(match) ? rightGuess() : wrongGuess(oneAway, selections);
 	});
 	/* Needed for Firefox. Otherwise, it keeps button state on page
 	   refresh: https://bugzilla.mozilla.org/show_bug.cgi?id=685657 */
