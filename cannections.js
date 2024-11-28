@@ -57,12 +57,7 @@ function rightGuess(matches) {
 
 }
 
-//Gotta figure out how to compare these two. Hoping can get guesses to just be text, not ID. May be easier?
-function wrongGuess(oneAway, selections) {
-	let selectionTexts = [];
-	for (const selection of selections) {
-		selectionTexts.push(selection.text);
-	}
+function wrongGuess(oneAway, selectionTexts) {
 	const guessedPrior = priorGuesses.some(priorGuess => {
 		return priorGuess.every(guess => selectionTexts.includes(guess));
 	});
@@ -141,26 +136,25 @@ async function main() {
 	
 	const submitButton = document.querySelector('#submit');
 	submitButton.addEventListener('click', () => {
+		let selectionTexts = [];
+		for (const selection of selections) {
+			selectionTexts.push(selection.text);
+		}
 		let oneAway = false;
-		// If some selection matches every topic in some category
 		const match = categories.some(category => {
-			let selectionMatches = 0;
-			const topicsMatch = category.topics.every(topic => {
-				const textsMatch = selections.some(selection => {
-					return selection.text == topic;
-				});
-				if (textsMatch) {
-					selectionMatches++;
+			let matchCount = 0;
+			for (const topic of category.topics) {
+				if (selectionTexts.includes(topic)) {
+					matchCount++;
 				}
-				return textsMatch;
-			});
-			// If a category was already one off, don't overwrite it
-			if (!oneAway) {
-				oneAway = (selectionMatches === 3) ? true : false;
 			}
-			return topicsMatch;
+			// If some category was already one off, don't overwrite it
+			if (!oneAway) {
+				oneAway = (matchCount === 3) ? true : false;
+			}
+			return (matchCount === 4) ? true : false;
 		});
-		(match) ? rightGuess() : wrongGuess(oneAway, selections);
+		(match) ? rightGuess() : wrongGuess(oneAway, selectionTexts);
 	});
 	/* Needed for Firefox. Otherwise, it keeps button state on page
 	   refresh: https://bugzilla.mozilla.org/show_bug.cgi?id=685657 */
