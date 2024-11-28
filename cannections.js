@@ -34,8 +34,8 @@ function shuffle(categories) {
 	return shuffledCategories[0].map((_, colIndex) => shuffledCategories.map(row => row[colIndex]));
 }
 
-function addText(button, shuffledCategories, i, j) {
-	button.textContent = shuffledCategories[i][j];
+function addText(buttons, shuffledCategories, i, j) {
+	buttons.textContent = shuffledCategories[i][j];
 	j++;
 	if (j === 4) {
 		i++;
@@ -45,10 +45,11 @@ function addText(button, shuffledCategories, i, j) {
 }
 
 function deselectAll(selections, submitButton) {
-	selections.forEach(selection => {
+	
+	for (const selection of selections) {
 		const square = document.querySelector('#' + selection.id);
 		square.classList.remove('selected');
-	});
+	}
 	submitButton.disabled = true;
 	return [0, []];
 }
@@ -93,8 +94,8 @@ async function main() {
 	let i = 0;
 	let j = 0;
 	
-	const squares = document.querySelectorAll('.square');
-	squares.forEach(button => {
+	const buttons = document.querySelectorAll('.square');
+	for (const button of buttons) {
 		[i, j] = addText(button, shuffledCategories, i, j);
 		
 		const classes = button.classList;
@@ -116,7 +117,7 @@ async function main() {
 			
 			(selectCount === 4) ? submitButton.disabled = false : submitButton.disabled = true;
 		});
-	});
+	}
 	
 	const deselectButton = document.querySelector('#deselect');
 	deselectButton.addEventListener('click', () => {
@@ -129,9 +130,9 @@ async function main() {
 		shuffledCategories = shuffle(categories);
 		i = 0;
 		j = 0;
-		squares.forEach(button => {
+		for (const button of buttons) {
 			[i, j] = addText(button, shuffledCategories, i, j);
-		});
+		}
 	});
 	
 	const submitButton = document.querySelector('#submit');
