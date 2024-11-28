@@ -34,8 +34,8 @@ function shuffle(categories) {
 	return shuffledCategories[0].map((_, colIndex) => shuffledCategories.map(row => row[colIndex]));
 }
 
-function addText(buttons, shuffledCategories, i, j) {
-	buttons.textContent = shuffledCategories[i][j];
+function addText(button, shuffledCategories, i, j) {
+	button.textContent = shuffledCategories[i][j];
 	j++;
 	if (j === 4) {
 		i++;
