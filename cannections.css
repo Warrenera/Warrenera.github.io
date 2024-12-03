@@ -1,19 +1,15 @@
-.row {
-	width: 425px;
-}
-
-.selected {
-  background-color: lightBlue;
-  height: 95px;
-  width: 95px;
-}
-
 .square {
   background-color: lightGray;
   border-radius: 25px;
   font-weight: bold;
   height: 100px;
   width: 100px;
+}
+
+.selected {
+  background-color: lightBlue;
+  height: 95px;
+  width: 95px;
 }
 
 #popup {
