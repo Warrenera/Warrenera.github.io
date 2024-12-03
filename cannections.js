@@ -86,7 +86,6 @@ function wrongGuess(oneAway, selectionTexts) {
 			priorGuesses.push(selectionTexts);
 		}
 	}
-	// Change later
 	displayPopup(message);
 }
 
@@ -115,13 +114,11 @@ async function main() {
 				selections.splice(index, 1);
 				selectCount--;
 				classes.toggle('selected');
-				console.log(classes);
 			} else if (selectCount < 4) {
 				const newSelection = {id: button.id, text: button.textContent};
 				selections.push(newSelection);
 				selectCount++;
 				classes.toggle('selected');
-				console.log(classes);
 			}
 			console.log('selectCount: ' + selectCount);
 			console.log('Selected Squares: ' + JSON.stringify(selections));
