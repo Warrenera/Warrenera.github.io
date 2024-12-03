@@ -58,27 +58,36 @@ function rightGuess(matches) {
 
 }
 
+function displayPopup(message) {
+	const popup = document.querySelector('#popup');
+	popup.textContent = message;
+	const classes = popup.classList;
+	fade = classes => classes.toggle('fade');
+	fade(classes);
+	setTimeout(fade, 2000, classes);
+}
+
 function wrongGuess(oneAway, selectionTexts) {
 	const guessedPrior = priorGuesses.some(priorGuess => {
 		return priorGuess.every(guess => selectionTexts.includes(guess));
 	});
-	let popup;
+	let message;
 	if (guessedPrior) {
-		popup = 'Already guessed!';
+		message = 'Already guessed!';
 	} else {
 		tries--;
 		const tigers = document.querySelector('#tigers');
 		// Needs to be -2. Think 🐯 has two Unicode points
 		tigers.textContent = tigers.textContent.slice(0, -2);
 		if (tries <= 0) {
-			popup = 'Next time';
+			message = 'Next time!';
 		} else {
-			popup = (oneAway) ? 'One away!' : 'Not quite';
+			message = (oneAway) ? 'One away!' : 'Not quite...';
 			priorGuesses.push(selectionTexts);
 		}
 	}
 	// Change later
-	alert(popup);
+	displayPopup(message);
 }
 
 async function main() {	
@@ -106,11 +115,13 @@ async function main() {
 				selections.splice(index, 1);
 				selectCount--;
 				classes.toggle('selected');
+				console.log(classes);
 			} else if (selectCount < 4) {
 				const newSelection = {id: button.id, text: button.textContent};
 				selections.push(newSelection);
 				selectCount++;
 				classes.toggle('selected');
+				console.log(classes);
 			}
 			console.log('selectCount: ' + selectCount);
 			console.log('Selected Squares: ' + JSON.stringify(selections));

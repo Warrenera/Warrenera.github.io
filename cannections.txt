@@ -18,6 +18,7 @@ TODO:
 - Implement losing logic
 	- Display message
 - Implement one-a-day logic? TBD
+	- cron?
 - Make pretty
 	- More colors
 	- Reactivity

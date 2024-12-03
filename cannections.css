@@ -1,3 +1,13 @@
+.row {
+	width: 425px;
+}
+
+.selected {
+  background-color: lightBlue;
+  height: 95px;
+  width: 95px;
+}
+
 .square {
   background-color: lightGray;
   border-radius: 25px;
@@ -6,8 +16,22 @@
   width: 100px;
 }
 
-.selected {
-  background-color: lightBlue;
-  height: 95px;
-  width: 95px;
+#popup {
+  background-color: coral; /*To change and make pretty later*/
+  left: 50%;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  transition: opacity 1s; 
+  z-index: 1;
+}
+
+#popup.fade {
+	opacity: 1;
+}
+
+#rows {
+  position: relative;
+  width: max-content;
 }
