@@ -15,6 +15,7 @@ function shuffleArray(array) {
 	return array;
 }
 
+// TODO: FIX SHUFFLE SO NOT ALWAYS ONE PER COLUMN (SWITCH ORDER OF SHUFFLING??)
 function shuffle(categories) {
 	rows = [];
 	for (const category of categories) {
