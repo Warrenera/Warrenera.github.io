@@ -1,0 +1,26 @@
+TODO:
+- Refactor code to not need to be in main function
+- Implement submit logic
+	- ~~Loop through selections vs game-chosen categories~~
+	- Implement right logic
+		- Move category to top
+		- Make unclickable
+	- ~~Implement wrong logic~~
+		- ~~Display message~~
+		- ~~Remove tiger~~
+		- ~~Already guessed logic... save array of previous choices~~
+		- ~~One away logic~~
+- Implement winning logic
+	- Display message
+	- Add share logic
+		- Copy text
+		- iOS share menu API?
+- Implement losing logic
+	- ~~Display message~~
+- Implement one-a-day logic? TBD
+- Make pretty
+	- More colors
+	- Reactivity
+	- Animations
+- Improve header/instructions
+- Think of more categories
