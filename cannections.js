@@ -83,8 +83,10 @@ function showCategory(category) {
 	row.innerHTML = `<br><strong>${category.title}</strong><br>${topics}`;
 }
 
-function rightGuess(matches) {
-
+function rightGuess(selections) {
+	// Loop through buttons getting all non-selections
+	showCategory(selections);
+	// Reapply non-selections to remaining buttons
 }
 
 function displayPopup(message) {
@@ -214,10 +216,15 @@ async function main() {
 			}
 			return (matchCount === 4) ? true : false;
 		});
-		(match) ? rightGuess() : wrongGuess(oneAway, selectionTexts, categories);
-		if (tries <= 0) {
-			gameOver(categories);
-			submitButton.disabled = true;
+		if (match) {
+			rightGuess(selections);
+			[selectCount, selections] = deselectAll(selections, submitButton);
+		} else {
+			wrongGuess(oneAway, selectionTexts, categories);
+			if (tries <= 0) {
+				gameOver(categories);
+				submitButton.disabled = true;
+			}
 		}
 	});
 	/* Needed for Firefox. Otherwise, it keeps button state on page
