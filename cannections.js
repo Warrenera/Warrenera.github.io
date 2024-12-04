@@ -15,24 +15,32 @@ function shuffleArray(array) {
 	return array;
 }
 
-// TODO: FIX SHUFFLE SO NOT ALWAYS ONE PER COLUMN (SWITCH ORDER OF SHUFFLING??)
 function shuffle(categories) {
-	rows = [];
+	// Get array of topic arrays
+	const rows = [];
 	for (const category of categories) {
-		topics = shuffleArray(category['topics'])
-		rows.push(topics);
+		rows.push(category['topics']);
 	}
-	const shuffledCategories = [];
+
+	// Shuffle columns
+	let columns = [];
 	for (const col in rows) {
-		let column = [];
+		const column = [];
 		for (const row in rows) {
 			column.push(rows[row][col]);
 		}
-		column = shuffleArray(column);
-		shuffledCategories.push(column);
+		columns.push(shuffleArray(column));
 	}
-	// Transposes rows of new 2D array back to columns
-	return shuffledCategories[0].map((_, colIndex) => shuffledCategories.map(row => row[colIndex]));
+	
+	// Transpose rows of new 2D array back to columns
+	columns = columns[0].map((_, i) => columns.map(row => row[i]));
+	
+	// Shuffle rows of now-shuffled columns
+	const shuffledArray = [];
+	for (const row of columns) {
+		shuffledArray.push(shuffleArray(row));
+	}
+	return shuffledArray;
 }
 
 function addText(button, shuffledCategories, i, j) {
