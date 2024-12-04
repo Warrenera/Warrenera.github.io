@@ -1,5 +1,6 @@
 let tries = 4;
 let priorGuesses = [];
+let categoriesShown = 0;
 
 async function getData() {	
 	const response = await fetch('https://warrenera.github.io/cannections.json');
@@ -63,6 +64,18 @@ function deselectAll(selections, submitButton) {
 	return [0, []];
 }
 
+function showCategory(category) {
+	categoriesShown++;
+	const id = 'row_' + categoriesShown;
+	const row = document.querySelector('#' + id);
+	for (const button of row.children) {		
+		button.style.visibility = 'hidden';
+	}
+	row.classList.toggle('row');
+	const topics = category.topics.join(', ');
+	row.innerHTML = `<strong>${category.title}</strong><br>${topics}`;
+}
+
 function rightGuess(matches) {
 
 }
@@ -76,7 +89,7 @@ function displayPopup(message) {
 	setTimeout(fade, 2000, classes);
 }
 
-function wrongGuess(oneAway, selectionTexts) {
+function wrongGuess(oneAway, selectionTexts, categories) {
 	const guessedPrior = priorGuesses.some(priorGuess => {
 		return priorGuess.every(guess => selectionTexts.includes(guess));
 	});
@@ -89,13 +102,19 @@ function wrongGuess(oneAway, selectionTexts) {
 		// Needs to be -2. Think 🐯 has two Unicode points
 		tigers.textContent = tigers.textContent.slice(0, -2);
 		if (tries <= 0) {
-			message = 'Next time!';
+			message = 'Next time';
 		} else {
-			message = (oneAway) ? 'One away!' : 'Not quite...';
+			message = (oneAway) ? 'One away!' : 'Not quite';
 			priorGuesses.push(selectionTexts);
 		}
 	}
 	displayPopup(message);
+}
+
+function gameOver(categories) {
+	for (const category of categories) {
+		showCategory(category);
+	}
 }
 
 async function main() {	
@@ -172,7 +191,11 @@ async function main() {
 			}
 			return (matchCount === 4) ? true : false;
 		});
-		(match) ? rightGuess() : wrongGuess(oneAway, selectionTexts);
+		(match) ? rightGuess() : wrongGuess(oneAway, selectionTexts, categories);
+		if (tries <= 0) {
+			gameOver(categories);
+			submitButton.disabled = true;
+		}
 	});
 	/* Needed for Firefox. Otherwise, it keeps button state on page
 	   refresh: https://bugzilla.mozilla.org/show_bug.cgi?id=685657 */

@@ -12,6 +12,11 @@
   width: 95px;
 }
 
+.row {
+	text-align: center;
+	white-space: pre-line;
+}
+
 #popup {
   background-color: coral; /*To change and make pretty later*/
   left: 50%;
