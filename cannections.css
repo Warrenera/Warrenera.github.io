@@ -13,8 +13,11 @@
 }
 
 .row {
+	border-radius: 25px;
+	height: 100px;
 	text-align: center;
 	white-space: pre-line;
+	width: 400px;
 }
 
 #popup {
@@ -25,6 +28,7 @@
   top: 0;
   transform: translateX(-50%);
   transition: opacity 1s; 
+  white-space: pre-wrap;
   z-index: 1;
 }
 

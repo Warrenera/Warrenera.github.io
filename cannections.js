@@ -1,6 +1,12 @@
 let tries = 4;
 let priorGuesses = [];
 let categoriesShown = 0;
+const colors = {
+	'row_1': '#f9df6d',
+	'row_2': '#a0c35a',
+	'row_3': '#b0c4ef',
+	'row_4': '#ba81c5'
+}
 
 async function getData() {	
 	const response = await fetch('https://warrenera.github.io/cannections.json');
@@ -72,6 +78,7 @@ function showCategory(category) {
 		button.style.visibility = 'hidden';
 	}
 	row.classList.toggle('row');
+	row.style.background = colors[id];
 	const topics = category.topics.join(', ');
 	row.innerHTML = `<strong>${category.title}</strong><br>${topics}`;
 }
@@ -95,16 +102,16 @@ function wrongGuess(oneAway, selectionTexts, categories) {
 	});
 	let message;
 	if (guessedPrior) {
-		message = 'Already guessed!';
+		message = ' Already guessed! ';
 	} else {
 		tries--;
 		const tigers = document.querySelector('#tigers');
 		// Needs to be -2. Think 🐯 has two Unicode points
 		tigers.textContent = tigers.textContent.slice(0, -2);
 		if (tries <= 0) {
-			message = 'Next time';
+			message = ' Next time ';
 		} else {
-			message = (oneAway) ? 'One away!' : 'Not quite';
+			message = (oneAway) ? ' One away! ' : ' Not quite ';
 			priorGuesses.push(selectionTexts);
 		}
 	}
