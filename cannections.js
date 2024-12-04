@@ -80,7 +80,7 @@ function showCategory(category) {
 	row.classList.toggle('row');
 	row.style.background = colors[id];
 	const topics = category.topics.join(', ');
-	row.innerHTML = `<strong>${category.title}</strong><br>${topics}`;
+	row.innerHTML = `<br><strong>${category.title}</strong><br>${topics}`;
 }
 
 function rightGuess(matches) {
@@ -122,6 +122,8 @@ function gameOver(categories) {
 	for (const category of categories) {
 		showCategory(category);
 	}
+	const tigers = document.querySelector('#tigers');
+	tigers.textContent = 'Game over 😔 but hopefully you had fun anway!';
 }
 
 async function main() {	
