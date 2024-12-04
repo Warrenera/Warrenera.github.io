@@ -15,7 +15,7 @@ TODO:
 	- Add share logic
 		- Copy text
 		- iOS share menu API?
-- Implement losing logic
+- ~~Implement losing logic~~
 	- ~~Display message~~
 - Implement one-a-day logic? TBD
 - Make pretty

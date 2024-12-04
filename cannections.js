@@ -2,10 +2,10 @@ let tries = 4;
 let priorGuesses = [];
 let categoriesShown = 0;
 const colors = {
-	'row_1': '#f9df6d',
-	'row_2': '#a0c35a',
-	'row_3': '#b0c4ef',
-	'row_4': '#ba81c5'
+	row_1: '#f9df6d',
+	row_2: '#a0c35a',
+	row_3: '#b0c4ef',
+	row_4: '#ba81c5'
 }
 
 async function getData() {	
@@ -124,6 +124,20 @@ function gameOver(categories) {
 	}
 	const tigers = document.querySelector('#tigers');
 	tigers.textContent = 'Game over 😔 but hopefully you had fun anway!';
+	/*TODO: Will need to track state across guesses. New array?
+	const shareButton = document.querySelector('#share');
+	shareButton.hidden = false;
+	shareButton.addEventListener('click', async () => {
+		try {
+			await navigator.share({
+				text: 'test',
+				title: 'cAnnections',
+				url: 'https://warrenera.github.io/cannections.html'
+			});
+		} catch (err) {
+			console.error(err);
+		}
+	});*/
 }
 
 async function main() {	
