@@ -104,20 +104,20 @@ function wrongGuess(oneAway, selectionTexts, categories) {
 	});
 	let message;
 	if (guessedPrior) {
-		message = ' Already guessed! ';
+		message = 'Already guessed!';
 	} else {
 		tries--;
 		const tigers = document.querySelector('#tigers');
 		// Needs to be -2. Think 🐯 has two Unicode points
 		tigers.textContent = tigers.textContent.slice(0, -2);
 		if (tries <= 0) {
-			message = ' Next time ';
+			message = 'Next time';
 		} else {
-			message = (oneAway) ? ' One away! ' : ' Not quite ';
+			message = (oneAway) ? 'One away!' : 'Not quite';
 			priorGuesses.push(selectionTexts);
 		}
 	}
-	displayPopup(message);
+	displayPopup('  ' + message + '  ');
 }
 
 function gameOver(categories) {
