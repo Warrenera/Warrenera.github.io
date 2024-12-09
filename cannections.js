@@ -223,6 +223,8 @@ async function main() {
 			wrongGuess(oneAway, selectionTexts, categories);
 			if (tries <= 0) {
 				gameOver(categories);
+				deselectButton.disabled = true;
+				shuffleButton.disabled = true;
 				submitButton.disabled = true;
 			}
 		}
