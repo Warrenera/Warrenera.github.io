@@ -79,13 +79,28 @@ function showCategory(category) {
 	categoriesShown++;
 	const id = 'row_' + categoriesShown;
 	const row = document.querySelector('#' + id);
-	for (const button of row.children) {		
-		button.style.visibility = 'hidden';
+	try {		
+		for (const button of row.children) {		
+			button.style.visibility = 'hidden';
+		}
+		row.classList.toggle('row');
+		row.style.background = colors[id];
+		const topics = category.topics.join(', ');
+		row.innerHTML = `<br><strong>${category.title}</strong><br>${topics}`;
 	}
-	row.classList.toggle('row');
-	row.style.background = colors[id];
-	const topics = category.topics.join(', ');
-	row.innerHTML = `<br><strong>${category.title}</strong><br>${topics}`;
+	catch(TypeError) {
+		// No-op
+		() => {}
+	}
+}
+
+function displayPopup(message) {
+	const popup = document.querySelector('#popup');
+	popup.textContent = '  ' + message + '  ';
+	const classes = popup.classList;
+	fade = classes => classes.toggle('fade');
+	fade(classes);
+	setTimeout(fade, 2000, classes);
 }
 
 function rightGuess(matchingCategory, unselectedCategoriesList) {
@@ -99,15 +114,15 @@ function rightGuess(matchingCategory, unselectedCategoriesList) {
 			j++;
 		}		
 	}
-}
-
-function displayPopup(message) {
-	const popup = document.querySelector('#popup');
-	popup.textContent = message;
-	const classes = popup.classList;
-	fade = classes => classes.toggle('fade');
-	fade(classes);
-	setTimeout(fade, 2000, classes);
+	let message;
+	if (categoriesShown === 4) {
+		if (tries === 4) {
+			message = 'Perfect!';
+		} else {			
+			message = 'You did it!';
+		}
+		displayPopup(message);
+	}
 }
 
 function wrongGuess(oneAway, selectionTexts) {
@@ -129,15 +144,15 @@ function wrongGuess(oneAway, selectionTexts) {
 			priorGuesses.push(selectionTexts);
 		}
 	}
-	displayPopup('  ' + message + '  ');
+	displayPopup(message);
 }
 
-function gameOver(categories) {
+function gameOver(categories, endMessage) {
 	for (const category of categories) {
 		showCategory(category);
 	}
 	const tigers = document.querySelector('#tigers');
-	tigers.textContent = 'Game over 😔 but hopefully you had fun anway!';
+	tigers.textContent = endMessage;
 	/*TODO: Will need to track state across guesses. New array?
 	const shareButton = document.querySelector('#share');
 	shareButton.hidden = false;
@@ -246,16 +261,24 @@ async function main() {
 			}
 			return (matchCount === 4) ? true : false;
 		});
+		let endMessage;
 		if (match) {
 			rightGuess(matchingCategory, unselectedCategoriesList);
-			[selectCount, selections] = deselectAll(selections, submitButton);
-		} else {
-			wrongGuess(oneAway, selectionTexts);
-			if (tries <= 0) {
-				gameOver(categories);
+			if (categoriesShown >= 4) {
 				deselectButton.disabled = true;
 				shuffleButton.disabled = true;
 				submitButton.disabled = true;
+				gameOver(categories, 'You win! Wow, you know so much about us :)');
+			} else {
+				[selectCount, selections] = deselectAll(selections, submitButton);
+			}
+		} else {
+			wrongGuess(oneAway, selectionTexts);
+			if (tries <= 0) {
+				deselectButton.disabled = true;
+				shuffleButton.disabled = true;
+				submitButton.disabled = true;
+				gameOver(categories, 'Game over 😔 but hopefully you had fun anway!');
 			}
 		}
 	});
