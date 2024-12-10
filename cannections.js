@@ -64,7 +64,12 @@ function deselectAll(selections, submitButton) {
 	
 	for (const selection of selections) {
 		const square = document.querySelector('#' + selection.id);
-		square.classList.remove('selected');
+		try {
+			square.classList.remove('selected');			
+		}
+		catch(TypeError) {
+			continue;
+		}
 	}
 	submitButton.disabled = true;
 	return [0, []];
@@ -83,10 +88,17 @@ function showCategory(category) {
 	row.innerHTML = `<br><strong>${category.title}</strong><br>${topics}`;
 }
 
-function rightGuess(selections) {
-	// Loop through buttons getting all non-selections
-	showCategory(selections);
-	// Reapply non-selections to remaining buttons
+function rightGuess(matchingCategory, unselectedCategoriesList) {
+	showCategory(matchingCategory);
+	let j = 0;
+	for (let i = categoriesShown + 1; i < 5; i++) {
+		const id = 'row_' + i;
+		const row = document.querySelector('#' + id);
+		for (const button of row.children) {
+			button.textContent = unselectedCategoriesList[j];
+			j++;
+		}		
+	}
 }
 
 function displayPopup(message) {
@@ -98,7 +110,7 @@ function displayPopup(message) {
 	setTimeout(fade, 2000, classes);
 }
 
-function wrongGuess(oneAway, selectionTexts, categories) {
+function wrongGuess(oneAway, selectionTexts) {
 	const guessedPrior = priorGuesses.some(priorGuess => {
 		return priorGuess.every(guess => selectionTexts.includes(guess));
 	});
@@ -150,6 +162,13 @@ async function main() {
 	const categories = shuffleArray(data).slice(0, 4);
 	let shuffledCategories = shuffle(categories);
 	
+	let unselectedCategoriesList = [];
+	for (category of shuffledCategories) {
+		for (topic of category) {
+			unselectedCategoriesList.push(topic);
+		}
+	}
+	
 	let selections = [];
 	let selectCount = 0;
 	let i = 0;
@@ -167,14 +186,18 @@ async function main() {
 				selections.splice(index, 1);
 				selectCount--;
 				classes.toggle('selected');
+				unselectedCategoriesList.push(button.textContent);
 			} else if (selectCount < 4) {
 				const newSelection = {id: button.id, text: button.textContent};
 				selections.push(newSelection);
 				selectCount++;
 				classes.toggle('selected');
+				const index = unselectedCategoriesList.indexOf(button.textContent);
+				unselectedCategoriesList.splice(index, 1);
 			}
 			console.log('selectCount: ' + selectCount);
 			console.log('Selected Squares: ' + JSON.stringify(selections));
+			console.log('Unselected Squares: ' + JSON.stringify(unselectedCategoriesList));
 			
 			(selectCount === 4) ? submitButton.disabled = false : submitButton.disabled = true;
 		});
@@ -182,6 +205,9 @@ async function main() {
 	
 	const deselectButton = document.querySelector('#deselect');
 	deselectButton.addEventListener('click', () => {
+		for (selection of selections) {
+			unselectedCategoriesList.push(selection.text);
+		}
 		[selectCount, selections] = deselectAll(selections, submitButton);
 	});
 	
@@ -203,24 +229,35 @@ async function main() {
 			selectionTexts.push(selection.text);
 		}
 		let oneAway = false;
-		const match = categories.some(category => {
+		let matchingCategory;
+		let unselectedButtons = [];
+		let match = false;
+		for (const category of categories) {
 			let matchCount = 0;
 			for (const topic of category.topics) {
 				if (selectionTexts.includes(topic)) {
 					matchCount++;
+					if (matchCount === 4) {
+						matchingCategory = category;
+					}
+				} else {
+					unselectedButtons.push(topic);
 				}
 			}
 			// If some category was already one off, don't overwrite it
 			if (!oneAway) {
 				oneAway = (matchCount === 3) ? true : false;
 			}
-			return (matchCount === 4) ? true : false;
-		});
+			// If a category has already matched, don't update match
+			if (!match) {
+				match = (matchCount === 4) ? true : false;
+			}
+		}
 		if (match) {
-			rightGuess(selections);
+			rightGuess(matchingCategory, unselectedCategoriesList);
 			[selectCount, selections] = deselectAll(selections, submitButton);
 		} else {
-			wrongGuess(oneAway, selectionTexts, categories);
+			wrongGuess(oneAway, selectionTexts);
 			if (tries <= 0) {
 				gameOver(categories);
 				deselectButton.disabled = true;
