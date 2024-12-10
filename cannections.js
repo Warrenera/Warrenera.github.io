@@ -230,9 +230,7 @@ async function main() {
 		}
 		let oneAway = false;
 		let matchingCategory;
-		let unselectedButtons = [];
-		let match = false;
-		for (const category of categories) {
+		const match = categories.some(category => {
 			let matchCount = 0;
 			for (const topic of category.topics) {
 				if (selectionTexts.includes(topic)) {
@@ -240,19 +238,14 @@ async function main() {
 					if (matchCount === 4) {
 						matchingCategory = category;
 					}
-				} else {
-					unselectedButtons.push(topic);
 				}
 			}
 			// If some category was already one off, don't overwrite it
 			if (!oneAway) {
 				oneAway = (matchCount === 3) ? true : false;
 			}
-			// If a category has already matched, don't update match
-			if (!match) {
-				match = (matchCount === 4) ? true : false;
-			}
-		}
+			return (matchCount === 4) ? true : false;
+		});
 		if (match) {
 			rightGuess(matchingCategory, unselectedCategoriesList);
 			[selectCount, selections] = deselectAll(selections, submitButton);
