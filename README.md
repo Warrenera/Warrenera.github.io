@@ -2,9 +2,9 @@ TODO:
 - Refactor code to not need to be in main function
 - Implement submit logic
 	- ~~Loop through selections vs game-chosen categories~~
-	- Implement right logic
-		- Move category to top
-		- Make unclickable
+	- ~~Implement right logic~~
+		- ~~Move category to top~~
+		- ~~Make unclickable~~
 	- ~~Implement wrong logic~~
 		- ~~Display message~~
 		- ~~Remove tiger~~
