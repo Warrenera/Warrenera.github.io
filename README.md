@@ -24,5 +24,5 @@ TODO:
 	- More colors
 	- Reactivity
 	- Animations
-- Improve header/instructions
+- ~~Improve header/instructions~~
 - Think of more categories
