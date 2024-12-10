@@ -1,5 +1,7 @@
 TODO:
-- Refactor code to not need to be in main function
+- Refactor code
+	- To not need to be in main function
+	- To be less spaghetti in general
 - Implement submit logic
 	- ~~Loop through selections vs game-chosen categories~~
 	- ~~Implement right logic~~
@@ -11,8 +13,8 @@ TODO:
 		- ~~Already guessed logic... save array of previous choices~~
 		- ~~One away logic~~
 - Implement winning logic
-	- Display message
-	- Add share logic
+	- ~~Display message~~
+	- Add share logic (for losing too)
 		- Copy text
 		- iOS share menu API?
 - ~~Implement losing logic~~
