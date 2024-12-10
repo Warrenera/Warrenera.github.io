@@ -16,7 +16,7 @@
 
 	function shuffleArray(array) {
 		// Implementation of the Fisher–Yates shuffle
-		for (let i = array.length -1; i >= 0; i--) {
+		for (let i = array.length - 1; i >= 0; i--) {
 			const j = Math.floor(Math.random() * (i + 1));
 			[array[i], array[j]] = [array[j], array[i]];
 		}
@@ -48,17 +48,20 @@
 		for (const row of columns) {
 			shuffledArray.push(shuffleArray(row));
 		}
-		return shuffledArray;
+		// Return values in list since that's all we need
+		const unselectedTopics = [];
+		for (array of shuffledArray) {
+			for (element of array) {
+				unselectedTopics.push(element);
+			}
+		}
+		return unselectedTopics;
 	}
 
-	function addText(button, shuffledCategories, i, j) {
-		button.textContent = shuffledCategories[i][j];
-		j++;
-		if (j === 4) {
-			i++;
-			j = 0;
+	function addText(buttons, unselectedTopics) {
+		for (let i = 0; i < buttons.length; i++) {
+			buttons[i].textContent = unselectedTopics[i];
 		}
-		return [i, j];
 	}
 
 	function deselectAll(selections, submitButton) {
@@ -170,30 +173,16 @@
 		});*/
 	}
 
-	
-	// TODO: Figure out why data can't be an anonymous asynchronous function at the top level
-	// Then if you can, clean up function calls needing to return values like i, j
-	// and remove main()
 	const data = await getData();
 	const categories = shuffleArray(data).slice(0, 4);
-	let shuffledCategories = shuffle(categories);
-	
-	let unselectedTopics = [];
-	for (category of shuffledCategories) {
-		for (topic of category) {
-			unselectedTopics.push(topic);
-		}
-	}
+	let unselectedTopics = shuffle(categories);
 	
 	let selections = [];
 	let selectCount = 0;
-	let i = 0;
-	let j = 0;
 	
 	const buttons = document.querySelectorAll('.square');
+	addText(buttons, unselectedTopics);
 	for (const button of buttons) {
-		[i, j] = addText(button, shuffledCategories, i, j);
-		
 		const classes = button.classList;
 		button.addEventListener('click', () => {
 			const idsMatch = selections.some(selection => selection.id == button.id);
@@ -230,12 +219,8 @@
 	const shuffleButton = document.querySelector('#shuffle');
 	shuffleButton.addEventListener('click', () => {
 		[selectCount, selections] = deselectAll(selections, submitButton);
-		shuffledCategories = shuffle(categories);
-		i = 0;
-		j = 0;
-		for (const button of buttons) {
-			[i, j] = addText(button, shuffledCategories, i, j);
-		}
+		unselectedTopics = shuffle(categories);
+		addText(buttons, unselectedTopics)
 	});
 	
 	const submitButton = document.querySelector('#submit');
