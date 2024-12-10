@@ -8,6 +8,9 @@
 		row_3: '#b0c4ef',
 		row_4: '#ba81c5'
 	}
+	
+	let selections = [];
+	let selectCount = 0;
 
 	async function getData() {	
 		const response = await fetch('https://warrenera.github.io/cannections.json');
@@ -172,39 +175,40 @@
 			}
 		});*/
 	}
+	
+	function buttonLogic(button) {
+		const classes = button.classList;
+		const idsMatch = selections.some(selection => selection.id == button.id);
+		if (idsMatch) {
+			const index = selections.findIndex(selection => selection.id == button.id);
+			selections.splice(index, 1);
+			selectCount--;
+			classes.toggle('selected');
+			unselectedTopics.push(button.textContent);
+		} else if (selectCount < 4) {
+			const newSelection = {id: button.id, text: button.textContent};
+			selections.push(newSelection);
+			selectCount++;
+			classes.toggle('selected');
+			const index = unselectedTopics.indexOf(button.textContent);
+			unselectedTopics.splice(index, 1);
+		}
+		console.log('selectCount: ' + selectCount);
+		console.log('Selected Squares: ' + JSON.stringify(selections));
+		console.log('Unselected Squares: ' + JSON.stringify(unselectedTopics));
+		
+		(selectCount === 4) ? submitButton.disabled = false : submitButton.disabled = true;
+	}
 
 	const data = await getData();
 	const categories = shuffleArray(data).slice(0, 4);
 	let unselectedTopics = shuffle(categories);
 	
-	let selections = [];
-	let selectCount = 0;
-	
 	const buttons = document.querySelectorAll('.square');
 	addText(buttons, unselectedTopics);
 	for (const button of buttons) {
-		const classes = button.classList;
 		button.addEventListener('click', () => {
-			const idsMatch = selections.some(selection => selection.id == button.id);
-			if (idsMatch) {
-				const index = selections.findIndex(selection => selection.id == button.id);
-				selections.splice(index, 1);
-				selectCount--;
-				classes.toggle('selected');
-				unselectedTopics.push(button.textContent);
-			} else if (selectCount < 4) {
-				const newSelection = {id: button.id, text: button.textContent};
-				selections.push(newSelection);
-				selectCount++;
-				classes.toggle('selected');
-				const index = unselectedTopics.indexOf(button.textContent);
-				unselectedTopics.splice(index, 1);
-			}
-			console.log('selectCount: ' + selectCount);
-			console.log('Selected Squares: ' + JSON.stringify(selections));
-			console.log('Unselected Squares: ' + JSON.stringify(unselectedTopics));
-			
-			(selectCount === 4) ? submitButton.disabled = false : submitButton.disabled = true;
+			buttonLogic(button);
 		});
 	}
 	
@@ -216,6 +220,10 @@
 		[selectCount, selections] = deselectAll(selections, submitButton);
 	});
 	
+	// Shuffle currently BROKEN
+	// if shuffled after category is revealed, will shuffle revealed category topics too
+	// Because shuffle(categories) doesn't take revealed ones into account
+	// Need to keep track of them somewhere. Another "global" array?
 	const shuffleButton = document.querySelector('#shuffle');
 	shuffleButton.addEventListener('click', () => {
 		[selectCount, selections] = deselectAll(selections, submitButton);
