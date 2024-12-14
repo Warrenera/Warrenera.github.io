@@ -1,13 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="author" content="Andrew Warrener">
-    <meta name="description" content="My site landing page">
-    <title>My site landing page</title>
-  </head>
-  <body>
-    <a href="cannections.html">cAnnections</a>
-  </body>
+    <head>
+		<link href="favicon.ico" rel="icon" type="image/x-icon">
+		<link href="style.css" rel="stylesheet" type="text/css" >
+        <meta charset="UTF-8">
+        <meta name="application-name" content="cAnnections">
+        <meta name="author" content="Andrew Warrener">
+        <meta name="description" content="Like NYT Connections, but for Ann :)">
+		<meta name="viewport" content="width=device-width">
+        <title>cAnnections: Connections, but about us</title>
+    </head>
+    <body>
+        <header>
+            <h1>cAnnections</h1>
+            <h2>For Ann, by Andrew ♥</h2>
+			<details>
+				<summary>Click me for details</summary>
+				<h3>Merry Christmas 🎄</h3>
+				<p>
+					It all started in November when we were <a href="https://www.polygon.com/news/474209/new-york-times-strike-wordle-connections">boycotting the New York Times Games</a>. Inspired by <a href="https://www.nytimes.com/2022/01/03/technology/wordle-word-game-creator.html">Josh Wardle</a>, who:
+					<ol>
+						<li>Made Wordle for his partner</li>
+						<li>Named it after himself</li>
+					</ol>
+					I thought I'd try my hand at making my own version of our favorite NYT game for us to play in the meantime. That didn't happen in time for the strike, obviously, so then I thought, why rush it? Let's make this thing something special (and a learning opportunity for me) and give myself a decent deadline: Christmas. So here we are! Meet cAnnections: it's chock full of references and Ann-isms and inside jokes all about us 👫
+				</p>
+				<p>
+					I <em>thought</em> I'd be able to make this in like a day while watching Gilmore Girls with Morgan, but as it turns out JavaScript is hard lol. It's far from perfect, but I hope you like it!
+				</p>
+				<p>
+					(FYI, the colors don't mean anything. I figure there'd be no way for me to rank how difficult each of these categories are after staring at them for a month. Good luck!)
+				</p>
+			</details>
+        </header>
+		<hr>
+        <div id="rows">
+			<div id="popup"></div>
+            <div id="row_1">
+                <button class="square" id="square_1" type="button"></button>
+                <button class="square" id="square_2" type="button"></button>
+                <button class="square" id="square_3" type="button"></button>
+                <button class="square" id="square_4" type="button"></button>
+            </div>
+            <div id="row_2">
+                <button class="square" id="square_5" type="button"></button>
+                <button class="square" id="square_6" type="button"></button>
+                <button class="square" id="square_7" type="button"></button>
+                <button class="square" id="square_8" type="button"></button>
+            </div>
+            <div id="row_3">
+                <button class="square" id="square_9" type="button"></button>
+                <button class="square" id="square_10" type="button"></button>
+                <button class="square" id="square_11" type="button"></button>
+                <button class="square" id="square_12" type="button"></button>
+            </div>
+            <div id="row_4">
+                <button class="square" id="square_13" type="button"></button>
+                <button class="square" id="square_14" type="button"></button>
+                <button class="square" id="square_15" type="button"></button>
+                <button class="square" id="square_16" type="button"></button>
+            </div>
+        </div>
+		<p id="tigers">Tries left: 🐯🐯🐯🐯</p>
+		<button id="shuffle" type="button">Shuffle</button>
+		<button id="deselect" type="button">Deselect All</button>
+		<button id="submit" type="button" disabled>Submit</button>
+		<button id="share" type="button" hidden>Share</button>
+        <script src="cannections.js"></script>
+    </body>
 </html>
-
