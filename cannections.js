@@ -204,7 +204,7 @@
 	
 	// Start of main logic
 
-	const categories = shuffleArray(await getData()).slice(0, 4);
+	let categories = shuffleArray(await getData()).slice(0, 4);
 	let unselectedTopics = shuffle(categories);
 	
 	const buttons = document.querySelectorAll('.square');
@@ -225,6 +225,8 @@
 	// if shuffled after category is revealed, will shuffle revealed category topics too
 	// Because shuffle(categories) doesn't take revealed ones into account
 	// Need to keep track of them somewhere. Another "global" array?
+	
+	//2024-12-14 UPDATE: still broken. Tried to fix by removing right category from categories after finding it. Think it broke it more lol
 	const shuffleButton = document.querySelector('#shuffle');
 	shuffleButton.addEventListener('click', () => {
 		deselectAll(submitButton);
@@ -259,6 +261,8 @@
 		let endMessage;
 		if (match) {
 			rightGuess(matchingCategory, unselectedTopics);
+			const index = categories.findIndex(category => category.id === matchingCategory.id);
+			categories.splice(index, 1);
 			if (categoriesShown >= 4) {
 				submitButton.disabled = true;
 				shuffleButton.disabled = true;
