@@ -1,16 +1,15 @@
 (async () => {
-	let tries = 4;
-	let categoriesShown = 0;
-	let priorGuesses = [];
 	const colors = {
 		row_1: '#f9df6d',
 		row_2: '#a0c35a',
 		row_3: '#b0c4ef',
 		row_4: '#ba81c5'
 	}
-	
+	let categoriesShown = 0;
+	let priorGuesses = [];
 	let selections = [];
 	let selectCount = 0;
+	let tries = 4;
 
 	async function getData() {	
 		const response = await fetch('https://warrenera.github.io/topics.json');
@@ -52,24 +51,50 @@
 			shuffledArray.push(shuffleArray(row));
 		}
 		// Return values in list since that's all we need
-		const unselectedTopics = [];
+		const topics = [];
 		for (array of shuffledArray) {
 			for (element of array) {
-				unselectedTopics.push(element);
+				topics.push(element);
 			}
 		}
-		return unselectedTopics;
+		return topics;
+	}
+	
+	function buttonLogic(button, deselectButton) {
+		const classes = button.classList;
+		const idsMatch = selections.some(selection => selection.id == button.id);
+		if (idsMatch) {
+			// Remove selection from selections since it's been clicked again
+			const index = selections.findIndex(selection => selection.id == button.id);
+			selections.splice(index, 1);
+			selectCount--;
+			classes.remove('selected');
+			unselectedTopics.push(button.textContent);
+		} else if (selectCount < 4) {
+			// Add selection to selections if there aren't four already
+			selections.push({id: button.id, text: button.textContent});
+			selectCount++;
+			classes.add('selected');
+			const index = unselectedTopics.indexOf(button.textContent);
+			unselectedTopics.splice(index, 1);
+		}
+		console.log('selectCount: ' + selectCount);
+		console.log('Selected Squares: ' + JSON.stringify(selections));
+		console.log('Unselected Squares: ' + JSON.stringify(unselectedTopics));
+
+		submitButton.disabled = (selectCount === 4) ? false : true;
+		deselectButton.disabled = (selectCount === 0) ? true : false;
 	}
 
-	function addText(buttons, unselectedTopics) {
+	function addText(buttons, topics) {
 		for (let i = 0; i < buttons.length; i++) {
-			buttons[i].textContent = unselectedTopics[i];
+			buttons[i].textContent = topics[i];
 		}
 	}
 
-	function deselectAll(selections, submitButton) {
-		
+	function deselectAll(submitButton) {
 		for (const selection of selections) {
+			unselectedTopics.push(selection.text);
 			const square = document.querySelector('#' + selection.id);
 			try {
 				square.classList.remove('selected');			
@@ -78,8 +103,9 @@
 				continue;
 			}
 		}
+		selections = [];
+		selectCount = 0;
 		submitButton.disabled = true;
-		return [0, []];
 	}
 
 	function showCategory(category) {
@@ -110,14 +136,14 @@
 		setTimeout(fade, 2000, classes);
 	}
 
-	function rightGuess(matchingCategory, unselectedTopics) {
+	function rightGuess(matchingCategory, topics) {
 		showCategory(matchingCategory);
 		let j = 0;
 		for (let i = categoriesShown + 1; i < 5; i++) {
 			const id = 'row_' + i;
 			const row = document.querySelector('#' + id);
 			for (const button of row.children) {
-				button.textContent = unselectedTopics[j];
+				button.textContent = topics[j];
 				j++;
 			}		
 		}
@@ -176,31 +202,6 @@
 		});*/
 	}
 	
-	function buttonLogic(button) {
-		const classes = button.classList;
-		const idsMatch = selections.some(selection => selection.id == button.id);
-		if (idsMatch) {
-			// Remove selection from selections since it's been clicked again
-			const index = selections.findIndex(selection => selection.id == button.id);
-			selections.splice(index, 1);
-			selectCount--;
-			classes.remove('selected');
-			unselectedTopics.push(button.textContent);
-		} else if (selectCount < 4) {
-			// Add selection to selections if there aren't four already
-			selections.push({id: button.id, text: button.textContent});
-			selectCount++;
-			classes.add('selected');
-			const index = unselectedTopics.indexOf(button.textContent);
-			unselectedTopics.splice(index, 1);
-		}
-		console.log('selectCount: ' + selectCount);
-		console.log('Selected Squares: ' + JSON.stringify(selections));
-		console.log('Unselected Squares: ' + JSON.stringify(unselectedTopics));
-		
-		submitButton.disabled = (selectCount === 4) ? false : true;
-	}
-	
 	// Start of main logic
 
 	const categories = shuffleArray(await getData()).slice(0, 4);
@@ -210,16 +211,14 @@
 	addText(buttons, unselectedTopics);
 	for (const button of buttons) {
 		button.addEventListener('click', () => {
-			buttonLogic(button);
+			buttonLogic(button, deselectButton);
 		});
 	}
 	
 	const deselectButton = document.querySelector('#deselect');
+	deselectButton.disabled = true;
 	deselectButton.addEventListener('click', () => {
-		for (selection of selections) {
-			unselectedTopics.push(selection.text);
-		}
-		[selectCount, selections] = deselectAll(selections, submitButton);
+		deselectAll(submitButton);
 	});
 	
 	// Shuffle currently BROKEN
@@ -228,7 +227,7 @@
 	// Need to keep track of them somewhere. Another "global" array?
 	const shuffleButton = document.querySelector('#shuffle');
 	shuffleButton.addEventListener('click', () => {
-		[selectCount, selections] = deselectAll(selections, submitButton);
+		deselectAll(submitButton);
 		unselectedTopics = shuffle(categories);
 		addText(buttons, unselectedTopics)
 	});
@@ -261,19 +260,19 @@
 		if (match) {
 			rightGuess(matchingCategory, unselectedTopics);
 			if (categoriesShown >= 4) {
-				deselectButton.disabled = true;
-				shuffleButton.disabled = true;
 				submitButton.disabled = true;
+				shuffleButton.disabled = true;
+				deselectButton.disabled = true;
 				gameOver(categories, 'You win! Wow, you know so much about us :)');
 			} else {
-				[selectCount, selections] = deselectAll(selections, submitButton);
+				deselectAll(submitButton);
 			}
 		} else {
 			wrongGuess(oneAway, selectionTexts);
 			if (tries <= 0) {
-				deselectButton.disabled = true;
-				shuffleButton.disabled = true;
 				submitButton.disabled = true;
+				shuffleButton.disabled = true;
+				deselectButton.disabled = true;
 				gameOver(categories, 'Game over 😔 but hopefully you had fun anway!');
 			}
 		}
