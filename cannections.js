@@ -13,7 +13,7 @@
 	let selectCount = 0;
 
 	async function getData() {	
-		const response = await fetch('https://warrenera.github.io/cannections.json');
+		const response = await fetch('https://warrenera.github.io/topics.json');
 		return await response.json();
 	}
 
@@ -180,16 +180,17 @@
 		const classes = button.classList;
 		const idsMatch = selections.some(selection => selection.id == button.id);
 		if (idsMatch) {
+			// Remove selection from selections since it's been clicked again
 			const index = selections.findIndex(selection => selection.id == button.id);
 			selections.splice(index, 1);
 			selectCount--;
-			classes.toggle('selected');
+			classes.remove('selected');
 			unselectedTopics.push(button.textContent);
 		} else if (selectCount < 4) {
-			const newSelection = {id: button.id, text: button.textContent};
-			selections.push(newSelection);
+			// Add selection to selections if there aren't four already
+			selections.push({id: button.id, text: button.textContent});
 			selectCount++;
-			classes.toggle('selected');
+			classes.add('selected');
 			const index = unselectedTopics.indexOf(button.textContent);
 			unselectedTopics.splice(index, 1);
 		}
@@ -197,11 +198,12 @@
 		console.log('Selected Squares: ' + JSON.stringify(selections));
 		console.log('Unselected Squares: ' + JSON.stringify(unselectedTopics));
 		
-		(selectCount === 4) ? submitButton.disabled = false : submitButton.disabled = true;
+		submitButton.disabled = (selectCount === 4) ? false : true;
 	}
+	
+	// Start of main logic
 
-	const data = await getData();
-	const categories = shuffleArray(data).slice(0, 4);
+	const categories = shuffleArray(await getData()).slice(0, 4);
 	let unselectedTopics = shuffle(categories);
 	
 	const buttons = document.querySelectorAll('.square');
