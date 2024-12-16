@@ -1,16 +1,4 @@
 (async () => {
-	const colors = {
-		row_1: '#f9df6d',
-		row_2: '#a0c35a',
-		row_3: '#b0c4ef',
-		row_4: '#ba81c5'
-	}
-	let categoriesShown = 0;
-	let priorGuesses = [];
-	let selections = [];
-	let selectCount = 0;
-	let tries = 4;
-
 	async function getData() {	
 		const response = await fetch('https://warrenera.github.io/topics.json');
 		return await response.json();
@@ -62,7 +50,7 @@
 		return topics;
 	}
 	
-	function buttonLogic(button, deselectButton) {
+	function buttonLogic(button, selections, unselectedTopics) {
 		const classes = button.classList;
 		const idsMatch = selections.some(selection => selection.id == button.id);
 		if (idsMatch) {
@@ -82,12 +70,9 @@
 		}
 		console.log('Selected Squares: ' + JSON.stringify(selections));
 		console.log('Unselected Squares: ' + JSON.stringify(unselectedTopics));
-
-		submitButton.disabled = (selectCount === 4) ? false : true;
-		deselectButton.disabled = (selectCount === 0) ? true : false;
 	}
 
-	function addText() {
+	function addText(buttons, unselectedTopics) {
 		let i = 0;
 		for (const button of buttons) {
 			if (button.style.visibility === 'hidden') {
@@ -99,7 +84,7 @@
 		}
 	}
 
-	function deselectAll(submitButton, postSubmit = false) {
+	function deselectAll(deselectButton, submitButton, postSubmit = false) {
 		for (const selection of selections) {
 			if (!postSubmit) {
 				unselectedTopics.push(selection.text);				
@@ -114,6 +99,7 @@
 		}
 		selections = [];
 		selectCount = 0;
+		deselectButton.disabled = true;
 		submitButton.disabled = true;
 	}
 
@@ -145,9 +131,9 @@
 		setTimeout(fade, 2000, classes);
 	}
 
-	function rightGuess(matchingCategory) {
+	function rightGuess(matchingCategory, buttons, unselectedTopics) {
 		showCategory(matchingCategory);
-		addText();
+		addText(buttons, unselectedTopics);
 		let message;
 		if (categoriesShown === 4) {
 			if (tries === 4) {
@@ -181,12 +167,12 @@
 		displayPopup(message);
 	}
 
-	function gameOver(categories, endMessage) {
+	function endGame(categories, endMessage) {
 		for (const category of categories) {
 			showCategory(category);
 		}
 		const tigers = document.querySelector('#tigers');
-		tigers.textContent = endMessage;
+		tigers.textContent = endMessage + ' Refresh the page to play again.';
 		/*TODO: Will need to track state across guesses. New array?
 		const shareButton = document.querySelector('#share');
 		shareButton.hidden = false;
@@ -203,30 +189,43 @@
 		});*/
 	}
 	
+	
 	// Start of main logic
-
+	const colors = {
+		row_1: '#f9df6d',
+		row_2: '#a0c35a',
+		row_3: '#b0c4ef',
+		row_4: '#ba81c5'
+	}
+	let categoriesShown = 0;
+	let priorGuesses = [];
+	let selections = [];
+	let selectCount = 0;
+	let tries = 4;
+	
 	let categories = shuffleArray(await getData()).slice(0, 4);
 	let unselectedTopics = shuffle(categories);
 	
 	const buttons = document.querySelectorAll('.square');
-	addText();
+	addText(buttons, unselectedTopics);
 	for (const button of buttons) {
 		button.addEventListener('click', () => {
-			buttonLogic(button, deselectButton);
+			buttonLogic(button, selections, unselectedTopics);
+			submitButton.disabled = (selectCount === 4) ? false : true;
+			deselectButton.disabled = (selectCount === 0) ? true : false;
 		});
 	}
 	
 	const deselectButton = document.querySelector('#deselect');
-	deselectButton.disabled = true;
 	deselectButton.addEventListener('click', () => {
-		deselectAll(submitButton);
+		deselectAll(deselectButton, submitButton);
 	});
 	
 	const shuffleButton = document.querySelector('#shuffle');
 	shuffleButton.addEventListener('click', () => {
-		deselectAll(submitButton);
+		deselectAll(deselectButton, submitButton);
 		unselectedTopics = shuffle(categories);
-		addText();
+		addText(buttons, unselectedTopics);
 	});
 	
 	const submitButton = document.querySelector('#submit');
@@ -255,7 +254,7 @@
 		});
 		let endMessage;
 		if (match) {
-			rightGuess(matchingCategory);
+			rightGuess(matchingCategory, buttons, unselectedTopics);
 			// Removes matchingCategory from categories so shuffle works
 			const index = categories.findIndex(category => category.title === matchingCategory.title);
 			categories.splice(index, 1);
@@ -263,9 +262,9 @@
 				submitButton.disabled = true;
 				shuffleButton.disabled = true;
 				deselectButton.disabled = true;
-				gameOver(categories, 'You win! Wow, you know so much about us :)');
+				endGame(categories, 'You win! Wow, you know so much about us :)');
 			} else {
-				deselectAll(submitButton, true);
+				deselectAll(deselectButton, submitButton, true);
 			}
 		} else {
 			wrongGuess(oneAway, selectionTexts);
@@ -273,7 +272,7 @@
 				submitButton.disabled = true;
 				shuffleButton.disabled = true;
 				deselectButton.disabled = true;
-				gameOver(categories, 'Game over 😔 but hopefully you had fun anway!');
+				endGame(categories, 'Game over 😔 but hopefully you had fun anway!');
 			}
 		}
 	});
