@@ -78,7 +78,6 @@
 			const index = unselectedTopics.indexOf(button.textContent);
 			unselectedTopics.splice(index, 1);
 		}
-		console.log('selectCount: ' + selectCount);
 		console.log('Selected Squares: ' + JSON.stringify(selections));
 		console.log('Unselected Squares: ' + JSON.stringify(unselectedTopics));
 
@@ -86,15 +85,23 @@
 		deselectButton.disabled = (selectCount === 0) ? true : false;
 	}
 
-	function addText(buttons, topics) {
-		for (let i = 0; i < buttons.length; i++) {
-			buttons[i].textContent = topics[i];
+	function addText() {
+		let i = 0;
+		for (const button of buttons) {
+			if (button.style.visibility === 'hidden') {
+				continue;
+			} else {
+				button.textContent = unselectedTopics[i];
+				i++;
+			}
 		}
 	}
 
-	function deselectAll(submitButton) {
+	function deselectAll(submitButton, postSubmit = false) {
 		for (const selection of selections) {
-			unselectedTopics.push(selection.text);
+			if (!postSubmit) {
+				unselectedTopics.push(selection.text);				
+			}
 			const square = document.querySelector('#' + selection.id);
 			try {
 				square.classList.remove('selected');			
@@ -136,17 +143,18 @@
 		setTimeout(fade, 2000, classes);
 	}
 
-	function rightGuess(matchingCategory, topics) {
+	function rightGuess(matchingCategory) {
 		showCategory(matchingCategory);
-		let j = 0;
+		addText();
+		/*let j = 0;
 		for (let i = categoriesShown + 1; i < 5; i++) {
 			const id = 'row_' + i;
 			const row = document.querySelector('#' + id);
 			for (const button of row.children) {
-				button.textContent = topics[j];
+				button.textContent = unselectedTopics[j];
 				j++;
 			}		
-		}
+		}*/
 		let message;
 		if (categoriesShown === 4) {
 			if (tries === 4) {
@@ -208,7 +216,7 @@
 	let unselectedTopics = shuffle(categories);
 	
 	const buttons = document.querySelectorAll('.square');
-	addText(buttons, unselectedTopics);
+	addText();
 	for (const button of buttons) {
 		button.addEventListener('click', () => {
 			buttonLogic(button, deselectButton);
@@ -227,11 +235,13 @@
 	// Need to keep track of them somewhere. Another "global" array?
 	
 	//2024-12-14 UPDATE: still broken. Tried to fix by removing right category from categories after finding it. Think it broke it more lol
+	
+	//2024-12-15 UPDATE: No changes from above, but on playing noticed categories randomly don't work. Def broke it more
 	const shuffleButton = document.querySelector('#shuffle');
 	shuffleButton.addEventListener('click', () => {
 		deselectAll(submitButton);
 		unselectedTopics = shuffle(categories);
-		addText(buttons, unselectedTopics)
+		addText();
 	});
 	
 	const submitButton = document.querySelector('#submit');
@@ -260,16 +270,18 @@
 		});
 		let endMessage;
 		if (match) {
-			rightGuess(matchingCategory, unselectedTopics);
-			const index = categories.findIndex(category => category.id === matchingCategory.id);
+			rightGuess(matchingCategory);
+			// Removes matchingCategory from categories so shuffle works
+			const index = categories.findIndex(category => category.title === matchingCategory.title);
 			categories.splice(index, 1);
+			console.log(JSON.stringify(categories));
 			if (categoriesShown >= 4) {
 				submitButton.disabled = true;
 				shuffleButton.disabled = true;
 				deselectButton.disabled = true;
 				gameOver(categories, 'You win! Wow, you know so much about us :)');
 			} else {
-				deselectAll(submitButton);
+				deselectAll(submitButton, true);
 			}
 		} else {
 			wrongGuess(oneAway, selectionTexts);
