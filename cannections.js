@@ -222,14 +222,6 @@
 		deselectAll(submitButton);
 	});
 	
-	// Shuffle currently BROKEN
-	// if shuffled after category is revealed, will shuffle revealed category topics too
-	// Because shuffle(categories) doesn't take revealed ones into account
-	// Need to keep track of them somewhere. Another "global" array?
-	
-	//2024-12-14 UPDATE: still broken. Tried to fix by removing right category from categories after finding it. Think it broke it more lol
-	
-	//2024-12-15 UPDATE: No changes from above, but on playing noticed categories randomly don't work. Def broke it more
 	const shuffleButton = document.querySelector('#shuffle');
 	shuffleButton.addEventListener('click', () => {
 		deselectAll(submitButton);
