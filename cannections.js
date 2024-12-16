@@ -168,7 +168,7 @@
 		}
 		const tigers = document.querySelector('#tigers');
 		tigers.textContent = endMessage + ' Refresh the page to play again.';
-		/*TODO: Will need to track state across guesses. New array?
+		//TODO: Will need to track state across guesses. New array?
 		const shareButton = document.querySelector('#share');
 		shareButton.hidden = false;
 		shareButton.addEventListener('click', async () => {
@@ -181,7 +181,7 @@
 			} catch (err) {
 				console.error(err);
 			}
-		});*/
+		});
 	}
 	
 	
