@@ -146,15 +146,6 @@
 	function rightGuess(matchingCategory) {
 		showCategory(matchingCategory);
 		addText();
-		/*let j = 0;
-		for (let i = categoriesShown + 1; i < 5; i++) {
-			const id = 'row_' + i;
-			const row = document.querySelector('#' + id);
-			for (const button of row.children) {
-				button.textContent = unselectedTopics[j];
-				j++;
-			}		
-		}*/
 		let message;
 		if (categoriesShown === 4) {
 			if (tries === 4) {
@@ -274,7 +265,6 @@
 			// Removes matchingCategory from categories so shuffle works
 			const index = categories.findIndex(category => category.title === matchingCategory.title);
 			categories.splice(index, 1);
-			console.log(JSON.stringify(categories));
 			if (categoriesShown >= 4) {
 				submitButton.disabled = true;
 				shuffleButton.disabled = true;
