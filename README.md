@@ -1,7 +1,6 @@
 TODO:
 - Refactor code
-	- To not need to be in main function
-	- To be less spaghetti in general
+	- Make OOP for state and code structure?
 - Implement submit logic
 	- ~~Loop through selections vs game-chosen categories~~
 	- ~~Implement right logic~~
