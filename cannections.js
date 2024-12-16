@@ -110,7 +110,7 @@
 				button.style.visibility = 'hidden';
 			}
 			row.classList.toggle('row');
-			row.style.background = category.color;
+			row.style.background = category.color.hex;
 			const topics = category.topics.join(', ');
 			row.innerHTML = `<br><strong>${category.title}</strong><br>${topics}`;
 		}
@@ -216,7 +216,7 @@
 	/* Colors assigned dynamically/randomly. No
 	   correlation to difficulty unlike the real game */
 	for (let i = 0; i < categories.length; i++) {
-		categories[i].color = colors[i].hex;
+		categories[i].color = colors[i];
 	}
 	console.log(categories);
 	let unselectedTopics = shuffle(categories);
@@ -251,10 +251,12 @@
 		}
 		let oneAway = false;
 		let matchingCategory;
+		// TODO: let resultRow;
 		const match = categories.some(category => {
 			let matchCount = 0;
 			for (const topic of category.topics) {
 				if (selectionTexts.includes(topic)) {
+					// TODO: resultRow += category.color.hex;
 					matchCount++;
 					if (matchCount === 4) {
 						matchingCategory = category;
@@ -269,6 +271,7 @@
 		});
 		// TODO: Split function roughly here somehow? Too long
 		// TODO: append to results here
+		// results += '\n' + resultRow;
 		// TODO: Split here again?
 		if (match) {
 			rightGuess(matchingCategory, buttons, unselectedTopics);
