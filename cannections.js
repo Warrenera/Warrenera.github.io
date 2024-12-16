@@ -34,10 +34,12 @@
 
 		// Shuffle columns
 		let columns = [];
-		for (const col in rows) {
+		/* 4 is number of categories to start. Can't use `col in rows` because it
+		   will break if category already found, removed from categories var */
+		for (let i = 0; i < 4; i++) {
 			const column = [];
 			for (const row in rows) {
-				column.push(rows[row][col]);
+				column.push(rows[row][i]);
 			}
 			columns.push(shuffleArray(column));
 		}
