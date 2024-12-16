@@ -17,7 +17,7 @@
 		// Get array of topic arrays
 		const rows = [];
 		for (const category of categories) {
-			rows.push(category['topics']);
+			rows.push(category.topics);
 		}
 
 		// Shuffle columns
@@ -250,9 +250,8 @@
 			if (!oneAway) {
 				oneAway = (matchCount === 3) ? true : false;
 			}
-			return (matchCount === 4) ? true : false;
+			return (matchingCategory) ? true : false;
 		});
-		let endMessage;
 		if (match) {
 			rightGuess(matchingCategory, buttons, unselectedTopics);
 			// Removes matchingCategory from categories so shuffle works
