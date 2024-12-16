@@ -188,10 +188,22 @@
 	
 	// Start of main logic
 	const colors = [
-		'#f9df6d', // Yellow
-		'#a0c35a', // Green
-		'#b0c4ef', // Blue
-		'#ba81c5'  // Purple
+		{ // Yellow
+			'emoji': '🟨',
+			'hex': '#f9df6d'
+		},
+		{ // Green
+			'emoji': '🟩',
+			'hex': '#a0c35a'
+		},
+		{ // Blue
+			'emoji': '🟦',
+			'hex': '#b0c4ef'
+		},
+		{ // Purple
+			'emoji': '🟪',
+			'hex': '#ba81c5'
+		}
 	]
 	let categoriesShown = 0;
 	let priorGuesses = [];
@@ -204,7 +216,7 @@
 	/* Colors assigned dynamically/randomly. No
 	   correlation to difficulty unlike the real game */
 	for (let i = 0; i < categories.length; i++) {
-		categories[i].color = colors[i];
+		categories[i].color = colors[i].hex;
 	}
 	console.log(categories);
 	let unselectedTopics = shuffle(categories);
@@ -255,6 +267,9 @@
 			}
 			return (matchingCategory) ? true : false;
 		});
+		// TODO: Split function roughly here somehow? Too long
+		// TODO: append to results here
+		// TODO: Split here again?
 		if (match) {
 			rightGuess(matchingCategory, buttons, unselectedTopics);
 			// Removes matchingCategory from categories so shuffle works
