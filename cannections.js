@@ -68,8 +68,6 @@
 			const index = unselectedTopics.indexOf(button.textContent);
 			unselectedTopics.splice(index, 1);
 		}
-		console.log('Selected Squares: ' + JSON.stringify(selections));
-		console.log('Unselected Squares: ' + JSON.stringify(unselectedTopics));
 	}
 
 	function addText(buttons, unselectedTopics) {
@@ -112,7 +110,7 @@
 				button.style.visibility = 'hidden';
 			}
 			row.classList.toggle('row');
-			row.style.background = colors[id];
+			row.style.background = category.color;
 			const topics = category.topics.join(', ');
 			row.innerHTML = `<br><strong>${category.title}</strong><br>${topics}`;
 		}
@@ -179,26 +177,36 @@
 					url: 'https://warrenera.github.io/cannections.html'
 				});
 			} catch (err) {
-				console.error(err);
+				console.error('Cannot share results: ' + err);
+				navigator.clipboard.writeText(results);
+				console.log(`Copied to clipboard instead:
+				${results}`);
 			}
 		});
 	}
 	
 	
 	// Start of main logic
-	const colors = {
-		row_1: '#f9df6d',
-		row_2: '#a0c35a',
-		row_3: '#b0c4ef',
-		row_4: '#ba81c5'
-	}
+	const colors = [
+		'#f9df6d', // Yellow
+		'#a0c35a', // Green
+		'#b0c4ef', // Blue
+		'#ba81c5'  // Purple
+	]
 	let categoriesShown = 0;
 	let priorGuesses = [];
-	let selections = [];
+	let results = 'cAnnections';
 	let selectCount = 0;
+	let selections = [];
 	let tries = 4;
 	
 	let categories = shuffleArray(await getData()).slice(0, 4);
+	/* Colors assigned dynamically/randomly. No
+	   correlation to difficulty unlike the real game */
+	for (let i = 0; i < categories.length; i++) {
+		categories[i].color = colors[i];
+	}
+	console.log(categories);
 	let unselectedTopics = shuffle(categories);
 	
 	const buttons = document.querySelectorAll('.square');
