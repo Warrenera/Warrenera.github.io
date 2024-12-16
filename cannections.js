@@ -174,7 +174,7 @@
 		shareButton.addEventListener('click', async () => {
 			try {
 				await navigator.share({
-					text: 'test',
+					text: 'Andrew loves me so much he made a whole game dedicated to us ♥ check it out!',
 					title: 'cAnnections',
 					url: 'https://warrenera.github.io/cannections.html'
 				});
