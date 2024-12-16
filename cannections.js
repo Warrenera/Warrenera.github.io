@@ -134,18 +134,13 @@
 	function rightGuess(matchingCategory, buttons, unselectedTopics) {
 		showCategory(matchingCategory);
 		addText(buttons, unselectedTopics);
-		let message;
 		if (categoriesShown === 4) {
-			if (tries === 4) {
-				message = 'Perfect!';
-			} else {			
-				message = 'You did it!';
-			}
+			const message = (tries === 4) ? 'Perfect!' : 'You did it!';
 			displayPopup(message);
 		}
 	}
 
-	function wrongGuess(oneAway, selectionTexts) {
+	function wrongGuess(oneAway, selectionTexts, priorGuesses) {
 		const guessedPrior = priorGuesses.some(priorGuess => {
 			return priorGuess.every(guess => selectionTexts.includes(guess));
 		});
@@ -266,7 +261,7 @@
 				deselectAll(deselectButton, submitButton, true);
 			}
 		} else {
-			wrongGuess(oneAway, selectionTexts);
+			wrongGuess(oneAway, selectionTexts, priorGuesses);
 			if (tries <= 0) {
 				submitButton.disabled = true;
 				shuffleButton.disabled = true;
