@@ -120,13 +120,13 @@
 		}
 	}
 
-	function displayPopup(message) {
+	function displayPopup(message, time=2000) {
 		const popup = document.querySelector('#popup');
-		popup.textContent = '  ' + message + '  ';
+		popup.textContent = '  ' + message;
 		const classes = popup.classList;
 		fade = classes => classes.toggle('fade');
 		fade(classes);
-		setTimeout(fade, 2000, classes);
+		setTimeout(fade, time, classes);
 	}
 
 	function rightGuess(matchingCategory, buttons, unselectedTopics) {
@@ -160,7 +160,12 @@
 		displayPopup(message);
 	}
 
-	function endGame(categories, endMessage) {
+	function endGame(finalResults, categories, endMessage) {
+		const shareObject = {
+			text: 'Andrew loves me so much he made a whole game about to us ♥ check it out!\n' + finalResults,
+			title: 'cAnnections',
+			url: 'https://warrenera.github.io/cannections.html'
+		}
 		for (const category of categories) {
 			showCategory(category);
 		}
@@ -171,16 +176,11 @@
 		shareButton.hidden = false;
 		shareButton.addEventListener('click', async () => {
 			try {
-				await navigator.share({
-					text: 'Andrew loves me so much he made a whole game dedicated to us ♥ check it out!',
-					title: 'cAnnections',
-					url: 'https://warrenera.github.io/cannections.html'
-				});
+				await navigator.share();
 			} catch (err) {
-				console.error('Cannot share results: ' + err);
-				navigator.clipboard.writeText(results);
-				console.log(`Copied to clipboard instead:
-				${results}`);
+				console.error(err + '. Cannot share results. Copying to clipboard instead: \n' + finalResults);
+				navigator.clipboard.writeText(shareObject.text);
+				displayPopup('Copied to clipboard:\n' + shareObject.text + '\n', 5000);
 			}
 		});
 	}
@@ -218,7 +218,6 @@
 	for (let i = 0; i < categories.length; i++) {
 		categories[i].color = colors[i];
 	}
-	console.log(categories);
 	let unselectedTopics = shuffle(categories);
 	
 	const buttons = document.querySelectorAll('.square');
@@ -251,12 +250,12 @@
 		}
 		let oneAway = false;
 		let matchingCategory;
-		// TODO: let resultRow;
+		let resultRow = '';
 		const match = categories.some(category => {
 			let matchCount = 0;
 			for (const topic of category.topics) {
 				if (selectionTexts.includes(topic)) {
-					// TODO: resultRow += category.color.hex;
+					resultRow += category.color.emoji;
 					matchCount++;
 					if (matchCount === 4) {
 						matchingCategory = category;
@@ -270,8 +269,7 @@
 			return (matchingCategory) ? true : false;
 		});
 		// TODO: Split function roughly here somehow? Too long
-		// TODO: append to results here
-		// results += '\n' + resultRow;
+		results += '\n' + resultRow;
 		// TODO: Split here again?
 		if (match) {
 			rightGuess(matchingCategory, buttons, unselectedTopics);
@@ -282,7 +280,7 @@
 				submitButton.disabled = true;
 				shuffleButton.disabled = true;
 				deselectButton.disabled = true;
-				endGame(categories, 'You win! Wow, you know so much about us :)');
+				endGame(results, categories, 'You win! Wow, you know so much about us :)');
 			} else {
 				deselectAll(deselectButton, submitButton, true);
 			}
@@ -292,7 +290,7 @@
 				submitButton.disabled = true;
 				shuffleButton.disabled = true;
 				deselectButton.disabled = true;
-				endGame(categories, 'Game over 😔 but hopefully you had fun anway!');
+				endGame(results, categories, 'Game over 😔 but hopefully you had fun anway!');
 			}
 		}
 	});
