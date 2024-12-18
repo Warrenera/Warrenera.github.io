@@ -1,20 +1,20 @@
 .square {
-    height: 23vw;
+    height: 22vw;
 	margin-top: 1%;
 	max-height: 115px;
 	max-width: 115px;
     padding-left: 1%;
     padding-right: 1%;
 	vertical-align: top;
-    width: 23vw;
+    width: 22vw;
 }
 
 .selected {
     background-color: #f78f91;
-    height: 22vw;
+    height: 21vw;
 	max-height: 110px;
 	max-width: 110px;
-	width: 22vw;
+	width: 21vw;
 }
 
 .row {
@@ -107,6 +107,7 @@ button {
 	border-radius: 25px;
 	color: white;
 	font-family: Verdana, Arial, sans-serif;
+	font-size: .8em;
 	font-weight: bold;
 }
 
