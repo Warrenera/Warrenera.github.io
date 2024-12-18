@@ -176,10 +176,13 @@
 		shareButton.addEventListener('click', async () => {
 			try {
 				await navigator.share(shareObject);
-			} catch(TypeError) {
-				const clipboardText = shareObject.text + '\n' + shareObject.url;
-				navigator.clipboard.writeText(clipboardText);
-				displayPopup('Copied to clipboard');
+			} catch(e) {
+				console.error(e);
+				if (e instanceof TypeError || e instanceof DataError || e instanceof NotAllowedError) {
+					const clipboardText = shareObject.text + '\n' + shareObject.url;
+					navigator.clipboard.writeText(clipboardText);
+					displayPopup('Copied to clipboard');					
+				}
 			}
 		});
 	}
