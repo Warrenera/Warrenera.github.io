@@ -164,7 +164,7 @@
 		const shareObject = {
 			text: 'Andrew loves me so much he made a whole game about to us ♥ check it out!\n' + finalResults,
 			title: 'cAnnections',
-			url: 'https://warrenera.github.io'
+			url: 'https://warrenera.github.io/'
 		}
 		for (const category of categories) {
 			showCategory(category);
@@ -176,9 +176,8 @@
 		shareButton.addEventListener('click', async () => {
 			try {
 				await navigator.share(shareObject);
-			} catch (err) {
+			} catch(error) {
 				const clipboardText = shareObject.text + '\n' + shareObject.url;
-				console.error(err + '. Cannot share results. Copying to clipboard instead: \n' + clipboardText);
 				navigator.clipboard.writeText(clipboardText);
 				displayPopup('Copied to clipboard:\n' + clipboardText, 5000);
 			}
@@ -280,7 +279,7 @@
 				submitButton.disabled = true;
 				shuffleButton.disabled = true;
 				deselectButton.disabled = true;
-				endGame(results, categories, 'You win! Wow, you know so much about us :)');
+				endGame(results, categories, 'You win! You know so much about us :)');
 			} else {
 				deselectAll(deselectButton, submitButton, true);
 			}
