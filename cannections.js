@@ -162,7 +162,7 @@
 
 	function endGame(finalResults, categories, endMessage) {
 		const shareObject = {
-			text: 'Andrew loves me so much he made a whole game about to us ♥ check out!\n' + finalResults,
+			text: 'Andrew loves me so much he made a whole game about to us ♥ check it out!\n' + finalResults,
 			title: 'cAnnections',
 			url: 'https://warrenera.github.io'
 		}
