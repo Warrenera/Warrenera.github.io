@@ -2,33 +2,33 @@
     background-color: lightGray;
     border-radius: 25px;
     font-weight: bold;
-    height: 22vw;
+    height: 23vw;
 	max-height: 115px;
 	max-width: 115px;
     padding-left: 1%;
     padding-right: 1%;
 	vertical-align: top;
-    width: 22vw;
+    width: 23vw;
 }
 
 .selected {
     background-color: lightBlue;
-    height: 21vw;
+    height: 22vw;
 	max-height: 110px;
 	max-width: 110px;
-	width: 21vw;
+	width: 22vw;
 }
 
 .row {
     border-radius: 25px;
-    height: 22vw;
+    height: 23vw;
     margin-top: 2%;
 	max-height: 115px;
 	max-width: 460px;
     padding-left: 1%;
     padding-right: 1%;
     text-align: center;
-    width: 88vw;
+    width: 92vw;
 }
 
 #popup {
