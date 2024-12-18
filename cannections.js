@@ -120,13 +120,13 @@
 		}
 	}
 
-	function displayPopup(message, time=2000) {
+	function displayPopup(message) {
 		const popup = document.querySelector('#popup');
 		popup.textContent = '  ' + message;
 		const classes = popup.classList;
 		fade = classes => classes.toggle('fade');
 		fade(classes);
-		setTimeout(fade, time, classes);
+		setTimeout(fade, 2000, classes);
 	}
 
 	function rightGuess(matchingCategory, buttons, unselectedTopics) {
@@ -176,12 +176,10 @@
 		shareButton.addEventListener('click', async () => {
 			try {
 				await navigator.share(shareObject);
-			} catch(e) {
-				if (!(e instanceof AbortError)) {
-					const clipboardText = shareObject.text + '\n' + shareObject.url;
-					navigator.clipboard.writeText(clipboardText);
-					displayPopup('Copied to clipboard:\n' + clipboardText, 5000);
-				}
+			} catch(TypeError) {
+				const clipboardText = shareObject.text + '\n' + shareObject.url;
+				navigator.clipboard.writeText(clipboardText);
+				displayPopup('Copied to clipboard');
 			}
 		});
 	}

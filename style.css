@@ -19,6 +19,7 @@
 
 .row {
     border-radius: 25px;
+	font-family: Verdana, Arial, sans-serif;
     height: 23vw;
     margin-top: 2%;
 	max-height: 115px;
@@ -33,7 +34,8 @@
     background-color: #e3f6f6;
 	border: 2px solid #525352;
 	border-radius: 15px;
-    left: 50%;
+    font-family: Verdana, Arial, sans-serif;
+	left: 50%;
     opacity: 0;
 	padding: 2% 4% 4% 2%;
     position: absolute;
