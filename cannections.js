@@ -112,7 +112,7 @@
 			row.classList.toggle('row');
 			row.style.background = category.color.hex;
 			const topics = category.topics.join(', ');
-			row.innerHTML = `<br><strong>${category.title}</strong><br>${topics}`;
+			row.innerHTML = `<strong>${category.title}</strong><br>${topics}`;
 		}
 		catch(TypeError) {
 			// No-op

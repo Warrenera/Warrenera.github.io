@@ -20,12 +20,13 @@
 .row {
     border-radius: 25px;
 	font-family: Verdana, Arial, sans-serif;
-    height: 23vw;
+    height: 24vw;
     margin-top: 2%;
 	max-height: 115px;
 	max-width: 460px;
     padding-left: 1%;
     padding-right: 1%;
+	padding-top: 1%;
     text-align: center;
     width: 92vw;
 }
