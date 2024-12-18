@@ -1,8 +1,7 @@
 .square {
-    background-color: lightGray;
-    border-radius: 25px;
     font-weight: bold;
     height: 23vw;
+	margin-top: 1%;
 	max-height: 115px;
 	max-width: 115px;
     padding-left: 1%;
@@ -12,7 +11,7 @@
 }
 
 .selected {
-    background-color: lightBlue;
+    background-color: #f78f91;
     height: 22vw;
 	max-height: 110px;
 	max-width: 110px;
@@ -53,4 +52,49 @@
 #rows {
     position: relative;
     width: max-content;
+}
+
+body {
+	background-color: #fbf1eb;
+}
+
+header {
+	background-color: #e3f6f6;
+	color: #525352;
+	padding-bottom: 1vh;
+}
+
+h1 {
+	background-color: #7aadad;
+	color: white;
+	font-family: Georgia, serif;
+}
+
+h2, h3 {
+	font-family: Georgia, serif;
+	padding-left: 1vw;
+}
+
+p, li, summary {
+	font-family: Verdana, Arial, sans-serif;
+	padding-left: 1vw;
+}
+
+hr {
+	border: 1px solid #7aadad;
+}
+
+button {
+	background-color: #7aadad;
+	border: 1px solid #525352;
+	border-radius: 25px;
+	color: white;
+}
+
+button:active {
+	background-color: #284d4d;
+}
+
+button:disabled {
+	color: gray;
 }
