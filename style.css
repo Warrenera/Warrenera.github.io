@@ -84,6 +84,14 @@ p, li, summary {
 	padding-left: 1vw;
 }
 
+a:link {
+	color: #284d4d;
+}
+
+a:visited {
+	color: #f78f91;
+}
+
 hr {
 	border: 1px solid #7aadad;
 }
