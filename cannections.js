@@ -292,7 +292,7 @@
 				submitButton.disabled = true;
 				shuffleButton.disabled = true;
 				deselectButton.disabled = true;
-				endGame(results, categories, 'Game over 😔 but hopefully you had fun anway!');
+				endGame(results, categories, 'Game over 😔 but hopefully you had fun anyway!');
 			}
 		}
 	});
