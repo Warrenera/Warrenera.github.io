@@ -30,6 +30,10 @@
     width: 92vw;
 }
 
+.footer {
+	padding: 1vw;
+}
+
 #popup {
     background-color: #e3f6f6;
 	border: 2px solid #525352;
