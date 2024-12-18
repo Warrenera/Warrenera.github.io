@@ -12,6 +12,7 @@
 .selected {
     background-color: #f78f91;
     height: 21vw;
+	margin: .25vw;
 	max-height: 110px;
 	max-width: 110px;
 	width: 21vw;
