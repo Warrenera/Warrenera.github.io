@@ -162,25 +162,25 @@
 
 	function endGame(finalResults, categories, endMessage) {
 		const shareObject = {
-			text: 'Andrew loves me so much he made a whole game about to us ♥ check it out!\n' + finalResults,
+			text: 'Andrew loves me so much he made a whole game about to us ♥ check out!\n' + finalResults,
 			title: 'cAnnections',
-			url: 'https://warrenera.github.io/cannections.html'
+			url: 'https://warrenera.github.io'
 		}
 		for (const category of categories) {
 			showCategory(category);
 		}
 		const tigers = document.querySelector('#tigers');
 		tigers.textContent = endMessage + ' Refresh the page to play again.';
-		//TODO: Will need to track state across guesses. New array?
 		const shareButton = document.querySelector('#share');
 		shareButton.hidden = false;
 		shareButton.addEventListener('click', async () => {
 			try {
-				await navigator.share();
+				await navigator.share(shareObject);
 			} catch (err) {
-				console.error(err + '. Cannot share results. Copying to clipboard instead: \n' + finalResults);
-				navigator.clipboard.writeText(shareObject.text);
-				displayPopup('Copied to clipboard:\n' + shareObject.text + '\n', 5000);
+				const clipboardText = shareObject.text + '\n' + shareObject.url;
+				console.error(err + '. Cannot share results. Copying to clipboard instead: \n' + clipboardText);
+				navigator.clipboard.writeText(clipboardText);
+				displayPopup('Copied to clipboard:\n' + clipboardText, 5000);
 			}
 		});
 	}
