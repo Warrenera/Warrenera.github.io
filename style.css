@@ -1,5 +1,4 @@
 .square {
-    font-weight: bold;
     height: 23vw;
 	margin-top: 1%;
 	max-height: 115px;
@@ -31,7 +30,8 @@
 }
 
 #popup {
-    background-color: coral; /*To change and make pretty later*/
+    background-color: #e3f6f6;
+	border: 2px solid #525352;
 	border-radius: 15px;
     left: 50%;
     opacity: 0;
@@ -60,6 +60,8 @@ body {
 
 header {
 	background-color: #e3f6f6;
+	border: 2px solid #525352;
+	border-radius: 25px;
 	color: #525352;
 	padding-bottom: 1vh;
 }
@@ -86,9 +88,11 @@ hr {
 
 button {
 	background-color: #7aadad;
-	border: 1px solid #525352;
+	border: 2px solid #525352;
 	border-radius: 25px;
 	color: white;
+	font-family: Verdana, Arial, sans-serif;
+	font-weight: bold;
 }
 
 button:active {
