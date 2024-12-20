@@ -112,7 +112,7 @@
 			row.classList.toggle('row');
 			row.style.background = category.color.hex;
 			const topics = category.topics.join(', ');
-			row.innerHTML = `<strong>${category.title}</strong><br>${topics}`;
+			row.innerHTML = `<h4>${category.title}</h4>${topics}`;
 		}
 		catch(TypeError) {
 			// No-op
@@ -147,6 +147,7 @@
 			return priorGuess.every(guess => selectionTexts.includes(guess));
 		});
 		let message;
+		let gameOver = false;
 		if (guessedPrior) {
 			message = 'Already guessed!';
 		} else {
@@ -155,13 +156,14 @@
 			// Needs to be -2. Think 🐯 has two Unicode points
 			tigers.textContent = tigers.textContent.slice(0, -2);
 			if (tries <= 0) {
-				message = 'Next time';
+				message = 'Next time!';
+				gameOver = true;
 			} else {
 				message = (oneAway) ? 'One away!' : 'Not quite';
 				priorGuesses.push(selectionTexts);
 			}
 		}
-		displayPopup(message);
+		displayPopup(message, gameOver);
 	}
 
 	function endGame(finalResults, categories, endMessage) {

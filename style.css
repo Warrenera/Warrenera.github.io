@@ -85,6 +85,10 @@ h1, h2, h3 {
 	padding-left: 1vw;
 }
 
+h4 {
+	margin-bottom: 0vw;
+}
+
 p, li, summary {
 	font-family: Verdana, Arial, sans-serif;
 	padding-left: 1vw;
