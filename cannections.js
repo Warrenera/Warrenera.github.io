@@ -120,9 +120,13 @@
 		}
 	}
 
-	function displayPopup(message) {
+	function displayPopup(message, gameOver=false) {
 		const popup = document.querySelector('#popup');
-		popup.textContent = '  ' + message;
+		if (gameOver) {
+			popup.textContent = '  ' + message + ' Refresh the page to play again';
+		} else {
+			popup.textContent = '  ' + message;
+		}	
 		const classes = popup.classList;
 		fade = classes => classes.toggle('fade');
 		fade(classes);
@@ -134,7 +138,7 @@
 		addText(buttons, unselectedTopics);
 		if (categoriesShown === 4) {
 			const message = (tries === 4) ? 'Perfect!' : 'You did it!';
-			displayPopup(message);
+			displayPopup(message, true);
 		}
 	}
 
@@ -170,7 +174,7 @@
 			showCategory(category);
 		}
 		const tigers = document.querySelector('#tigers');
-		tigers.textContent = endMessage + ' Refresh the page to play again.';
+		tigers.textContent = endMessage;
 		const shareButton = document.querySelector('#share');
 		shareButton.hidden = false;
 		shareButton.addEventListener('click', async () => {

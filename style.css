@@ -22,7 +22,7 @@
     border-radius: 25px;
 	font-family: Verdana, Arial, sans-serif;
     height: 24vw;
-    margin-top: 2%;
+    margin: 2% auto 0vw;
 	max-height: 115px;
 	max-width: 460px;
     padding-left: 1%;
@@ -58,7 +58,8 @@
 }
 
 #rows {
-    position: relative;
+    margin: auto;
+	position: relative;
     width: max-content;
 }
 
@@ -77,10 +78,9 @@ header {
 h1 {
 	background-color: #7aadad;
 	color: white;
-	font-family: Georgia, serif;
 }
 
-h2, h3 {
+h1, h2, h3 {
 	font-family: Georgia, serif;
 	padding-left: 1vw;
 }
@@ -88,6 +88,7 @@ h2, h3 {
 p, li, summary {
 	font-family: Verdana, Arial, sans-serif;
 	padding-left: 1vw;
+	padding-right: 1vw;
 }
 
 a:link {
