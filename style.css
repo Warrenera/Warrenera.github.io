@@ -81,7 +81,8 @@ h1 {
 }
 
 h4 {
-	margin-bottom: 0vw;
+	margin-bottom: 0vh;
+	margin-top: .25vh;
 }
 
 h1, h2, h3 {

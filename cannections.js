@@ -126,7 +126,7 @@
 		const popup = document.querySelector('#popup');
 		if (gameOver) {
 			popup.textContent = message + ' Refresh the page to play again';
-			time = 5000;
+			time = 4000;
 		} else {
 			popup.textContent = message;
 		}	
