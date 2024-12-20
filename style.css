@@ -22,7 +22,7 @@
     border-radius: 25px;
 	font-family: Verdana, Arial, sans-serif;
     height: 24vw;
-    margin: 2% auto 0vw;
+    margin: 1% auto 0vw;
 	max-height: 115px;
 	max-width: 460px;
     padding-left: 1%;
@@ -84,7 +84,7 @@ h4 {
 	margin-bottom: 0vw;
 }
 
-h1, h2, h3 , h4 {
+h1, h2, h3 {
 	font-family: Georgia, serif;
 	padding-left: 1vw;
 }

@@ -121,16 +121,19 @@
 	}
 
 	function displayPopup(message, gameOver=false) {
+		message = '  ' + message;
+		let time = 2000;
 		const popup = document.querySelector('#popup');
 		if (gameOver) {
-			popup.textContent = '  ' + message + ' Refresh the page to play again';
+			popup.textContent = message + ' Refresh the page to play again';
+			time = 5000;
 		} else {
-			popup.textContent = '  ' + message;
+			popup.textContent = message;
 		}	
 		const classes = popup.classList;
 		fade = classes => classes.toggle('fade');
 		fade(classes);
-		setTimeout(fade, 2000, classes);
+		setTimeout(fade, time, classes);
 	}
 
 	function rightGuess(matchingCategory, buttons, unselectedTopics) {
