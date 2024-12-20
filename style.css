@@ -19,6 +19,9 @@
 }
 
 .row {
+	display: flex;
+	justify-content: center;
+	align-items: center;
     border-radius: 25px;
 	font-family: Verdana, Arial, sans-serif;
     height: 24vw;
