@@ -66,6 +66,11 @@
     width: max-content;
 }
 
+#tigers {
+	max-width: 460px;
+	width: 92vw;
+}
+
 body {
 	background-color: #fbf1eb;
 }

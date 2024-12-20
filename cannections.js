@@ -120,20 +120,13 @@
 		}
 	}
 
-	function displayPopup(message, gameOver=false) {
-		message = '  ' + message;
-		let time = 2000;
+	function displayPopup(message) {
 		const popup = document.querySelector('#popup');
-		if (gameOver) {
-			popup.textContent = message + ' Refresh the page to play again';
-			time = 4000;
-		} else {
-			popup.textContent = message;
-		}	
+		popup.textContent = '  ' + message;
 		const classes = popup.classList;
 		fade = classes => classes.toggle('fade');
 		fade(classes);
-		setTimeout(fade, time, classes);
+		setTimeout(fade, 2000, classes);
 	}
 
 	function rightGuess(matchingCategory, buttons, unselectedTopics) {
@@ -141,7 +134,7 @@
 		addText(buttons, unselectedTopics);
 		if (categoriesShown === 4) {
 			const message = (tries === 4) ? 'Perfect!' : 'You did it!';
-			displayPopup(message, true);
+			displayPopup(message);
 		}
 	}
 
@@ -150,7 +143,6 @@
 			return priorGuess.every(guess => selectionTexts.includes(guess));
 		});
 		let message;
-		let gameOver = false;
 		if (guessedPrior) {
 			message = 'Already guessed!';
 		} else {
@@ -160,13 +152,12 @@
 			tigers.textContent = tigers.textContent.slice(0, -2);
 			if (tries <= 0) {
 				message = 'Next time!';
-				gameOver = true;
 			} else {
 				message = (oneAway) ? 'One away!' : 'Not quite';
 				priorGuesses.push(selectionTexts);
 			}
 		}
-		displayPopup(message, gameOver);
+		displayPopup(message);
 	}
 
 	function endGame(finalResults, categories, endMessage) {
@@ -179,7 +170,7 @@
 			showCategory(category);
 		}
 		const tigers = document.querySelector('#tigers');
-		tigers.textContent = endMessage;
+		tigers.textContent = endMessage + ' Refresh the page to play again';
 		const shareButton = document.querySelector('#share');
 		shareButton.hidden = false;
 		shareButton.addEventListener('click', async () => {
