@@ -80,6 +80,10 @@ h1 {
 	color: white;
 }
 
+h4 {
+	margin-bottom: 0vw;
+}
+
 h1, h2, h3 , h4 {
 	font-family: Georgia, serif;
 	padding-left: 1vw;
