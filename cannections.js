@@ -67,7 +67,7 @@
 				square.classList.remove('selected');			
 			}
 			catch(TypeError) {
-				continue;
+				console.warn('Could not remove "selected" class style from selection.');
 			}
 		}
 		selections = [];
@@ -90,8 +90,7 @@
 			row.innerHTML = `<div><strong>${category.title}</strong><br>${topics}</div>`;
 		}
 		catch(TypeError) {
-			// No-op
-			() => {}
+			console.warn('TypeError received while revealing categories.');
 		}
 	}
 	
