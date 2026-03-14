@@ -120,11 +120,14 @@
 		}
 	}
 
+	function fade(classes) {
+		classes.toggle('fade');
+	}
+	
 	function displayPopup(message) {
 		const popup = document.querySelector('#popup');
 		popup.textContent = '  ' + message;
 		const classes = popup.classList;
-		fade = classes => classes.toggle('fade');
 		fade(classes);
 		setTimeout(fade, 2000, classes);
 	}
@@ -161,6 +164,10 @@
 	}
 
 	function endGame(finalResults, categories, endMessage) {
+		submitButton.disabled = true;
+		shuffleButton.disabled = true;
+		deselectButton.disabled = true;
+
 		const shareObject = {
 			text: 'Andrew loves me so much he made a whole game about us ♥ check it out!\n' + finalResults,
 			title: 'cAnnections',
@@ -279,9 +286,6 @@
 			const index = categories.findIndex(category => category.title === matchingCategory.title);
 			categories.splice(index, 1);
 			if (categoriesShown >= 4) {
-				submitButton.disabled = true;
-				shuffleButton.disabled = true;
-				deselectButton.disabled = true;
 				endGame(results, categories, 'You win! You know so much about us :)');
 			} else {
 				deselectAll(deselectButton, submitButton, true);
@@ -289,9 +293,6 @@
 		} else {
 			wrongGuess(oneAway, selectionTexts, priorGuesses);
 			if (tries <= 0) {
-				submitButton.disabled = true;
-				shuffleButton.disabled = true;
-				deselectButton.disabled = true;
 				endGame(results, categories, 'Game over 😔 but hopefully you had fun anyway!');
 			}
 		}
