@@ -26,8 +26,8 @@
 		   will break if category already found, removed from categories var */
 		for (let i = 0; i < 4; i++) {
 			const column = [];
-			for (const row in rows) {
-				column.push(rows[row][i]);
+			for (const row of rows) {
+				column.push(row[i]);
 			}
 			columns.push(shuffleArray(column));
 		}
