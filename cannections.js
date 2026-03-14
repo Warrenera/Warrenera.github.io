@@ -14,40 +14,15 @@
 	}
 
 	function shuffle(categories) {
-		// Get array of topic arrays
-		const rows = [];
-		for (const category of categories) {
-			rows.push(category.topics);
-		}
-
-		// Shuffle columns
-		let columns = [];
-		/* 4 is number of categories to start. Can't use `col in rows` because it
-		   will break if category already found, removed from categories var */
-		for (let i = 0; i < 4; i++) {
-			const column = [];
-			for (const row of rows) {
-				column.push(row[i]);
-			}
-			columns.push(shuffleArray(column));
-		}
-		
-		// Transpose rows of new 2D array back to columns
-		columns = columns[0].map((_, i) => columns.map(row => row[i]));
-		
-		// Shuffle rows of now-shuffled columns
-		const shuffledArray = [];
-		for (const row of columns) {
-			shuffledArray.push(shuffleArray(row));
-		}
-		// Return values in list since that's all we need
-		const topics = [];
-		for (array of shuffledArray) {
-			for (element of array) {
-				topics.push(element);
-			}
-		}
-		return topics;
+		// Grabs each column of 2D array and shuffles it
+		const columns = Array.from({length: 4}, (_, i) =>
+			shuffleArray(categories.map(category => category.topics[i]))
+		);
+		// Transposes columns back to columns and shuffles rows
+		const rows = columns[0].map((_, i) => 
+			shuffleArray(columns.map(col => col[i]))
+		);
+		return rows.flat();
 	}
 	
 	function buttonLogic(button, selections, unselectedTopics) {
