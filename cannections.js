@@ -94,12 +94,11 @@
 			() => {}
 		}
 	}
-
-	function fade(classes) {
-		classes.toggle('fade');
-	}
 	
 	function displayPopup(message) {
+		function fade(classes) {
+			classes.toggle('fade');
+		}
 		const popup = document.querySelector('#popup');
 		popup.textContent = '  ' + message;
 		const classes = popup.classList;
