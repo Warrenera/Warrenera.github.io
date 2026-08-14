@@ -1,3 +1,4 @@
+# ruff: noqa: CPY001
 """Page object model for https://warrenera.github.io."""
 
 from selenium.common.exceptions import WebDriverException
