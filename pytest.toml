@@ -1,0 +1,9 @@
+[pytest]
+addopts = ["--import-mode=importlib"]
+strict = true
+
+[tool.ruff]
+line-length = 99
+
+[tool.ruff.lint]
+select = ["ALL"]
