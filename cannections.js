@@ -240,8 +240,8 @@ const state = {
 	categoriesShown: 0,
 	priorGuesses: [],
 	results: 'cAnnections',
-	categories = setCategories(),
-	unselectedTopics = []
+	categories: setCategories(),
+	unselectedTopics: []
 };
 unselectedTopics = shuffle(state.categories);
 
