@@ -1,4 +1,8 @@
-[pytest]
+[project]
+name = "cAnnections Test Framework"
+version = "0.0.1"
+
+[tool.pytest]
 addopts = ["--import-mode=importlib"]
 strict = true
 
@@ -7,3 +11,4 @@ line-length = 99
 
 [tool.ruff.lint]
 select = ["ALL"]
+ignore = ["CPY001"]

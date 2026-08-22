@@ -1,10 +1,12 @@
-# ruff: noqa: CPY001
+# ruff: noqa: ANN201
 """Page object model for https://warrenera.github.io.
 
 Silenced Ruff checks
 --------------------
-- ANN204: (in-line) __init__() always returns None.
-- S101:   Assertions are necessary as this is a test framework.
+- ANN201: None of the POM functions return anything. It'd only add
+          visual clutter
+- ANN204: (in-line) __init__() always returns None
+- S101:   (in-line) Assertions are necessary as this is a test framework
 """
 
 from selenium.webdriver import Firefox
@@ -41,11 +43,11 @@ class GamePage(BasePage):
             f"but the current page is {self.driver.current_url}"
         )
 
-    def deselect_all(self) -> None:
+    def deselect_all(self):
         """Click the 'Deselect All' button, unselecting all buttons."""
         self.click(self.DESELECT)
 
-    def refresh(self) -> None:
+    def refresh(self):
         """Refresh the page, resetting the game with new categories.
 
         Calls the parent method as this one is just here for the
@@ -53,7 +55,7 @@ class GamePage(BasePage):
         """
         super().refresh()
 
-    def select_square(self, square_id: str) -> None:
+    def select_square(self, square_id: str):
         """Toggle selection of a category choice button.
 
         Locator is dynamically constructed to avoid having 16 identical
@@ -63,7 +65,7 @@ class GamePage(BasePage):
         square_locator = (By.ID, sid)
         self.click(square_locator)
 
-    def share(self) -> None:
+    def share(self):
         """Click the Share button.
 
         This copies text to the clipboard if the navigator.share()
@@ -71,17 +73,17 @@ class GamePage(BasePage):
         """
         self.click(self.SHARE)
 
-    def shuffle(self) -> None:
+    def shuffle(self):
         """Click the shuffle button, mixing up the category squares.
 
         Also deselect any currently selected squares.
         """
         self.click(self.SHUFFLE)
 
-    def submit(self) -> None:
+    def submit(self):
         """Click the Submit button to see if the choices were right."""
         self.click(self.SUBMIT)
 
-    def toggle_details(self) -> None:
+    def toggle_details(self):
         """Toggle appearance of the header details drop-down menu."""
         self.click(self.SUMMARY)

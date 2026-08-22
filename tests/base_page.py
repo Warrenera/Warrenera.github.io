@@ -1,9 +1,8 @@
-# ruff: noqa: CPY001
 """Base page for utilities and setup not specific to GamePage parts.
 
 Silenced Ruff checks
 --------------------
-- ANN204: (in-line) __init__() always returns None.
+- ANN204: (in-line) __init__() always returns None
 """
 
 from selenium.webdriver import Firefox

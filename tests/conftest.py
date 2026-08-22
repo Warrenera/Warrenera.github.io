@@ -1,4 +1,3 @@
-# ruff: noqa: CPY001
 """Provide fixtures for the test framework."""
 
 import pytest  # pytest convention, see Ruff PT013
