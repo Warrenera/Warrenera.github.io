@@ -1,5 +1,11 @@
 # ruff: noqa: CPY001
-"""Page object model for https://warrenera.github.io."""
+"""Page object model for https://warrenera.github.io.
+
+Silenced Ruff checks
+--------------------
+- ANN204: (in-line) __init__() always returns None.
+- S101:   Assertions are necessary as this is a test framework.
+"""
 
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
@@ -8,13 +14,7 @@ from tests.base_page import BasePage
 
 
 class GamePage(BasePage):
-    """Represent the cAnnections game page.
-
-    Silenced Ruff checks
-    --------------------
-    - ANN204: (in-line) __init__() always returns None.
-    - S101:   This is test framework code, assertions are necessary.
-    """
+    """Represent the cAnnections game page."""
 
     url = "https://warrenera.github.io"
     title = "cAnnections: Connections, but about us"
@@ -34,8 +34,9 @@ class GamePage(BasePage):
         https://www.selenium.dev/documentation/test_practices/encouraged/page_object_models#assertions-in-page-objects
         """
         super().__init__(driver, timeout)
-        cleaned_url = self.driver.current_url.rstrip("/")
-        assert cleaned_url == self.url, (  # noqa: S101
+        # TODO: feels flaky, find better way to do this
+        clean_url = self.driver.current_url.rstrip("/")
+        assert clean_url == self.url, (  # noqa: S101
             "This is not the right page! Expected cAnnections, "
             f"but the current page is {self.driver.current_url}"
         )

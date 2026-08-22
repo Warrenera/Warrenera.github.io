@@ -6,7 +6,7 @@ Silenced Ruff checks
 - ANN201: None of the test functions return anything. It'd only add
           visual clutter.
 - CPY001: See LICENSE.
-- S101:   Assertions are needed for testing.
+- S101:   Assertions are necessary as this is a test framework.
 """
 
 

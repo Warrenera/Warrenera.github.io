@@ -1,5 +1,10 @@
 # ruff: noqa: CPY001
-"""Base page for utilities and setup not specific to GamePage parts."""
+"""Base page for utilities and setup not specific to GamePage parts.
+
+Silenced Ruff checks
+--------------------
+- ANN204: (in-line) __init__() always returns None.
+"""
 
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import ByType
@@ -12,12 +17,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 
 class BasePage:
-    """Define page-agnostic utilities for page object models.
-
-    Silenced Ruff checks
-    --------------------
-    - ANN204: (in-line) __init__() always returns None.
-    """
+    """Define page-agnostic utilities for page object models."""
 
     def __init__(self, driver: Firefox, timeout: int = 10):  # noqa: ANN204
         """Set the details for interacting with the page."""
