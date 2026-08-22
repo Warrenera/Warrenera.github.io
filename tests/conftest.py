@@ -1,14 +1,19 @@
 # ruff: noqa: CPY001
-"""."""
+"""Provide fixtures for the test framework."""
 
 import pytest  # pytest convention, see Ruff PT013
-from page import Page  # First-party, import the POM
 from selenium.webdriver import Firefox
 from selenium.webdriver.firefox.options import Options
+
+from tests.game_page import GamePage
 
 
 @pytest.fixture
 def driver() -> Firefox:
+    """Instantiate the Firefox Web driver for the test.
+
+    Gracefully close the driver after each test as well.
+    """
     options = Options()
     options.add_argument("--headless")
     webdriver = Firefox(options=options)
@@ -17,6 +22,7 @@ def driver() -> Firefox:
 
 
 @pytest.fixture(autouse=True)
-def page(driver: Firefox) -> Page:
+def page(driver: Firefox) -> GamePage:
+    """Instantiate the Firefox webpage for the test."""
     driver.get("https://warrenera.github.io")
-    return Page(driver)
+    return GamePage(driver)
