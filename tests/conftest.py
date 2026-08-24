@@ -15,6 +15,7 @@ def driver() -> Firefox:
     """
     options = Options()
     options.add_argument("--headless")
+    # options.add_argument("--window-size=1920,1080")
     webdriver = Firefox(options=options)
     yield webdriver
     webdriver.quit()
@@ -23,5 +24,5 @@ def driver() -> Firefox:
 @pytest.fixture(autouse=True)
 def page(driver: Firefox) -> GamePage:
     """Instantiate the Firefox webpage for the test."""
-    driver.get("https://warrenera.github.io")
+    driver.get("https://warrenera.github.io/")
     return GamePage(driver)

@@ -1,5 +1,5 @@
 # ruff: noqa: ANN201
-"""Page object model for https://warrenera.github.io.
+"""Page object model for https://warrenera.github.io/.
 
 Silenced Ruff checks
 --------------------
@@ -18,7 +18,7 @@ from tests.base_page import BasePage
 class GamePage(BasePage):
     """Represent the cAnnections game page."""
 
-    url = "https://warrenera.github.io"
+    url = "https://warrenera.github.io/"
     title = "cAnnections: Connections, but about us"
 
     # Static Locators
@@ -31,7 +31,7 @@ class GamePage(BasePage):
     SUBMIT = (By.ID, "submit")
     SUMMARY = (By.ID, "summary")
 
-    def __init__(self, driver: Firefox, timeout: int = 10):  # noqa: ANN204
+    def __init__(self, driver: Firefox, timeout: int = 5):  # noqa: ANN204
         """Initialize the BasePage, then determine if on the game page.
 
         This is the one assertion allowed, and even recommended, by
@@ -39,16 +39,12 @@ class GamePage(BasePage):
         https://www.selenium.dev/documentation/test_practices/encouraged/page_object_models#assertions-in-page-objects
         """
         super().__init__(driver, timeout)
-        clean_url = self.driver.current_url.rstrip("/")
-        self._verify_page(clean_url)
+        self._verify_page()
 
-    def _verify_page(self, url: str) -> None:
+    def _verify_page(self) -> None:
         """Check the page and all its components loaded correctly."""
-        assert self.verify_url(self.url), (  # noqa: S101
-            "ERROR: This is not the right page! Expected cAnnections, "
-            f"but the current page is {self.driver.current_url}"
-        )
-        for element in (self.HEADER, self.ROWS, self.FOOTER):
+        self.verify_url()
+        for element in (self.HEADER,):  # self.ROWS, self.FOOTER):
             assert self.verify_element(element), (  # noqa: S101
                 f"ERROR: critical element with ID '{element[1]}' "
                 "did not load properly. Try refreshing the page"

@@ -42,6 +42,21 @@ class BasePage:
         """Check if an element is present once the page fully loads."""
         return self._wait.until(visibility_of_element_located(locator))
 
-    def verify_url(self, url: str) -> bool:
-        """Check if a URL is correct once the page fully loads."""
-        return self._wait.until(url_to_be(url + "/"))
+    def verify_url(self) -> bool:
+        """Validate if a URL is correct once the page fully loads.
+
+        Checks for trailing slashes in the driver's current URL and
+        makes the class variable match before validating.
+        """
+        if self.driver.current_url.endswith("/"):
+            url = f"{self.url}/" if not self.url.endswith("/") else self.url
+        else:
+            url = self.url.rstrip("/") if self.url.endswith("/") else self.url
+
+        return self._wait.until(
+            message=(
+                f"ERROR: expected current driver URL to be {url}, "
+                "but was {self.driver.current_url} instead"
+            ),
+            method=url_to_be(url),
+        )
