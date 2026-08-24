@@ -23,6 +23,9 @@ class GamePage(BasePage):
 
     # Static Locators
     DESELECT = (By.ID, "deselect")
+    FOOTER = (By.ID, "footer")
+    HEADER = (By.ID, "header")
+    ROWS = (By.ID, "rows")
     SHARE = (By.ID, "share")
     SHUFFLE = (By.ID, "shuffle")
     SUBMIT = (By.ID, "submit")
@@ -36,12 +39,20 @@ class GamePage(BasePage):
         https://www.selenium.dev/documentation/test_practices/encouraged/page_object_models#assertions-in-page-objects
         """
         super().__init__(driver, timeout)
-        # TODO: feels flaky, find better way to do this
         clean_url = self.driver.current_url.rstrip("/")
-        assert clean_url == self.url, (  # noqa: S101
-            "This is not the right page! Expected cAnnections, "
+        self._verify_page(clean_url)
+
+    def _verify_page(self, url: str) -> None:
+        """Check the page and all its components loaded correctly."""
+        assert self.verify_url(self.url), (  # noqa: S101
+            "ERROR: This is not the right page! Expected cAnnections, "
             f"but the current page is {self.driver.current_url}"
         )
+        for element in (self.HEADER, self.ROWS, self.FOOTER):
+            assert self.verify_element(element), (  # noqa: S101
+                f"ERROR: critical element with ID '{element[1]}' "
+                "did not load properly. Try refreshing the page"
+            )
 
     def deselect_all(self):
         """Click the 'Deselect All' button, unselecting all buttons."""

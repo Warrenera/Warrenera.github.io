@@ -11,6 +11,8 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.expected_conditions import (
     element_to_be_clickable,
     presence_of_element_located,
+    url_to_be,
+    visibility_of_element_located,
 )
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -35,3 +37,11 @@ class BasePage:
     def refresh(self) -> None:
         """Refresh the page."""
         self.driver.refresh()
+
+    def verify_element(self, locator: str) -> bool:
+        """Check if an element is present once the page fully loads."""
+        return self._wait.until(visibility_of_element_located(locator))
+
+    def verify_url(self, url: str) -> bool:
+        """Check if a URL is correct once the page fully loads."""
+        return self._wait.until(url_to_be(url + "/"))
