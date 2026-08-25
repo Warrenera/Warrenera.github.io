@@ -1,1 +1,1 @@
-# ruff: noqa: CPY001, D104
+# ruff: noqa: D104
