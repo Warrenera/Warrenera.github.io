@@ -50,7 +50,7 @@ jobs:
         uses: browser-actions/setup-firefox@v1
 
       - name: Serve site locally
-        run: python -m http.server &
+        run: python -m http.server -d _site &
 
       - name: Wait for server
         run: sleep 2

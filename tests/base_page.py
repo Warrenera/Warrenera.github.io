@@ -19,7 +19,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 class BasePage:
     """Define page-agnostic utilities for page object models."""
 
-    def __init__(self, driver: Firefox, timeout: int = 30):  # noqa: ANN204
+    def __init__(self, driver: Firefox, timeout: int = 10):  # noqa: ANN204
         """Set the details for interacting with the page."""
         self.driver = driver
         self.timeout = timeout
