@@ -9,6 +9,11 @@ on:
       - reopened
       - synchronize
   workflow_dispatch:
+    inputs:
+      manually-deploy:
+        description: Manually deploy cAnnections to GitHub Pages
+        default: false
+        type: boolean
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
@@ -60,7 +65,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || github.event.inputs.manually-deploy == true
     name: Deploy to GitHub Pages
     needs: ui-test
     permissions:
