@@ -65,7 +65,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    if: ${{ github.event.pull_request.merged || github.event.inputs]'manually-deploy'] }}
+    if: ${{ github.event.pull_request.merged || github.event.inputs['manually-deploy'] }}
     name: Deploy to GitHub Pages
     needs: ui-test
     permissions:
