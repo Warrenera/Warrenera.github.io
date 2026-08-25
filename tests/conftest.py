@@ -14,8 +14,9 @@ def driver() -> Firefox:
     Gracefully close the driver after each test as well.
     """
     options = Options()
-    options.add_argument("--headless")
-    # options.add_argument("--window-size=1920,1080")
+    options.add_argument("-headless")
+    options.add_argument("-height=1080")
+    options.add_argument("-width=1920")
     webdriver = Firefox(options=options)
     yield webdriver
     webdriver.quit()

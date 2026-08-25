@@ -10,7 +10,6 @@ from selenium.webdriver.common.by import ByType
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.expected_conditions import (
     element_to_be_clickable,
-    presence_of_element_located,
     url_to_be,
     visibility_of_element_located,
 )
@@ -32,21 +31,19 @@ class BasePage:
 
     def find(self, locator: tuple[ByType, str]) -> WebElement:
         """Search for the specified UI element and return if found."""
-        return self._wait.until(presence_of_element_located(locator))
+        return self._wait.until(
+            method=visibility_of_element_located(locator),
+        )
 
     def refresh(self) -> None:
         """Refresh the page."""
         self.driver.refresh()
 
-    def verify_element(self, locator: str) -> bool:
-        """Check if an element is present once the page fully loads."""
-        return self._wait.until(visibility_of_element_located(locator))
-
     def verify_url(self) -> bool:
         """Validate if a URL is correct once the page fully loads.
 
         Checks for trailing slashes in the driver's current URL and
-        makes the class variable match before validating.
+        makes sure the class variable matches before validating.
         """
         if self.driver.current_url.endswith("/"):
             url = f"{self.url}/" if not self.url.endswith("/") else self.url
