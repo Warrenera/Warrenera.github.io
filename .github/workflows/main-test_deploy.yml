@@ -10,6 +10,10 @@ on:
       - synchronize
   workflow_dispatch:
     inputs:
+      manually-test:
+        description: Manually run cAnnections UI tests
+        default: true
+        type: boolean
       manually-deploy:
         description: Manually deploy cAnnections to GitHub Pages
         default: false
@@ -30,6 +34,7 @@ jobs:
   #   steps: ...
 
   ui-test:
+    if: ${{ ! github.event.pull_request.merged || inputs['manually-test'] }}
     name: Selenium tests
     runs-on: ubuntu-latest
     steps:
@@ -65,7 +70,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    if: ${{ github.event.pull_request.merged || github.event.inputs['manually-deploy'] }}
+    if: ${{ github.event.pull_request.merged || inputs['manually-deploy'] }}
     name: Deploy to GitHub Pages
     needs: ui-test
     permissions:
