@@ -9,6 +9,8 @@ Silenced Ruff checks
 - S101:   (in-line) Assertions are necessary as this is a test framework
 """
 
+from os import environ
+
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
 
@@ -18,7 +20,7 @@ from tests.base_page import BasePage
 class GamePage(BasePage):
     """Represent the cAnnections game page."""
 
-    url = "https://warrenera.github.io/"
+    url = environ.get("BASE_URL", "https://warrenera.github.io/")
     title = "cAnnections: Connections, but about us"
 
     # Static Locators

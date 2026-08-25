@@ -1,5 +1,7 @@
 """Provide fixtures for the test framework."""
 
+from os import environ
+
 import pytest  # pytest convention, see Ruff PT013
 from selenium.webdriver import Firefox
 from selenium.webdriver.firefox.options import Options
@@ -25,5 +27,6 @@ def driver() -> Firefox:
 @pytest.fixture(autouse=True)
 def page(driver: Firefox) -> GamePage:
     """Instantiate the Firefox webpage for the test."""
-    driver.get("https://warrenera.github.io/")
+    url = environ.get("BASE_URL", "https://warrenera.github.io/")
+    driver.get(url)
     return GamePage(driver)
