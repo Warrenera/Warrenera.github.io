@@ -1,0 +1,84 @@
+name: Deploy cAnnections to Pages
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+      - opened
+      - reopened
+      - synchronize
+  workflow_dispatch:
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # TODO: write unit tests first
+  # unit-test:
+  #   if: github.event_name == "push"
+  #   name: Run pytest unit tests
+  #   runs-on: ubuntu-latest
+  #   steps: ...
+
+  ui-test:
+    name: Run Selenium tests on Firefox with Python
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.10"
+      
+      - name: Install Python dependencies
+        run: |
+          python -m pip install -U pip
+          pip install -r requirements.txt
+      
+      - name: Set up Firefox
+        uses: browser-actions/setup-firefox@v1
+
+      - name: Serve site locally
+        run: python -m http.server &
+
+      - name: Wait for server
+        run: sleep 2
+      
+      - name: Run tests
+        env:
+          BASE_URL: "http://localhost:8000/"
+          CI: true
+        run: pytest tests/ -v
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    if: github.event.pull_request.merged == true
+    needs: ui-test
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+
+      - name: Set up Pages
+        uses: actions/configure-pages@v6
+      
+      - name: Upload artifact(s)
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: .
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
