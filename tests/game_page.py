@@ -46,8 +46,7 @@ class GamePage(BasePage):
     def _verify_page(self) -> None:
         """Check the page and all its components loaded correctly."""
         self.verify_url()
-        # TODO: commented locators fail until their IDs are deployed
-        for element in (self.ROWS,):  # self.HEADER, self.FOOTER):
+        for element in (self.ROWS, self.HEADER, self.FOOTER):
             assert self.find(element), (  # noqa: S101
                 f"ERROR: critical element with ID '{element[1]}' "
                 "did not load properly. Try increasing the timeout"
