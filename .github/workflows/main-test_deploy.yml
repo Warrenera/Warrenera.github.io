@@ -1,4 +1,4 @@
-name: Deploy cAnnections to Pages
+name: cAnnections CI/CD
 on:
   pull_request:
     branches:
@@ -25,7 +25,7 @@ jobs:
   #   steps: ...
 
   ui-test:
-    name: Run Selenium tests on Firefox with Python
+    name: Selenium tests
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -61,6 +61,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     if: github.event.pull_request.merged == true
+    name: Deploy to GitHub Pages
     needs: ui-test
     permissions:
       contents: read

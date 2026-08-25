@@ -12,11 +12,11 @@
         <title>cAnnections: Connections, but about us</title>
     </head>
     <body>
-        <header>
+        <header id="header">
             <h1>cAnnections</h1>
             <h2>For Ann, by Andrew ♥</h2>
 			<details>
-				<summary>Click me for details</summary>
+				<summary id="summary">Click me for details</summary>
 				<h3>Merry Christmas 🎄</h3>
 				<p>
 					It all started in November when we were <a href="https://www.polygon.com/news/474209/new-york-times-strike-wordle-connections">boycotting the New York Times Games</a>. Inspired by <a href="https://www.nytimes.com/2022/01/03/technology/wordle-word-game-creator.html">Josh Wardle</a>, who:
@@ -63,11 +63,13 @@
                 <button class="square" id="square_15" type="button"></button>
                 <button class="square" id="square_16" type="button"></button>
             </div>
-			<p id="tigers">Tries left: 🐯🐯🐯🐯</p>
-			<button class="footer" id="shuffle" type="button">Shuffle</button>
-			<button class="footer" id="deselect" type="button" disabled>Deselect All</button>
-			<button class="footer" id="submit" type="button" disabled>Submit</button>
-			<button class="footer" id="share" type="button" hidden>Share</button>
+            <footer id="footer">
+                <p id="tigers">Tries left: 🐯🐯🐯🐯</p>
+                <button class="footer" id="shuffle" type="button">Shuffle</button>
+                <button class="footer" id="deselect" type="button" disabled>Deselect All</button>
+                <button class="footer" id="submit" type="button" disabled>Submit</button>
+                <button class="footer" id="share" type="button" hidden>Share</button>
+            </footer>
 		</div>
         <script src="cannections.js"></script>
     </body>
