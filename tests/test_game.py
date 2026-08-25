@@ -13,7 +13,3 @@ from tests.game_page import GamePage
 
 def test_title(page: GamePage):
     assert page.title == "cAnnections: Connections, but about us"
-
-
-def test_page_structure():
-    assert True
