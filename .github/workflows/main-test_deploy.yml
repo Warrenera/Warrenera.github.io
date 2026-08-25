@@ -87,7 +87,7 @@ jobs:
         run: |
           mkdir _site/
           cp index.html _site/
-          cp styles.css _site/
+          cp style.css _site/
           cp cannections.js _site/
       
       - name: Upload artifact(s)
