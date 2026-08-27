@@ -12,13 +12,20 @@ from tests.game_page import GamePage
 
 
 def test_title(page: GamePage):
+    """Check the page title is as expected on page load."""
     assert page.title == "cAnnections: Connections, but about us"
 
 
 def test_details(page: GamePage):
+    """Check the details header and body become visible when clicked.
+
+    Also check they become invisible again when clicked a second time.
+    """
     assert page.do_not_find(page.DETAILS_HEADER)
     assert page.do_not_find(page.DETAILS_PARAGRAPHS)
     page.click(page.SUMMARY)
-    h3 = page.find(page.DETAILS_HEADER)
-    assert h3 == "Merry Christmas 🎄"
+    assert page.find(page.DETAILS_HEADER).text == "Merry Christmas 🎄"
     assert page.find_all(page.DETAILS_PARAGRAPHS)
+    page.click(page.SUMMARY)
+    assert page.do_not_find(page.DETAILS_HEADER)
+    assert page.do_not_find(page.DETAILS_PARAGRAPHS)
