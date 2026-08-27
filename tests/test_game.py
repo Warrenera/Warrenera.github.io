@@ -23,9 +23,9 @@ def test_details(page: GamePage):
     """
     assert page.do_not_find(page.DETAILS_HEADER)
     assert page.do_not_find(page.DETAILS_PARAGRAPHS)
-    page.click(page.SUMMARY)
+    page.toggle_details()
     assert page.find(page.DETAILS_HEADER).text == "Merry Christmas 🎄"
     assert page.find_all(page.DETAILS_PARAGRAPHS)
-    page.click(page.SUMMARY)
+    page.toggle_details()
     assert page.do_not_find(page.DETAILS_HEADER)
     assert page.do_not_find(page.DETAILS_PARAGRAPHS)
