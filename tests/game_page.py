@@ -25,6 +25,8 @@ class GamePage(BasePage):
 
     # Static Locators
     DESELECT = (By.ID, "deselect")
+    DETAILS_HEADER = (By.CSS_SELECTOR, "details > h3")
+    DETAILS_PARAGRAPHS = (By.CSS_SELECTOR, "details > p")
     FOOTER = (By.ID, "footer")
     HEADER = (By.ID, "header")
     ROWS = (By.ID, "rows")
