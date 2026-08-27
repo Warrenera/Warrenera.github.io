@@ -3,10 +3,17 @@
 from os import environ
 
 import pytest  # pytest convention, see Ruff PT013
+import requests
 from selenium.webdriver import Firefox
 from selenium.webdriver.firefox.options import Options
 
 from tests.game_page import GamePage
+
+
+@pytest.fixture
+def categories() -> list[dict]:
+    """Get the categories JSON file from the site to have handy."""
+    return requests.get(timeout=10, url="https://warrenera.github.io/topics.json").json()
 
 
 @pytest.fixture

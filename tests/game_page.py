@@ -32,6 +32,7 @@ class GamePage(BasePage):
     ROWS = (By.ID, "rows")
     SHARE = (By.ID, "share")
     SHUFFLE = (By.ID, "shuffle")
+    SQUARES = (By.CLASS_NAME, "square")
     SUBMIT = (By.ID, "submit")
     SUMMARY = (By.ID, "summary")
 
