@@ -54,10 +54,6 @@ class GamePage(BasePage):
                 "did not load properly. Try increasing the timeout"
             )
 
-    def deselect_all(self):
-        """Click the 'Deselect All' button, unselecting all buttons."""
-        self.click(self.DESELECT)
-
     def refresh(self):
         """Refresh the page, resetting the game with new categories.
 
@@ -65,6 +61,14 @@ class GamePage(BasePage):
         GamePage-specific docstring.
         """
         super().refresh()
+
+    def toggle_details(self):
+        """Toggle appearance of the header details drop-down menu."""
+        self.click(self.SUMMARY)
+
+    def get_square_locator(self, square_id: str) -> tuple:
+        """."""
+        return (By.ID, square_id)
 
     def select_square(self, square_id: str):
         """Toggle selection of a category choice button.
@@ -76,14 +80,6 @@ class GamePage(BasePage):
         square_locator = (By.ID, sid)
         self.click(square_locator)
 
-    def share(self):
-        """Click the Share button.
-
-        This copies text to the clipboard if the navigator.share()
-        object is unreachable, i.e., from the desktop.
-        """
-        self.click(self.SHARE)
-
     def shuffle(self):
         """Click the shuffle button, mixing up the category squares.
 
@@ -91,10 +87,18 @@ class GamePage(BasePage):
         """
         self.click(self.SHUFFLE)
 
+    def deselect_all(self):
+        """Click the 'Deselect All' button, unselecting all buttons."""
+        self.click(self.DESELECT)
+
     def submit(self):
         """Click the Submit button to see if the choices were right."""
         self.click(self.SUBMIT)
 
-    def toggle_details(self):
-        """Toggle appearance of the header details drop-down menu."""
-        self.click(self.SUMMARY)
+    def share(self):
+        """Click the Share button.
+
+        This copies text to the clipboard if the navigator.share()
+        object is unreachable, i.e., from the desktop.
+        """
+        self.click(self.SHARE)
