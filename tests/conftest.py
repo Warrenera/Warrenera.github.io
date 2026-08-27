@@ -24,7 +24,7 @@ def driver() -> Firefox:
     webdriver.quit()
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def page(driver: Firefox) -> GamePage:
     """Instantiate the Firefox webpage for the test."""
     url = environ.get("BASE_URL", "https://warrenera.github.io/")
