@@ -20,6 +20,8 @@ from tests.base_page import BasePage
 class GamePage(BasePage):
     """Represent the cAnnections game page."""
 
+    CATEGORY_SIZE = 4
+
     url = environ.get("BASE_URL", "https://warrenera.github.io/")
     title = "cAnnections: Connections, but about us"
 
