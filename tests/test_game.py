@@ -59,3 +59,19 @@ def test_squares_change_on_refresh(page: GamePage):
     except AssertionError:
         page.refresh()
         assert set(old_topics) != set(new_topics)
+
+
+def test_deselect_clickability(page: GamePage):
+    """Check the Deselect button is clickable when selections are made.
+
+    The Deselect button should only be clickable when selections are
+    made. If selections are unmade, the Deselect button should become
+    unclickable again.
+    """
+    deselect_button = page.find(page.DESELECT)
+    assert not deselect_button.is_enabled()
+    square = page.find(page.get_square_locator("1"))
+    page.click(square)
+    assert deselect_button.is_enabled()
+    page.click(square)
+    assert not deselect_button.is_enabled()

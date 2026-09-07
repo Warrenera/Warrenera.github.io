@@ -70,18 +70,12 @@ class GamePage(BasePage):
         self.click(self.SUMMARY)
 
     def get_square_locator(self, square_id: str) -> tuple:
-        """."""
-        return (By.ID, square_id)
+        """Dynamically construct a square locator for a given ID number.
 
-    def select_square(self, square_id: str):
-        """Toggle selection of a category choice button.
-
-        Locator is dynamically constructed to avoid having 16 identical
-        locators, one for each square on the game board.
+        This avoids having to have 16 idential locators hard-coded into
+        the POM.
         """
-        sid = "square_" + square_id
-        square_locator = (By.ID, sid)
-        self.click(square_locator)
+        return (By.ID, f"square_{square_id}")
 
     def shuffle(self):
         """Click the shuffle button, mixing up the category squares.
