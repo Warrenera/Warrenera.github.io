@@ -27,7 +27,7 @@ class BasePage:
         self.timeout = timeout
         self._wait = WebDriverWait(self.driver, self.timeout)
 
-    def click(self, locator: tuple[ByType, str]) -> None:
+    def click(self, locator: tuple[ByType, str] | WebElement) -> None:
         """Click the specified UI button."""
         self._wait.until(element_to_be_clickable(locator)).click()
 

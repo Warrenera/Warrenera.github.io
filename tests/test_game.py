@@ -8,6 +8,8 @@ Silenced Ruff checks
 - S101:   Assertions are necessary as this is a test framework
 """
 
+from selenium.webdriver.support.color import Color
+
 from tests.game_page import GamePage
 
 
@@ -59,6 +61,30 @@ def test_squares_change_on_refresh(page: GamePage):
     except AssertionError:
         page.refresh()
         assert set(old_topics) != set(new_topics)
+
+
+def test_square_clicked_style(page: GamePage):
+    """Check a square changes style when clicked.
+
+    It should change back to its original style when clicked again.
+    """
+    square = page.find(page.get_square_locator("1"))
+    rgb = square.value_of_css_property("background-color")
+    assert Color.from_string(rgb).hex == "#7aadad"
+    height = square.size["height"]
+    width = square.size["width"]
+
+    page.click(square)
+    rgb = square.value_of_css_property("background-color")
+    assert Color.from_string(rgb).hex == "#f78f91"
+    assert square.size["height"] == height / 23 * 22
+    assert square.size["width"] == width / 23 * 22
+
+    page.click(square)
+    rgb = square.value_of_css_property("background-color")
+    assert Color.from_string(rgb).hex == "#7aadad"
+    assert square.size["height"] == height
+    assert square.size["width"] == width
 
 
 def test_deselect_clickability(page: GamePage):
