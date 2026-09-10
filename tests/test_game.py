@@ -90,6 +90,32 @@ def test_square_clicked_style(page: GamePage):
     assert square.size["width"] == width
 
 
+def test_selected_square_limit(page: GamePage):
+    """Check up to 4 squares may be selected at any given time.
+
+    Unselecting a previously selected square frees up another square to
+    be selected instead.
+    """
+    squares = []
+    for i in range(1, page.CATEGORY_SIZE + 1):
+        square = page.find(page.get_square_locator(i))
+        squares.append(square)
+        page.click(square)
+    for square in squares:
+        rgb = square.value_of_css_property("background-color")
+        assert Color.from_string(rgb).hex == "#f78f91"
+
+    square = page.find(page.get_square_locator(page.CATEGORY_SIZE + 1))
+    page.click(square)
+    rgb = square.value_of_css_property("background-color")
+    assert Color.from_string(rgb).hex == "#7aadad"
+
+    page.click(squares[0])  # arbitrarily removing a selection
+    page.click(square)
+    rgb = square.value_of_css_property("background-color")
+    assert Color.from_string(rgb).hex == "#f78f91"
+
+
 def test_deselect_clickability(page: GamePage):
     """Check the Deselect button is clickable when selections are made.
 
