@@ -107,14 +107,18 @@ def test_deselect_clickability(page: GamePage):
 
 
 def test_deselect_logic(page: GamePage):
-    """Check clicking the Deselect button deselects any selections."""
+    """Check clicking the Deselect button deselects any selections.
+
+    Checked for each number of possible selection counts, 1 through 4.
+    """
     deselect_button = page.find(page.DESELECT)
-    squares = []
-    for i in range(1, 5):
-        square = page.find(page.get_square_locator(i))
-        squares.append(square)
-        page.click(square)
-    page.click(deselect_button)
-    for square in squares:
-        rgb = square.value_of_css_property("background-color")
-        assert Color.from_string(rgb).hex == "#7aadad"
+    for i in range(1, page.CATEGORY_SIZE + 1):
+        squares = []
+        for j in range(1, i + 1):
+            square = page.find(page.get_square_locator(j))
+            squares.append(square)
+            page.click(square)
+        page.click(deselect_button)
+        for square in squares:
+            rgb = square.value_of_css_property("background-color")
+            assert Color.from_string(rgb).hex == "#7aadad"
