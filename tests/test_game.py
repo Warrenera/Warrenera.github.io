@@ -33,7 +33,7 @@ def test_details(page: GamePage):
     assert page.do_not_find(page.DETAILS_PARAGRAPHS)
 
 
-def test_squares_populated_on_load(page: GamePage, categories: list[dict]):
+def test_squares_populate_on_load(page: GamePage, categories: list[dict]):
     """Check the squares are filled with 4 categories on page load.
 
     Category selection should be random.
@@ -105,12 +105,14 @@ def test_selected_square_limit(page: GamePage):
         rgb = square.value_of_css_property("background-color")
         assert Color.from_string(rgb).hex == "#f78f91"
 
+    # Selecting a fifth square does not work
     square = page.find(page.get_square_locator(page.CATEGORY_SIZE + 1))
     page.click(square)
     rgb = square.value_of_css_property("background-color")
     assert Color.from_string(rgb).hex == "#7aadad"
 
-    page.click(squares[0])  # arbitrarily removing a selection
+    # Selecting a fifth square after undoing one of the first 4 works
+    page.click(squares[0])
     page.click(square)
     rgb = square.value_of_css_property("background-color")
     assert Color.from_string(rgb).hex == "#f78f91"
@@ -148,3 +150,32 @@ def test_deselect_logic(page: GamePage):
         for square in squares:
             rgb = square.value_of_css_property("background-color")
             assert Color.from_string(rgb).hex == "#7aadad"
+
+
+def test_submit_clickability(page: GamePage):
+    """Check the Submit button is clickable once 4 squares are selected.
+
+    Before then it should not be clickable.
+    """
+    submit_button = page.find(page.SUBMIT)
+    for i in range(1, page.CATEGORY_SIZE):
+        page.click(page.find(page.get_square_locator(i)))
+        assert not submit_button.is_enabled()
+    page.click(page.find(page.get_square_locator(page.CATEGORY_SIZE)))
+    assert submit_button.is_enabled()
+
+
+def test_submit_refresh_state(page: GamePage):
+    """Check that button state is not kept between page refreshes.
+
+    This is a longstanding, Firefox-specific bug for which the Submit
+    button is explicitly set to disabled at the end of the game logic.
+    See: https://bugzilla.mozilla.org/show_bug.cgi?id=685657.
+    """
+    for i in range(1, page.CATEGORY_SIZE + 1):
+        page.click(page.find(page.get_square_locator(i)))
+    submit_button = page.find(page.SUBMIT)
+    assert submit_button.is_enabled()
+    page.refresh()
+    submit_button = page.find(page.SUBMIT)
+    assert not submit_button.is_enabled()
