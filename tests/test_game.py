@@ -8,11 +8,19 @@ Silenced Ruff checks
 - S101:   Assertions are necessary as this is a test framework
 """
 
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.color import Color
 
 from tests.game_page import GamePage
 
 
+# Utilities
+def get_background_color(square: WebElement) -> str:
+    """Get a square's hexadecimal code for its background-color property."""
+    return Color.from_string(square.value_of_css_property("background-color")).hex
+
+
+# Tests
 def test_title(page: GamePage):
     """Check the page title is as expected on page load."""
     assert page.title == "cAnnections: Connections, but about us"
@@ -118,6 +126,36 @@ def test_selected_square_limit(page: GamePage):
     assert Color.from_string(rgb).hex == "#f78f91"
 
 
+def test_shuffle_logic(page: GamePage):
+    """Check clicking the shuffle button randomizes the square text."""
+    old_topics = (square.text for square in page.find_all(page.SQUARES))
+    page.click(page.find(page.SHUFFLE))
+    new_topics = (square.text for square in page.find_all(page.SQUARES))
+    # Same topics and categories:
+    assert set(old_topics) == set(new_topics)
+    # But in a different order:
+    assert old_topics != new_topics
+
+
+def test_deselect_clickability_on_shuffle(page: GamePage):
+    """Check clicking the shuffle button deselects selected squares."""
+    square = page.find(page.get_square_locator(1))
+    page.click(square)
+    rgb = square.value_of_css_property("background-color")
+    assert Color.from_string(rgb).hex == "#f78f91"
+
+    deselect_button = page.find(page.DESELECT)
+    assert deselect_button.is_enabled()
+
+    page.click(page.find(page.SHUFFLE))
+    assert not deselect_button.is_enabled()
+    # Check all squares to ensure wherever the one that
+    # was clicked went, it did not remain clicked
+    for i in range(1, page.CATEGORY_SIZE**2 + 1):
+        square = page.find(page.get_square_locator(i))
+        assert get_background_color(square) == "#7aadad"
+
+
 def test_deselect_clickability(page: GamePage):
     """Check the Deselect button is clickable when selections are made.
 
@@ -138,6 +176,7 @@ def test_deselect_logic(page: GamePage):
     """Check clicking the Deselect button deselects any selections.
 
     Checked for each number of possible selection counts, 1 through 4.
+    Clicking the Deselect button also disables the button.
     """
     deselect_button = page.find(page.DESELECT)
     for i in range(1, page.CATEGORY_SIZE + 1):
