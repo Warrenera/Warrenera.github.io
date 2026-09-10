@@ -147,6 +147,7 @@ def test_deselect_logic(page: GamePage):
             squares.append(square)
             page.click(square)
         page.click(deselect_button)
+        assert not deselect_button.is_enabled()
         for square in squares:
             rgb = square.value_of_css_property("background-color")
             assert Color.from_string(rgb).hex == "#7aadad"
