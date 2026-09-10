@@ -69,7 +69,7 @@ class GamePage(BasePage):
         """Toggle appearance of the header details drop-down menu."""
         self.click(self.SUMMARY)
 
-    def get_square_locator(self, square_id: str) -> tuple:
+    def get_square_locator(self, square_id: int) -> tuple:
         """Dynamically construct a square locator for a given ID number.
 
         This avoids having to have 16 idential locators hard-coded into

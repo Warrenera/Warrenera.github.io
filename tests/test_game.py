@@ -67,8 +67,11 @@ def test_square_clicked_style(page: GamePage):
     """Check a square changes style when clicked.
 
     It should change back to its original style when clicked again.
+    Square height and width are 23% when unselected and 22% when
+    selected, thus the magic number math in the second set of
+    assertions.
     """
-    square = page.find(page.get_square_locator("1"))
+    square = page.find(page.get_square_locator(1))
     rgb = square.value_of_css_property("background-color")
     assert Color.from_string(rgb).hex == "#7aadad"
     height = square.size["height"]
@@ -96,8 +99,22 @@ def test_deselect_clickability(page: GamePage):
     """
     deselect_button = page.find(page.DESELECT)
     assert not deselect_button.is_enabled()
-    square = page.find(page.get_square_locator("1"))
+    square = page.find(page.get_square_locator(1))
     page.click(square)
     assert deselect_button.is_enabled()
     page.click(square)
     assert not deselect_button.is_enabled()
+
+
+def test_deselect_logic(page: GamePage):
+    """Check clicking the Deselect button deselects any selections."""
+    deselect_button = page.find(page.DESELECT)
+    squares = []
+    for i in range(1, 5):
+        square = page.find(page.get_square_locator(i))
+        squares.append(square)
+        page.click(square)
+    page.click(deselect_button)
+    for square in squares:
+        rgb = square.value_of_css_property("background-color")
+        assert Color.from_string(rgb).hex == "#7aadad"
