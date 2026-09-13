@@ -28,6 +28,11 @@ class BasePage:
         self.timeout = timeout
         self._wait = WebDriverWait(self.driver, self.timeout)
 
+    @staticmethod
+    def get_background_color(element: WebElement) -> str:
+        """Get an element's background-color CSS property hex code."""
+        return Color.from_string(element.value_of_css_property("background-color")).hex
+
     def click(self, locator: tuple[ByType, str] | WebElement) -> None:
         """Click the specified UI button."""
         self._wait.until(element_to_be_clickable(locator)).click()
@@ -43,10 +48,6 @@ class BasePage:
     def find_all(self, locator: tuple[ByType, str]) -> list[WebElement]:
         """Search for all UI elements and return if found."""
         return self._wait.until(visibility_of_all_elements_located(locator))
-
-    def get_background_color(self, element: WebElement) -> str:
-        """Get an element's hex code for its background-color property."""
-        return Color.from_string(element.value_of_css_property("background-color")).hex
 
     def refresh(self) -> None:
         """Refresh the page."""

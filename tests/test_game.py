@@ -14,11 +14,13 @@ from tests.game_page import GamePage
 
 
 # Tests
+@pytest.mark.body
 def test_title(page: GamePage):
     """Check the page title is as expected on page load."""
     assert page.title == "cAnnections: Connections, but about us"
 
 
+@pytest.mark.body
 def test_details(page: GamePage):
     """Check the details header and body become visible when clicked.
 
@@ -34,6 +36,7 @@ def test_details(page: GamePage):
     assert page.do_not_find(page.DETAILS_PARAGRAPHS)
 
 
+@pytest.mark.squares
 def test_squares_populate_on_load(page: GamePage, categories: list[dict]):
     """Check the squares are filled with 4 categories on page load.
 
@@ -50,6 +53,8 @@ def test_squares_populate_on_load(page: GamePage, categories: list[dict]):
     assert categories_chosen != categories[:4]
 
 
+@pytest.mark.shuffle
+@pytest.mark.squares
 def test_squares_change_on_refresh(page: GamePage):
     """Check the squares are filled with 4 new categories on page load."""
     old_topics = [square.text for square in page.find_all(page.SQUARES)]
@@ -65,6 +70,7 @@ def test_squares_change_on_refresh(page: GamePage):
 
 
 @pytest.mark.color
+@pytest.mark.squares
 def test_square_clicked_style(page: GamePage):
     """Check a square changes style when clicked.
 
@@ -90,6 +96,7 @@ def test_square_clicked_style(page: GamePage):
 
 
 @pytest.mark.color
+@pytest.mark.squares
 def test_selected_square_limit(page: GamePage):
     """Check up to 4 squares may be selected at any given time.
 
@@ -115,6 +122,7 @@ def test_selected_square_limit(page: GamePage):
     assert page.get_background_color(square) == "#f78f91"
 
 
+@pytest.mark.shuffle
 def test_shuffle_logic(page: GamePage):
     """Check clicking the shuffle button randomizes the square text."""
     old_topics = (square.text for square in page.find_all(page.SQUARES))
@@ -127,6 +135,8 @@ def test_shuffle_logic(page: GamePage):
 
 
 @pytest.mark.color
+@pytest.mark.deselect
+@pytest.mark.shuffle
 def test_deselect_clickability_on_shuffle(page: GamePage):
     """Check clicking the shuffle button deselects selected squares."""
     square = page.find(page.get_square_locator(1))
@@ -145,6 +155,7 @@ def test_deselect_clickability_on_shuffle(page: GamePage):
         assert page.get_background_color(square) == "#7aadad"
 
 
+@pytest.mark.deselect
 def test_deselect_clickability(page: GamePage):
     """Check the Deselect button is clickable when selections are made.
 
@@ -162,6 +173,7 @@ def test_deselect_clickability(page: GamePage):
 
 
 @pytest.mark.color
+@pytest.mark.deselect
 def test_deselect_logic(page: GamePage):
     """Check clicking the Deselect button deselects any selections.
 
@@ -181,6 +193,7 @@ def test_deselect_logic(page: GamePage):
             assert page.get_background_color(square) == "#7aadad"
 
 
+@pytest.mark.submit
 def test_submit_clickability(page: GamePage):
     """Check the Submit button is clickable once 4 squares are selected.
 
@@ -194,6 +207,7 @@ def test_submit_clickability(page: GamePage):
     assert submit_button.is_enabled()
 
 
+@pytest.mark.submit
 def test_submit_refresh_state(page: GamePage):
     """Check that button state is not kept between page refreshes.
 

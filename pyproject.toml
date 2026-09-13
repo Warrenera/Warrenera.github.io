@@ -4,7 +4,14 @@ version = "0.0.1"
 
 [tool.pytest]
 addopts = ["--import-mode=importlib"]
-markers = ["color: a test that checks the background-color CSS property of an element."]
+markers = [
+    "body: the test checks the structure or content of the body of the page.",
+    "color: the test checks the background-color CSS property of an element.",
+    "deselect: the test checks the logic or style of the Deselect button.",
+    "shuffle: the test checks the logic of the Shuffle button.",
+    "squares: the test checks the logic or style of the selectable square buttons.",
+    "submit: the test checks the logic or style of the Submit button."
+]
 strict = true
 
 [tool.ruff]
