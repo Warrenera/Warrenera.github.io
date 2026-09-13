@@ -8,6 +8,7 @@ Silenced Ruff checks
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import ByType
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support.color import Color
 from selenium.webdriver.support.expected_conditions import (
     element_to_be_clickable,
     invisibility_of_element_located,
@@ -42,6 +43,10 @@ class BasePage:
     def find_all(self, locator: tuple[ByType, str]) -> list[WebElement]:
         """Search for all UI elements and return if found."""
         return self._wait.until(visibility_of_all_elements_located(locator))
+
+    def get_background_color(self, element: WebElement) -> str:
+        """Get an element's hex code for its background-color property."""
+        return Color.from_string(element.value_of_css_property("background-color")).hex
 
     def refresh(self) -> None:
         """Refresh the page."""

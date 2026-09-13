@@ -8,16 +8,9 @@ Silenced Ruff checks
 - S101:   Assertions are necessary as this is a test framework
 """
 
-from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.support.color import Color
+import pytest
 
 from tests.game_page import GamePage
-
-
-# Utilities
-def get_background_color(square: WebElement) -> str:
-    """Get a square's hexadecimal code for its background-color property."""
-    return Color.from_string(square.value_of_css_property("background-color")).hex
 
 
 # Tests
@@ -71,6 +64,7 @@ def test_squares_change_on_refresh(page: GamePage):
         assert set(old_topics) != set(new_topics)
 
 
+@pytest.mark.color
 def test_square_clicked_style(page: GamePage):
     """Check a square changes style when clicked.
 
@@ -80,24 +74,22 @@ def test_square_clicked_style(page: GamePage):
     assertions.
     """
     square = page.find(page.get_square_locator(1))
-    rgb = square.value_of_css_property("background-color")
-    assert Color.from_string(rgb).hex == "#7aadad"
+    assert page.get_background_color(square) == "#7aadad"
     height = square.size["height"]
     width = square.size["width"]
 
     page.click(square)
-    rgb = square.value_of_css_property("background-color")
-    assert Color.from_string(rgb).hex == "#f78f91"
+    assert page.get_background_color(square) == "#f78f91"
     assert square.size["height"] == height / 23 * 22
     assert square.size["width"] == width / 23 * 22
 
     page.click(square)
-    rgb = square.value_of_css_property("background-color")
-    assert Color.from_string(rgb).hex == "#7aadad"
+    assert page.get_background_color(square) == "#7aadad"
     assert square.size["height"] == height
     assert square.size["width"] == width
 
 
+@pytest.mark.color
 def test_selected_square_limit(page: GamePage):
     """Check up to 4 squares may be selected at any given time.
 
@@ -110,20 +102,17 @@ def test_selected_square_limit(page: GamePage):
         squares.append(square)
         page.click(square)
     for square in squares:
-        rgb = square.value_of_css_property("background-color")
-        assert Color.from_string(rgb).hex == "#f78f91"
+        assert page.get_background_color(square) == "#f78f91"
 
     # Selecting a fifth square does not work
     square = page.find(page.get_square_locator(page.CATEGORY_SIZE + 1))
     page.click(square)
-    rgb = square.value_of_css_property("background-color")
-    assert Color.from_string(rgb).hex == "#7aadad"
+    assert page.get_background_color(square) == "#7aadad"
 
     # Selecting a fifth square after undoing one of the first 4 works
     page.click(squares[0])
     page.click(square)
-    rgb = square.value_of_css_property("background-color")
-    assert Color.from_string(rgb).hex == "#f78f91"
+    assert page.get_background_color(square) == "#f78f91"
 
 
 def test_shuffle_logic(page: GamePage):
@@ -137,12 +126,12 @@ def test_shuffle_logic(page: GamePage):
     assert old_topics != new_topics
 
 
+@pytest.mark.color
 def test_deselect_clickability_on_shuffle(page: GamePage):
     """Check clicking the shuffle button deselects selected squares."""
     square = page.find(page.get_square_locator(1))
     page.click(square)
-    rgb = square.value_of_css_property("background-color")
-    assert Color.from_string(rgb).hex == "#f78f91"
+    assert page.get_background_color(square) == "#f78f91"
 
     deselect_button = page.find(page.DESELECT)
     assert deselect_button.is_enabled()
@@ -153,7 +142,7 @@ def test_deselect_clickability_on_shuffle(page: GamePage):
     # was clicked went, it did not remain clicked
     for i in range(1, page.CATEGORY_SIZE**2 + 1):
         square = page.find(page.get_square_locator(i))
-        assert get_background_color(square) == "#7aadad"
+        assert page.get_background_color(square) == "#7aadad"
 
 
 def test_deselect_clickability(page: GamePage):
@@ -172,6 +161,7 @@ def test_deselect_clickability(page: GamePage):
     assert not deselect_button.is_enabled()
 
 
+@pytest.mark.color
 def test_deselect_logic(page: GamePage):
     """Check clicking the Deselect button deselects any selections.
 
@@ -188,8 +178,7 @@ def test_deselect_logic(page: GamePage):
         page.click(deselect_button)
         assert not deselect_button.is_enabled()
         for square in squares:
-            rgb = square.value_of_css_property("background-color")
-            assert Color.from_string(rgb).hex == "#7aadad"
+            assert page.get_background_color(square) == "#7aadad"
 
 
 def test_submit_clickability(page: GamePage):

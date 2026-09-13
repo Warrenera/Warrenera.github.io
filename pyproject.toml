@@ -4,6 +4,7 @@ version = "0.0.1"
 
 [tool.pytest]
 addopts = ["--import-mode=importlib"]
+markers = ["color: a test that checks the background-color CSS property of an element."]
 strict = true
 
 [tool.ruff]
