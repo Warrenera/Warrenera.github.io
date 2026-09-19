@@ -47,6 +47,12 @@ class GamePage(BasePage):
         """
         super().__init__(driver, timeout)
         self._verify_page()
+        self.CATEGORY_COLORS = {
+            "yellow": "#f9df6d",
+            "green": "#a0c35a",
+            "blue": "#b0c4ef",
+            "purple": "#ba81c5",
+        }
 
     def _verify_page(self) -> None:
         """Check the page and all its components loaded correctly."""
@@ -69,13 +75,13 @@ class GamePage(BasePage):
         """Toggle appearance of the header details drop-down menu."""
         self.click(self.SUMMARY)
 
-    def get_square_locator(self, square_id: int) -> tuple:
-        """Dynamically construct a square locator for a given ID number.
+    def get_dynamic_locator(self, element: str, element_id: int) -> tuple:
+        """Dynamically construct a game element locator for a given ID.
 
-        This avoids having to have 16 idential locators hard-coded into
-        the POM.
+        This avoids having to have 16 idential square locators or 4
+        identical square row locations hard-coded into the POM.
         """
-        return (By.ID, f"square_{square_id}")
+        return (By.ID, f"{element}_{element_id}")
 
     def shuffle(self):
         """Click the shuffle button, mixing up the category squares.

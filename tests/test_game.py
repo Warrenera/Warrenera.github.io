@@ -9,8 +9,10 @@ Silenced Ruff checks
 """
 
 import pytest
+from selenium.webdriver.common.by import By
 
 from tests.game_page import GamePage
+from tests.utilities import get_categories_chosen, select_category
 
 
 # Tests
@@ -79,7 +81,7 @@ def test_square_clicked_style(page: GamePage):
     selected, thus the magic number math in the second set of
     assertions.
     """
-    square = page.find(page.get_square_locator(1))
+    square = page.find(page.get_dynamic_locator("square", 1))
     assert page.get_background_color(square) == "#7aadad"
     height = square.size["height"]
     width = square.size["width"]
@@ -105,14 +107,14 @@ def test_selected_square_limit(page: GamePage):
     """
     squares = []
     for i in range(1, page.CATEGORY_SIZE + 1):
-        square = page.find(page.get_square_locator(i))
+        square = page.find(page.get_dynamic_locator("square", i))
         squares.append(square)
         page.click(square)
     for square in squares:
         assert page.get_background_color(square) == "#f78f91"
 
     # Selecting a fifth square does not work
-    square = page.find(page.get_square_locator(page.CATEGORY_SIZE + 1))
+    square = page.find(page.get_dynamic_locator("square", page.CATEGORY_SIZE + 1))
     page.click(square)
     assert page.get_background_color(square) == "#7aadad"
 
@@ -139,7 +141,7 @@ def test_shuffle_logic(page: GamePage):
 @pytest.mark.shuffle
 def test_deselect_clickability_on_shuffle(page: GamePage):
     """Check clicking the shuffle button deselects selected squares."""
-    square = page.find(page.get_square_locator(1))
+    square = page.find(page.get_dynamic_locator("square", 1))
     page.click(square)
     assert page.get_background_color(square) == "#f78f91"
 
@@ -151,7 +153,7 @@ def test_deselect_clickability_on_shuffle(page: GamePage):
     # Check all squares to ensure wherever the one that
     # was clicked went, it did not remain clicked
     for i in range(1, page.CATEGORY_SIZE**2 + 1):
-        square = page.find(page.get_square_locator(i))
+        square = page.find(page.get_dynamic_locator("square", i))
         assert page.get_background_color(square) == "#7aadad"
 
 
@@ -165,7 +167,7 @@ def test_deselect_clickability(page: GamePage):
     """
     deselect_button = page.find(page.DESELECT)
     assert not deselect_button.is_enabled()
-    square = page.find(page.get_square_locator(1))
+    square = page.find(page.get_dynamic_locator("square", 1))
     page.click(square)
     assert deselect_button.is_enabled()
     page.click(square)
@@ -184,7 +186,7 @@ def test_deselect_logic(page: GamePage):
     for i in range(1, page.CATEGORY_SIZE + 1):
         squares = []
         for j in range(1, i + 1):
-            square = page.find(page.get_square_locator(j))
+            square = page.find(page.get_dynamic_locator("square", j))
             squares.append(square)
             page.click(square)
         page.click(deselect_button)
@@ -201,9 +203,9 @@ def test_submit_clickability(page: GamePage):
     """
     submit_button = page.find(page.SUBMIT)
     for i in range(1, page.CATEGORY_SIZE):
-        page.click(page.find(page.get_square_locator(i)))
+        page.click(page.find(page.get_dynamic_locator("square", i)))
         assert not submit_button.is_enabled()
-    page.click(page.find(page.get_square_locator(page.CATEGORY_SIZE)))
+    page.click(page.find(page.get_dynamic_locator("square", page.CATEGORY_SIZE)))
     assert submit_button.is_enabled()
 
 
@@ -216,9 +218,45 @@ def test_submit_refresh_state(page: GamePage):
     See: https://bugzilla.mozilla.org/show_bug.cgi?id=685657.
     """
     for i in range(1, page.CATEGORY_SIZE + 1):
-        page.click(page.find(page.get_square_locator(i)))
+        page.click(page.find(page.get_dynamic_locator("square", i)))
     submit_button = page.find(page.SUBMIT)
     assert submit_button.is_enabled()
     page.refresh()
     submit_button = page.find(page.SUBMIT)
     assert not submit_button.is_enabled()
+
+
+@pytest.mark.color
+@pytest.mark.submit
+def test_submit_correct_category(page: GamePage, categories: list[dict]):
+    """Check that submitting all 4 topics of a category reveals it.
+
+    The category will be revealed over the top row of squares. It will
+    be one of 4 randomly assigned category colors. The remaining squares
+    will file down to the remaining 3 rows.
+    """
+    squares = page.find_all(page.SQUARES)
+    categories_chosen = get_categories_chosen(categories, [square.text for square in squares])
+    category = categories_chosen[0]  # First category chosen arbitrarily
+
+    select_category(page.click, category["topics"], squares)
+    page.click(page.find(page.SUBMIT))
+
+    row = page.find(page.get_dynamic_locator("row", 1))
+    color = page.get_background_color(row)
+    assert color in page.CATEGORY_COLORS.values()
+
+    children = row.find_elements(By.TAG_NAME, "button")
+    for child in children:
+        assert not child.is_displayed()
+
+    row_text = row.text.split("\n")
+    assert row_text[0] == category["title"]
+    assert row_text[1] == ", ".join(category["topics"])
+
+    remaining_topics = [
+        topic for cat in categories_chosen if cat != category for topic in cat["topics"]
+    ]
+    remaining_squares = page.find_all(page.SQUARES)
+    for topic in remaining_topics:
+        assert any(square.text == topic for square in remaining_squares)
