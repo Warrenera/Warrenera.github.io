@@ -16,6 +16,8 @@ from tests.game_page import GamePage
 # Tests
 @pytest.mark.body
 class TestPageBody:
+    """Test the presense and structure of parts of the page body."""
+
     def test_title(self, page: GamePage):
         """Check the page title is as expected on page load."""
         assert page.title == "cAnnections: Connections, but about us"
@@ -37,6 +39,8 @@ class TestPageBody:
 
 @pytest.mark.squares
 class TestSquares:
+    """Test the population and behavior of the square buttons."""
+
     def test_squares_populate_on_load(self, page: GamePage, categories: list[dict]):
         """Check the squares are filled with 4 categories on page load.
 
@@ -118,6 +122,8 @@ class TestSquares:
 
 @pytest.mark.shuffle
 class TestShuffle:
+    """Test the functionaliy of the Shuffle button."""
+
     def test_shuffle_logic(self, page: GamePage):
         """Check clicking the shuffle button randomizes the square text."""
         old_topics = (square.text for square in page.find_all(page.SQUARES))
@@ -150,6 +156,8 @@ class TestShuffle:
 
 @pytest.mark.deselect
 class TestDeselect:
+    """Test the functionality of the Deselect button."""
+
     def test_deselect_clickability(self, page: GamePage):
         """Check the Deselect button is clickable when selections are made.
 
@@ -188,6 +196,8 @@ class TestDeselect:
 
 @pytest.mark.submit
 class TestSubmit:
+    """Test the functionality of the Submit button in various cases."""
+
     def test_submit_clickability(self, page: GamePage):
         """Check the Submit button is clickable once 4 squares are selected.
 
