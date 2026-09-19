@@ -9,10 +9,8 @@ Silenced Ruff checks
 """
 
 import pytest
-from selenium.webdriver.common.by import By
 
 from tests.game_page import GamePage
-from tests.utilities import get_categories_chosen, select_category
 
 
 # Tests
@@ -228,35 +226,68 @@ def test_submit_refresh_state(page: GamePage):
 
 @pytest.mark.color
 @pytest.mark.submit
-def test_submit_correct_category(page: GamePage, categories: list[dict]):
+@pytest.mark.usefixtures("select_first_category")
+def test_submit_correct_category_color(page: GamePage):
     """Check that submitting all 4 topics of a category reveals it.
 
     The category will be revealed over the top row of squares. It will
-    be one of 4 randomly assigned category colors. The remaining squares
-    will file down to the remaining 3 rows.
+    be one of 4 randomly assigned category colors.
     """
-    squares = page.find_all(page.SQUARES)
-    categories_chosen = get_categories_chosen(categories, [square.text for square in squares])
-    category = categories_chosen[0]  # First category chosen arbitrarily
-
-    select_category(page.click, category["topics"], squares)
     page.click(page.find(page.SUBMIT))
-
     row = page.find(page.get_dynamic_locator("row", 1))
     color = page.get_background_color(row)
     assert color in page.CATEGORY_COLORS.values()
 
-    children = row.find_elements(By.TAG_NAME, "button")
+
+@pytest.mark.submit
+@pytest.mark.usefixtures("select_first_category")
+def test_submit_correct_category_children(page: GamePage):
+    """Check that submitting all 4 topics of a category reveals it.
+
+    The category will be revealed over the top row of squares. Squares
+    in that row will be hidden.
+    """
+    page.click(page.find(page.SUBMIT))
+    row = page.find(page.get_dynamic_locator("row", 1))
+    children = row.find_elements(*page.BUTTONS)
     for child in children:
         assert not child.is_displayed()
 
+
+@pytest.mark.submit
+@pytest.mark.usefixtures("select_first_category")
+def test_submit_correct_category_text(page: GamePage, categories_chosen: list[dict]):
+    """Check that submitting all 4 topics of a category reveals it.
+
+    The category will be revealed over the top row of squares. It will
+    display the revealed category title and topics.
+    """
+    category = categories_chosen[0]  # First category chosen arbitrarily
+    page.click(page.find(page.SUBMIT))
+    row = page.find(page.get_dynamic_locator("row", 1))
     row_text = row.text.split("\n")
     assert row_text[0] == category["title"]
     assert row_text[1] == ", ".join(category["topics"])
 
+
+@pytest.mark.submit
+@pytest.mark.usefixtures("select_first_category")
+def test_submit_correct_category_remaining_topics(page: GamePage, categories_chosen: list[dict]):
+    """Check that submitting all 4 topics of a category reveals it.
+
+    The category will be revealed over the top row of squares. The
+    remaining squares will file down to the remaining 3 rows.
+    """
+    category = categories_chosen[0]  # First category chosen arbitrarily
+    page.click(page.find(page.SUBMIT))
     remaining_topics = [
         topic for cat in categories_chosen if cat != category for topic in cat["topics"]
     ]
     remaining_squares = page.find_all(page.SQUARES)
     for topic in remaining_topics:
         assert any(square.text == topic for square in remaining_squares)
+
+
+# @pytest.mark.submit
+# def test_submit_last_correct_category(page: GamePage, categories: list[dict]):
+#     """."""

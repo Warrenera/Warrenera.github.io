@@ -26,12 +26,14 @@ class GamePage(BasePage):
     title = "cAnnections: Connections, but about us"
 
     # Static Locators
+    BODY = (By.ID, "rows")
+    BUTTONS = (By.TAG_NAME, "button")
     DESELECT = (By.ID, "deselect")
     DETAILS_HEADER = (By.CSS_SELECTOR, "details > h3")
     DETAILS_PARAGRAPHS = (By.CSS_SELECTOR, "details > p")
     FOOTER = (By.ID, "footer")
     HEADER = (By.ID, "header")
-    ROWS = (By.ID, "rows")
+    ROWS = (By.CLASS_NAME, "row")
     SHARE = (By.ID, "share")
     SHUFFLE = (By.ID, "shuffle")
     SQUARES = (By.CLASS_NAME, "square")
@@ -57,7 +59,7 @@ class GamePage(BasePage):
     def _verify_page(self) -> None:
         """Check the page and all its components loaded correctly."""
         self.verify_url()
-        for element in (self.ROWS, self.HEADER, self.FOOTER):
+        for element in (self.BODY, self.HEADER, self.FOOTER):
             assert self.find(element), (  # noqa: S101
                 f"ERROR: critical element with ID '{element[1]}' "
                 "did not load properly. Try increasing the timeout"
