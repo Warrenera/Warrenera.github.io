@@ -226,17 +226,35 @@ class TestSubmit:
         assert not submit_button.is_enabled()
 
     @pytest.mark.color
-    @pytest.mark.usefixtures("select_first_category")
-    def test_submit_correct_category_color(self, page: GamePage):
+    def test_submit_correct_category_colors(self, page: GamePage, categories_chosen: list[dict]):
         """Check that submitting all 4 topics of a category reveals it.
 
-        The category will be revealed over the top row of squares. It will
-        be one of 4 randomly assigned category colors.
+        The category will be revealed over the top row of squares. Each
+        will be one of 4 randomly assigned category colors. No 2
+        categories will be the same color.
+
+        Explicitly requesting the chosen_categories fixture because it
+        is needed to loop over every row instead of hard-codedly using
+        the first row.
+
+        Explicitly recreated the squares fixture logic because they need
+        to be refetched after every submission as the position of the
+        square texts changes.
         """
-        page.click(page.find(page.SUBMIT))
-        row = page.find(page.get_dynamic_locator("row", 1))
-        color = page.get_background_color(row)
-        assert color in page.CATEGORY_COLORS.values()
+        used_colors = []
+        for i in range(page.CATEGORY_SIZE):
+            topics = categories_chosen[i]["topics"]
+            squares = page.find_all(page.SQUARES)
+            for square in [square for square in squares if square.text in topics]:
+                page.click(square)
+
+            page.click(page.find(page.SUBMIT))
+            row = page.find(page.get_dynamic_locator("row", i + 1))
+            color = page.get_background_color(row)
+
+            assert color in page.CATEGORY_COLORS.values()
+            assert color not in used_colors
+            used_colors.append(color)
 
     @pytest.mark.usefixtures("select_first_category")
     def test_submit_correct_category_children(self, page: GamePage):
