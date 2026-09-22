@@ -28,10 +28,11 @@ class BasePage:
         self.timeout = timeout
         self._wait = WebDriverWait(self.driver, self.timeout)
 
-    @staticmethod
-    def get_background_color(element: WebElement) -> str:
+    def get_background_color(self, element: WebElement) -> str:
         """Get an element's background-color CSS property hex code."""
-        return Color.from_string(element.value_of_css_property("background-color")).hex
+        return self._wait.until(
+            lambda _: Color.from_string(element.value_of_css_property("background-color")).hex,
+        )
 
     def click(self, locator: tuple[ByType, str] | WebElement) -> None:
         """Click the specified UI button."""
