@@ -77,7 +77,8 @@ class TestSquares:
         It should change back to its original style when clicked again.
         Square height and width are 23% when unselected and 22% when
         selected, thus the magic number math in the second set of
-        assertions.
+        assertions. Using pytest.approx() as minute browser rendering
+        differences between environments caused this test to fail in CI.
         """
         square = page.find(page.get_dynamic_locator("square", 1))
         assert page.get_background_color(square) == "#7aadad"
@@ -86,8 +87,8 @@ class TestSquares:
 
         page.click(square)
         assert page.get_background_color(square) == "#f78f91"
-        assert square.size["height"] == height / 23 * 22
-        assert square.size["width"] == width / 23 * 22
+        assert square.size["height"] == pytest.approx(height / 23 * 22)
+        assert square.size["width"] == pytest.approx(width / 23 * 22)
 
         page.click(square)
         assert page.get_background_color(square) == "#7aadad"
