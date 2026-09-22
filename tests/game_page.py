@@ -20,16 +20,23 @@ from tests.base_page import BasePage
 class GamePage(BasePage):
     """Represent the cAnnections game page."""
 
+    CATEGORY_SIZE = 4
+
     url = environ.get("BASE_URL", "https://warrenera.github.io/")
     title = "cAnnections: Connections, but about us"
 
     # Static Locators
+    BODY = (By.ID, "rows")
+    BUTTONS = (By.TAG_NAME, "button")
     DESELECT = (By.ID, "deselect")
+    DETAILS_HEADER = (By.CSS_SELECTOR, "details > h3")
+    DETAILS_PARAGRAPHS = (By.CSS_SELECTOR, "details > p")
     FOOTER = (By.ID, "footer")
     HEADER = (By.ID, "header")
-    ROWS = (By.ID, "rows")
+    ROWS = (By.CLASS_NAME, "row")
     SHARE = (By.ID, "share")
     SHUFFLE = (By.ID, "shuffle")
+    SQUARES = (By.CLASS_NAME, "square")
     SUBMIT = (By.ID, "submit")
     SUMMARY = (By.ID, "summary")
 
@@ -42,19 +49,21 @@ class GamePage(BasePage):
         """
         super().__init__(driver, timeout)
         self._verify_page()
+        self.CATEGORY_COLORS = {
+            "yellow": "#f9df6d",
+            "green": "#a0c35a",
+            "blue": "#b0c4ef",
+            "purple": "#ba81c5",
+        }
 
     def _verify_page(self) -> None:
         """Check the page and all its components loaded correctly."""
         self.verify_url()
-        for element in (self.ROWS, self.HEADER, self.FOOTER):
+        for element in (self.BODY, self.HEADER, self.FOOTER):
             assert self.find(element), (  # noqa: S101
                 f"ERROR: critical element with ID '{element[1]}' "
                 "did not load properly. Try increasing the timeout"
             )
-
-    def deselect_all(self):
-        """Click the 'Deselect All' button, unselecting all buttons."""
-        self.click(self.DESELECT)
 
     def refresh(self):
         """Refresh the page, resetting the game with new categories.
@@ -64,23 +73,17 @@ class GamePage(BasePage):
         """
         super().refresh()
 
-    def select_square(self, square_id: str):
-        """Toggle selection of a category choice button.
+    def toggle_details(self):
+        """Toggle appearance of the header details drop-down menu."""
+        self.click(self.SUMMARY)
 
-        Locator is dynamically constructed to avoid having 16 identical
-        locators, one for each square on the game board.
+    def get_dynamic_locator(self, element: str, element_id: int) -> tuple:
+        """Dynamically construct a game element locator for a given ID.
+
+        This avoids having to have 16 idential square locators or 4
+        identical square row locations hard-coded into the POM.
         """
-        sid = "square_" + square_id
-        square_locator = (By.ID, sid)
-        self.click(square_locator)
-
-    def share(self):
-        """Click the Share button.
-
-        This copies text to the clipboard if the navigator.share()
-        object is unreachable, i.e., from the desktop.
-        """
-        self.click(self.SHARE)
+        return (By.ID, f"{element}_{element_id}")
 
     def shuffle(self):
         """Click the shuffle button, mixing up the category squares.
@@ -89,10 +92,18 @@ class GamePage(BasePage):
         """
         self.click(self.SHUFFLE)
 
+    def deselect_all(self):
+        """Click the 'Deselect All' button, unselecting all buttons."""
+        self.click(self.DESELECT)
+
     def submit(self):
         """Click the Submit button to see if the choices were right."""
         self.click(self.SUBMIT)
 
-    def toggle_details(self):
-        """Toggle appearance of the header details drop-down menu."""
-        self.click(self.SUMMARY)
+    def share(self):
+        """Click the Share button.
+
+        This copies text to the clipboard if the navigator.share()
+        object is unreachable, i.e., from the desktop.
+        """
+        self.click(self.SHARE)

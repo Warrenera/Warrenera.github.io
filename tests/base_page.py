@@ -8,9 +8,12 @@ Silenced Ruff checks
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import ByType
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support.color import Color
 from selenium.webdriver.support.expected_conditions import (
     element_to_be_clickable,
+    invisibility_of_element_located,
     url_to_be,
+    visibility_of_all_elements_located,
     visibility_of_element_located,
 )
 from selenium.webdriver.support.wait import WebDriverWait
@@ -25,15 +28,27 @@ class BasePage:
         self.timeout = timeout
         self._wait = WebDriverWait(self.driver, self.timeout)
 
-    def click(self, locator: tuple[ByType, str]) -> None:
+    def get_background_color(self, element: WebElement) -> str:
+        """Get an element's background-color CSS property hex code."""
+        return self._wait.until(
+            lambda _: Color.from_string(element.value_of_css_property("background-color")).hex,
+        )
+
+    def click(self, locator: tuple[ByType, str] | WebElement) -> None:
         """Click the specified UI button."""
         self._wait.until(element_to_be_clickable(locator)).click()
 
+    def do_not_find(self, locator: tuple[ByType, str]) -> bool:
+        """Verify element expected to be invisible is invisible."""
+        return self._wait.until(invisibility_of_element_located(locator))
+
     def find(self, locator: tuple[ByType, str]) -> WebElement:
         """Search for the specified UI element and return if found."""
-        return self._wait.until(
-            method=visibility_of_element_located(locator),
-        )
+        return self._wait.until(visibility_of_element_located(locator))
+
+    def find_all(self, locator: tuple[ByType, str]) -> list[WebElement]:
+        """Search for all UI elements and return if found."""
+        return self._wait.until(visibility_of_all_elements_located(locator))
 
     def refresh(self) -> None:
         """Refresh the page."""
