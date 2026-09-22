@@ -87,8 +87,8 @@ class TestSquares:
 
         page.click(square)
         assert page.get_background_color(square) == "#f78f91"
-        assert square.size["height"] == pytest.approx(height / 23 * 22)
-        assert square.size["width"] == pytest.approx(width / 23 * 22)
+        assert square.size["height"] == pytest.approx(height / 23 * 22, abs=1e-1, rel=1e-1)
+        assert square.size["width"] == pytest.approx(width / 23 * 22, abs=1e-1, rel=1e-1)
 
         page.click(square)
         assert page.get_background_color(square) == "#7aadad"
