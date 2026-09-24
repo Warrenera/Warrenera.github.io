@@ -44,7 +44,10 @@ class BasePage:
 
     def find(self, locator: tuple[ByType, str]) -> WebElement:
         """Search for the specified UI element and return if found."""
-        return self._wait.until(visibility_of_element_located(locator))
+        return self._wait.until(
+            message=f"element with locator {locator} not found!",
+            method=visibility_of_element_located(locator),
+        )
 
     def find_all(self, locator: tuple[ByType, str]) -> list[WebElement]:
         """Search for all UI elements and return if found."""

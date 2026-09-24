@@ -230,24 +230,15 @@ class TestSubmit:
     def test_submit_correct_category_colors(self, page: GamePage, categories_chosen: list[dict]):
         """Check that submitting all 4 topics of a category reveals it.
 
-        The category will be revealed over the top row of squares. Each
-        will be one of 4 randomly assigned category colors. No 2
-        categories will be the same color.
-
-        Explicitly requesting the chosen_categories fixture because it
-        is needed to loop over every row instead of hard-codedly using
-        the first row.
-
-        Explicitly recreated the squares fixture logic because they need
-        to be refetched after every submission as the position of the
-        square texts changes.
+        Each category will be revealed over a row of squares. Each will
+        be one of 4 randomly assigned category colors. No 2 categories
+        will be the same color.
         """
         used_colors = []
         for i in range(page.CATEGORY_SIZE):
             topics = categories_chosen[i]["topics"]
             squares = page.find_all(page.SQUARES)
-            for square in [square for square in squares if square.text in topics]:
-                page.click(square)
+            page.select_category(topics, squares)
 
             page.click(page.find(page.SUBMIT))
             row = page.find(page.get_dynamic_locator("row", i + 1))
@@ -257,34 +248,41 @@ class TestSubmit:
             assert color not in used_colors
             used_colors.append(color)
 
-    @pytest.mark.usefixtures("select_first_category")
-    def test_submit_correct_category_children(self, page: GamePage):
+    def test_submit_correct_category_children(self, page: GamePage, categories_chosen: list[dict]):
         """Check that submitting all 4 topics of a category reveals it.
 
-        The category will be revealed over the top row of squares. Squares
-        in that row will be hidden.
+        Each category will be revealed over a row of squares. The
+        squares in that row will be hidden.
         """
-        page.click(page.find(page.SUBMIT))
-        row = page.find(page.get_dynamic_locator("row", 1))
-        children = row.find_elements(*page.BUTTONS)
-        for child in children:
-            assert not child.is_displayed()
+        for i in range(page.CATEGORY_SIZE):
+            topics = categories_chosen[i]["topics"]
+            squares = page.find_all(page.SQUARES)
+            page.select_category(topics, squares)
 
-    @pytest.mark.usefixtures("select_first_category")
+            page.click(page.find(page.SUBMIT))
+            row = page.find(page.get_dynamic_locator("row", i + 1))
+            children = row.find_elements(*page.BUTTONS)
+            for child in children:
+                assert not child.is_displayed()
+
     def test_submit_correct_category_text(self, page: GamePage, categories_chosen: list[dict]):
         """Check that submitting all 4 topics of a category reveals it.
 
-        The category will be revealed over the top row of squares. It will
+        Each category will be revealed over a row of squares. Each will
         display the revealed category title and topics.
         """
-        category = categories_chosen[0]  # First category chosen arbitrarily
-        page.click(page.find(page.SUBMIT))
-        row = page.find(page.get_dynamic_locator("row", 1))
-        row_text = row.text.split("\n")
-        assert row_text[0] == category["title"]
-        assert row_text[1] == ", ".join(category["topics"])
+        for i in range(page.CATEGORY_SIZE):
+            category = categories_chosen[i]
+            topics = category["topics"]
+            squares = page.find_all(page.SQUARES)
+            page.select_category(topics, squares)
 
-    @pytest.mark.usefixtures("select_first_category")
+            page.click(page.find(page.SUBMIT))
+            row = page.find(page.get_dynamic_locator("row", i + 1))
+            row_text = row.text.split("\n")
+            assert row_text[0] == category["title"]
+            assert row_text[1] == ", ".join(topics)
+
     def test_submit_correct_category_remaining_topics(
         self,
         page: GamePage,
@@ -292,17 +290,29 @@ class TestSubmit:
     ):
         """Check that submitting all 4 topics of a category reveals it.
 
-        The category will be revealed over the top row of squares. The
-        remaining squares will file down to the remaining 3 rows.
+        Each category will be revealed over a row of squares. The
+        remaining squares will file down to the remaining rows. There
+        should be no remaining topics in the last loop.
         """
-        category = categories_chosen[0]  # First category chosen arbitrarily
-        page.click(page.find(page.SUBMIT))
-        remaining_topics = [
-            topic for cat in categories_chosen if cat != category for topic in cat["topics"]
-        ]
-        remaining_squares = page.find_all(page.SQUARES)
-        for topic in remaining_topics:
-            assert any(square.text == topic for square in remaining_squares)
+        used_categories = []
+        for i in range(page.CATEGORY_SIZE):
+            category = categories_chosen[i]
+            topics = category["topics"]
+            squares = page.find_all(page.SQUARES)
+            page.select_category(topics, squares)
+
+            page.click(page.find(page.SUBMIT))
+            remaining_topics = [
+                topic
+                for cat in categories_chosen
+                if (cat != category and cat not in used_categories)
+                for topic in cat["topics"]
+            ]
+            if remaining_topics:
+                remaining_squares = page.find_all(page.SQUARES)
+                for topic in remaining_topics:
+                    assert any(square.text == topic for square in remaining_squares)
+                used_categories.append(category)
 
     # @pytest.mark.submit
     # def test_submit_last_correct_category(page: GamePage, categories: list[dict]):

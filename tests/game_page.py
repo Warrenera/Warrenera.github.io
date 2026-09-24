@@ -13,6 +13,7 @@ from os import environ
 
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
 
 from tests.base_page import BasePage
 
@@ -58,11 +59,8 @@ class GamePage(BasePage):
     def _verify_page(self) -> None:
         """Check the page and all its components loaded correctly."""
         self.verify_url()
-        for element in (self.BODY, self.HEADER, self.FOOTER):
-            assert self.find(element), (  # noqa: S101
-                f"ERROR: critical element with ID '{element[1]}' "
-                "did not load properly. Try increasing the timeout"
-            )
+        for element in (self.HEADER, self.BODY, self.FOOTER):
+            assert self.find(element)  # noqa: S101
 
     def refresh(self):
         """Refresh the page, resetting the game with new categories.
@@ -83,6 +81,11 @@ class GamePage(BasePage):
         identical square row locations hard-coded into the POM.
         """
         return (By.ID, f"{element}_{element_id}")
+
+    def select_category(self, topics: list[str], squares: list[WebElement]) -> None:
+        """Click the squares corresponding to the topics in a category."""
+        for square in [square for square in squares if square.text in topics]:
+            self.click(square)
 
     def shuffle(self):
         """Click the shuffle button, mixing up the category squares.
