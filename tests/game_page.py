@@ -26,14 +26,13 @@ class GamePage(BasePage):
     title = "cAnnections: Connections, but about us"
 
     # Static Locators
-    BODY = (By.ID, "rows")
+    BODY = (By.ID, "gameboard")
     BUTTONS = (By.TAG_NAME, "button")
     DESELECT = (By.ID, "deselect")
     DETAILS_HEADER = (By.CSS_SELECTOR, "details > h3")
     DETAILS_PARAGRAPHS = (By.CSS_SELECTOR, "details > p")
     FOOTER = (By.ID, "footer")
     HEADER = (By.ID, "header")
-    ROWS = (By.CLASS_NAME, "row")
     SHARE = (By.ID, "share")
     SHUFFLE = (By.ID, "shuffle")
     SQUARES = (By.CLASS_NAME, "square")
