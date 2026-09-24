@@ -32,15 +32,22 @@ class BasePage:
         """Get an element's background-color CSS property hex code."""
         return self._wait.until(
             lambda _: Color.from_string(element.value_of_css_property("background-color")).hex,
+            message=f"Unable to get the background-color of element {element}",
         )
 
     def click(self, locator: tuple[ByType, str] | WebElement) -> None:
         """Click the specified UI button."""
-        self._wait.until(element_to_be_clickable(locator)).click()
+        self._wait.until(
+            element_to_be_clickable(locator),
+            message=f"Unable to click the element with locator {locator}",
+        ).click()
 
     def do_not_find(self, locator: tuple[ByType, str]) -> bool:
         """Verify element expected to be invisible is invisible."""
-        return self._wait.until(invisibility_of_element_located(locator))
+        return self._wait.until(
+            invisibility_of_element_located(locator),
+            message=f"Didn't expect to find element with locator {locator}, but found it anyway",
+        )
 
     def find(self, locator: tuple[ByType, str]) -> WebElement:
         """Search for the specified UI element and return if found."""
@@ -51,7 +58,10 @@ class BasePage:
 
     def find_all(self, locator: tuple[ByType, str]) -> list[WebElement]:
         """Search for all UI elements and return if found."""
-        return self._wait.until(visibility_of_all_elements_located(locator))
+        return self._wait.until(
+            visibility_of_all_elements_located(locator),
+            message=f"Unable to get all elements with locator {locator}",
+        )
 
     def refresh(self) -> None:
         """Refresh the page."""
