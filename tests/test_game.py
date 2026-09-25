@@ -314,6 +314,29 @@ class TestSubmit:
                     assert any(square.text == topic for square in remaining_squares)
                 used_categories.append(category)
 
-    # @pytest.mark.submit
-    # def test_submit_last_correct_category(page: GamePage, categories: list[dict]):
-    #     """."""
+
+class TestGameOver:
+    """Test various end-geame scenarios."""
+
+    def test_perfect_win(self, page: GamePage, categories_chosen: list[dict]):
+        """Check that ending a perfect game shows a 'Perfect!' popup.
+
+        Submitting a fourth guess ends the game. A popup message appears
+        over the top row temporarily. The 'Tries' test will change to a
+        congratulatory message for winning the game.
+        """
+        assert page.do_not_find(page.POPUP)
+
+        wait = page.create_wait(page.POPUP_TIME)
+        for i in range(page.CATEGORY_SIZE):
+            if i == 0:
+                first_row = page.find(page.get_dynamic_locator("row", i + 1))
+            topics = categories_chosen[i]["topics"]
+            squares = page.find_all(page.SQUARES)
+            page.select_category(topics, squares)
+            page.click(page.find(page.SUBMIT))
+
+        popup = page.find(page.POPUP, wait)
+        assert page.overlaps(first_row, popup)  # TODO: implement
+        assert popup.text == "Perfect!"
+        assert page.do_not_find(page.POPUP, wait)
