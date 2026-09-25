@@ -22,6 +22,7 @@ class GamePage(BasePage):
     """Represent the cAnnections game page."""
 
     CATEGORY_SIZE = 4
+    POPUP_TIME = 2
 
     url = environ.get("BASE_URL", "https://warrenera.github.io/")
     title = "cAnnections: Connections, but about us"
@@ -34,6 +35,7 @@ class GamePage(BasePage):
     DETAILS_PARAGRAPHS = (By.CSS_SELECTOR, "details > p")
     FOOTER = (By.ID, "footer")
     HEADER = (By.ID, "header")
+    POPUP = (By.ID, "popup")
     SHARE = (By.ID, "share")
     SHUFFLE = (By.ID, "shuffle")
     SQUARES = (By.CLASS_NAME, "square")
