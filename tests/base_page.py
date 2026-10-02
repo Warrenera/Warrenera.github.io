@@ -27,7 +27,7 @@ class BasePage:
         """Determine if two elements are ovelapping."""
         # TODO: implement
 
-    def __init__(self, driver: Firefox, timeout: int = 10):  # noqa: ANN204
+    def __init__(self, driver: Firefox, timeout: int = 5):  # noqa: ANN204
         """Set the details for interacting with the page."""
         self.driver = driver
         self.timeout = timeout

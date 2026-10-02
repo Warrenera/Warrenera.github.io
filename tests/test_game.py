@@ -128,7 +128,7 @@ class TestShuffle:
     def test_shuffle_logic(self, page: GamePage):
         """Check clicking the shuffle button randomizes the square text."""
         old_topics = (square.text for square in page.find_all(page.SQUARES))
-        page.click(page.find(page.SHUFFLE))
+        page.shuffle()
         new_topics = (square.text for square in page.find_all(page.SQUARES))
         # Same topics and categories:
         assert set(old_topics) == set(new_topics)
@@ -146,7 +146,7 @@ class TestShuffle:
         deselect_button = page.find(page.DESELECT)
         assert deselect_button.is_enabled()
 
-        page.click(page.find(page.SHUFFLE))
+        page.shuffle()
         assert not deselect_button.is_enabled()
         # Check all squares to ensure wherever the one that
         # was clicked went, it did not remain clicked
@@ -189,7 +189,7 @@ class TestDeselect:
                 square = page.find(page.get_dynamic_locator("square", j))
                 squares.append(square)
                 page.click(square)
-            page.click(deselect_button)
+            page.deselect_all()
             assert not deselect_button.is_enabled()
             for square in squares:
                 assert page.get_background_color(square) == "#7aadad"
@@ -240,7 +240,7 @@ class TestSubmit:
             squares = page.find_all(page.SQUARES)
             page.select_category(topics, squares)
 
-            page.click(page.find(page.SUBMIT))
+            page.submit()
             row = page.find(page.get_dynamic_locator("row", i + 1))
             color = page.get_background_color(row)
 
@@ -259,7 +259,7 @@ class TestSubmit:
             squares = page.find_all(page.SQUARES)
             page.select_category(topics, squares)
 
-            page.click(page.find(page.SUBMIT))
+            page.submit()
             row = page.find(page.get_dynamic_locator("row", i + 1))
             children = row.find_elements(*page.BUTTONS)
             for child in children:
@@ -277,7 +277,7 @@ class TestSubmit:
             squares = page.find_all(page.SQUARES)
             page.select_category(topics, squares)
 
-            page.click(page.find(page.SUBMIT))
+            page.submit()
             row = page.find(page.get_dynamic_locator("row", i + 1))
             row_text = row.text.split("\n")
             assert row_text[0] == category["title"]
@@ -301,7 +301,7 @@ class TestSubmit:
             squares = page.find_all(page.SQUARES)
             page.select_category(topics, squares)
 
-            page.click(page.find(page.SUBMIT))
+            page.submit()
             remaining_topics = [
                 topic
                 for cat in categories_chosen
@@ -332,7 +332,7 @@ class TestGameOver:
             topics = categories_chosen[i]["topics"]
             squares = page.find_all(page.SQUARES)
             page.select_category(topics, squares)
-            page.click(page.find(page.SUBMIT))
+            page.submit()
 
         wait = page.create_wait(page.POPUP_TIME)
         popup = page.find(page.POPUP, wait)
