@@ -41,6 +41,7 @@ class GamePage(BasePage):
     SQUARES = (By.CLASS_NAME, "square")
     SUBMIT = (By.ID, "submit")
     SUMMARY = (By.ID, "summary")
+    TRIES = (By.ID, "tigers")
 
     def __init__(self, driver: Firefox, timeout: int = 5):  # noqa: ANN204
         """Initialize the BasePage, then determine if on the game page.
