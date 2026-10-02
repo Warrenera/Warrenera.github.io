@@ -318,14 +318,32 @@ class TestSubmit:
 class TestGameOver:
     """Test various endgame scenarios."""
 
+    def test_popup(self, page: GamePage, categories_chosen: list[dict]):
+        """Check ending a game shows a popup.
+
+        The popup should appear on submitting the last category. It
+        should remain on the page for a couple seconds before
+        disappearing again.
+        """
+        assert page.do_not_find(page.POPUP)
+
+        for i in range(page.CATEGORY_SIZE):
+            topics = categories_chosen[i]["topics"]
+            squares = page.find_all(page.SQUARES)
+            page.select_category(topics, squares)
+            page.submit()
+
+        wait = page.create_wait(page.POPUP_TIME)
+        assert page.find(page.POPUP, wait)
+        assert page.do_not_find(page.POPUP)
+
     def test_perfect_win(self, page: GamePage, categories_chosen: list[dict]):
-        """Check that ending a perfect game shows a 'Perfect!' popup.
+        """Check that winning a perfect game shows a 'Perfect!' popup.
 
         Submitting a fourth guess ends the game. A popup message appears
         temporarily. The 'Tries' test will change to a congratulatory
         message for winning the game.
         """
-        assert page.do_not_find(page.POPUP)
         assert page.find(page.TRIES).text == "Tries left: 🐯🐯🐯🐯"
 
         for i in range(page.CATEGORY_SIZE):
@@ -337,6 +355,35 @@ class TestGameOver:
         wait = page.create_wait(page.POPUP_TIME)
         popup = page.find(page.POPUP, wait)
         assert popup.text.strip() == "Perfect!"
+        assert (
+            page.find(page.TRIES).text
+            == "You win! You know so much about us :) Refresh the page to play again"
+        )
+
+    def test_imperfect_win(self, page: GamePage, categories_chosen: list[dict]):
+        """Check that winning a game shows a 'You did it!' popup.
+
+        At least one incorrect guess has to have been submitted.
+        Submitting a fourth guess ends the game. A popup message appears
+        temporarily. The 'Tries' test will change to a congratulatory
+        message for winning the game.
+        """
+        assert page.do_not_find(page.POPUP)
+
+        for i in range(1, page.CATEGORY_SIZE + 1):
+            page.click(page.find(page.get_dynamic_locator("square", i)))
+        page.submit()
+        page.deselect_all()
+
+        for i in range(page.CATEGORY_SIZE):
+            topics = categories_chosen[i]["topics"]
+            squares = page.find_all(page.SQUARES)
+            page.select_category(topics, squares)
+            page.submit()
+
+        wait = page.create_wait(page.POPUP_TIME)
+        popup = page.find(page.POPUP, wait)
+        assert popup.text.strip() == "You did it!"
         assert page.do_not_find(page.POPUP)
 
         assert (
