@@ -390,3 +390,20 @@ class TestGameOver:
             page.find(page.TRIES).text
             == "You win! You know so much about us :) Refresh the page to play again"
         )
+
+    def test_loss(self, page: GamePage):
+        """TODO: figure out why this fails on pressing the Deselect button."""
+        assert page.do_not_find(page.POPUP)
+
+        for i in range(page.CATEGORY_SIZE):
+            for j in range(1, page.CATEGORY_SIZE + 1):
+                page.click(page.find(page.get_dynamic_locator("square", i + j)))
+            page.submit()
+            page.deselect_all()
+
+        wait = page.create_wait(page.POPUP_TIME)
+        popup = page.find(page.POPUP, wait)
+        assert popup.text.strip() == "Next time!"
+        assert page.do_not_find(page.POPUP)
+
+        assert page.find(page.TRIES).text == "Game over 😔 but hopefully you had fun anyway!"
