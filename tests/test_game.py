@@ -392,18 +392,28 @@ class TestGameOver:
         )
 
     def test_loss(self, page: GamePage):
-        """TODO: figure out why this fails on pressing the Deselect button."""
+        """Check that losing a game shows a 'Next time!' popup.
+
+        Four incorrect guess have to be submitted. Submitting the fourth
+        guess ends the game. A popup message appears temporarily. The
+        'Tries' text will change to a consolatory message for losing the
+        game.
+        """
         assert page.do_not_find(page.POPUP)
 
         for i in range(page.CATEGORY_SIZE):
             for j in range(1, page.CATEGORY_SIZE + 1):
-                page.click(page.find(page.get_dynamic_locator("square", i + j)))
+                page.select_square(i + j)
             page.submit()
-            page.deselect_all()
+            if i != page.CATEGORY_SIZE - 1:
+                page.deselect_all()
 
         wait = page.create_wait(page.POPUP_TIME)
         popup = page.find(page.POPUP, wait)
         assert popup.text.strip() == "Next time!"
         assert page.do_not_find(page.POPUP)
 
-        assert page.find(page.TRIES).text == "Game over 😔 but hopefully you had fun anyway!"
+        assert (
+            page.find(page.TRIES).text
+            == "Game over 😔 but hopefully you had fun anyway! Refresh the page to play again"
+        )
