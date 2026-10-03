@@ -12,7 +12,7 @@ Silenced Ruff checks
 from os import environ
 
 from selenium.webdriver import Firefox
-from selenium.webdriver.common.by import By
+from selenium.webdriver.common.by import By, ByType
 from selenium.webdriver.remote.webelement import WebElement
 
 from tests.base_page import BasePage
@@ -59,6 +59,14 @@ class GamePage(BasePage):
             "purple": "#ba81c5",
         }
 
+    def _get_dynamic_locator(self, element: str, element_id: int) -> tuple[ByType, str]:
+        """Dynamically construct a game element locator for a given ID.
+
+        This avoids having to have 16 idential square locators or 4
+        identical square row locations hard-coded into the POM.
+        """
+        return (By.ID, f"{element}_{element_id}")
+
     def _verify_page(self) -> None:
         """Check the page and all its components loaded correctly."""
         self.verify_url()
@@ -77,13 +85,17 @@ class GamePage(BasePage):
         """Toggle appearance of the header details drop-down menu."""
         self.click(self.SUMMARY)
 
-    def get_dynamic_locator(self, element: str, element_id: int) -> tuple:
-        """Dynamically construct a game element locator for a given ID.
+    def find_square(self, square_id: int) -> WebElement:
+        """Get the square corresponding to the ID number passed in."""
+        return self.find(self._get_dynamic_locator("square", square_id))
 
-        This avoids having to have 16 idential square locators or 4
-        identical square row locations hard-coded into the POM.
-        """
-        return (By.ID, f"{element}_{element_id}")
+    def select_square(self, square_id: int) -> None:
+        """Click the square corresponding to the ID number passed in."""
+        self.click(self._get_dynamic_locator("square", square_id))
+
+    def find_row(self, row_id: int) -> WebElement:
+        """Get the row corresponding to the ID number passed in."""
+        return self.find(self._get_dynamic_locator("row", row_id))
 
     def select_category(self, topics: list[str], squares: list[WebElement]) -> None:
         """Click the squares corresponding to the topics in a category."""

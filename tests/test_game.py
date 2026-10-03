@@ -80,7 +80,7 @@ class TestSquares:
         assertions. Using pytest.approx() as minute browser rendering
         differences between environments caused this test to fail in CI.
         """
-        square = page.find(page.get_dynamic_locator("square", 1))
+        square = page.find_square(1)
         assert page.get_background_color(square) == "#7aadad"
         height = square.size["height"]
         width = square.size["width"]
@@ -104,14 +104,14 @@ class TestSquares:
         """
         squares = []
         for i in range(1, page.CATEGORY_SIZE + 1):
-            square = page.find(page.get_dynamic_locator("square", i))
+            square = page.find_square(i)
             squares.append(square)
             page.click(square)
         for square in squares:
             assert page.get_background_color(square) == "#f78f91"
 
         # Selecting a fifth square does not work
-        square = page.find(page.get_dynamic_locator("square", page.CATEGORY_SIZE + 1))
+        square = page.find_square(page.CATEGORY_SIZE + 1)
         page.click(square)
         assert page.get_background_color(square) == "#7aadad"
 
@@ -139,7 +139,7 @@ class TestShuffle:
     @pytest.mark.deselect
     def test_deselect_clickability_on_shuffle(self, page: GamePage):
         """Check clicking the shuffle button deselects selected squares."""
-        square = page.find(page.get_dynamic_locator("square", 1))
+        square = page.find_square(1)
         page.click(square)
         assert page.get_background_color(square) == "#f78f91"
 
@@ -151,7 +151,7 @@ class TestShuffle:
         # Check all squares to ensure wherever the one that
         # was clicked went, it did not remain clicked
         for i in range(1, page.CATEGORY_SIZE**2 + 1):
-            square = page.find(page.get_dynamic_locator("square", i))
+            square = page.find_square(i)
             assert page.get_background_color(square) == "#7aadad"
 
 
@@ -168,7 +168,7 @@ class TestDeselect:
         """
         deselect_button = page.find(page.DESELECT)
         assert not deselect_button.is_enabled()
-        square = page.find(page.get_dynamic_locator("square", 1))
+        square = page.find_square(1)
         page.click(square)
         assert deselect_button.is_enabled()
         page.click(square)
@@ -186,7 +186,7 @@ class TestDeselect:
         for i in range(1, page.CATEGORY_SIZE + 1):
             squares = []
             for j in range(1, i + 1):
-                square = page.find(page.get_dynamic_locator("square", j))
+                square = page.find_square(j)
                 squares.append(square)
                 page.click(square)
             page.deselect_all()
@@ -206,9 +206,9 @@ class TestSubmit:
         """
         submit_button = page.find(page.SUBMIT)
         for i in range(1, page.CATEGORY_SIZE):
-            page.click(page.find(page.get_dynamic_locator("square", i)))
+            page.select_square(i)
             assert not submit_button.is_enabled()
-        page.click(page.find(page.get_dynamic_locator("square", page.CATEGORY_SIZE)))
+        page.select_square(page.CATEGORY_SIZE)
         assert submit_button.is_enabled()
 
     def test_submit_refresh_state(self, page: GamePage):
@@ -219,7 +219,7 @@ class TestSubmit:
         See: https://bugzilla.mozilla.org/show_bug.cgi?id=685657.
         """
         for i in range(1, page.CATEGORY_SIZE + 1):
-            page.click(page.find(page.get_dynamic_locator("square", i)))
+            page.select_square(i)
         submit_button = page.find(page.SUBMIT)
         assert submit_button.is_enabled()
         page.refresh()
@@ -241,7 +241,7 @@ class TestSubmit:
             page.select_category(topics, squares)
 
             page.submit()
-            row = page.find(page.get_dynamic_locator("row", i + 1))
+            row = page.find_row(i + 1)
             color = page.get_background_color(row)
 
             assert color in page.CATEGORY_COLORS.values()
@@ -260,7 +260,7 @@ class TestSubmit:
             page.select_category(topics, squares)
 
             page.submit()
-            row = page.find(page.get_dynamic_locator("row", i + 1))
+            row = page.find_row(i + 1)
             children = row.find_elements(*page.BUTTONS)
             for child in children:
                 assert not child.is_displayed()
@@ -278,7 +278,7 @@ class TestSubmit:
             page.select_category(topics, squares)
 
             page.submit()
-            row = page.find(page.get_dynamic_locator("row", i + 1))
+            row = page.find_row(i + 1)
             row_text = row.text.split("\n")
             assert row_text[0] == category["title"]
             assert row_text[1] == ", ".join(topics)
@@ -341,7 +341,7 @@ class TestGameOver:
         """Check that winning a perfect game shows a 'Perfect!' popup.
 
         Submitting a fourth guess ends the game. A popup message appears
-        temporarily. The 'Tries' test will change to a congratulatory
+        temporarily. The 'Tries' text will change to a congratulatory
         message for winning the game.
         """
         assert page.find(page.TRIES).text == "Tries left: 🐯🐯🐯🐯"
@@ -365,13 +365,13 @@ class TestGameOver:
 
         At least one incorrect guess has to have been submitted.
         Submitting a fourth guess ends the game. A popup message appears
-        temporarily. The 'Tries' test will change to a congratulatory
+        temporarily. The 'Tries' text will change to a congratulatory
         message for winning the game.
         """
         assert page.do_not_find(page.POPUP)
 
         for i in range(1, page.CATEGORY_SIZE + 1):
-            page.click(page.find(page.get_dynamic_locator("square", i)))
+            page.select_square(i)
         page.submit()
         page.deselect_all()
 
