@@ -395,9 +395,11 @@ class TestGameOver:
         """Check that losing a game shows a 'Next time!' popup.
 
         Four incorrect guess have to be submitted. Submitting the fourth
-        guess ends the game. A popup message appears temporarily. The
-        'Tries' text will change to a consolatory message for losing the
-        game.
+        guess ends the game. A popup message appears temporarily. Each
+        category will be revealed over a row of squares. Each will be
+        one of 4 randomly assigned category colors. No 2 categories will
+        be the same color. The 'Tries' text will change to a consolatory
+        message for losing the game.
         """
         assert page.do_not_find(page.POPUP)
 
@@ -412,6 +414,15 @@ class TestGameOver:
         popup = page.find(page.POPUP, wait)
         assert popup.text.strip() == "Next time!"
         assert page.do_not_find(page.POPUP)
+
+        used_colors = []
+        for i in range(page.CATEGORY_SIZE):
+            row = page.find_row(i + 1)
+            color = page.get_background_color(row)
+
+            assert color in page.CATEGORY_COLORS.values()
+            assert color not in used_colors
+            used_colors.append(color)
 
         assert (
             page.find(page.TRIES).text
