@@ -21,7 +21,7 @@ from tests.base_page import BasePage
 class GamePage(BasePage):
     """Represent the cAnnections game page."""
 
-    CATEGORIES_CHOSEN = 4
+    CATEGORY_COUNT = 4
     CATEGORY_SIZE = 4
     POPUP_TIME = 2
     START_GUESS_COUNT = 4

@@ -51,9 +51,9 @@ class TestSquares:
         for category in categories:
             if set(category["topics"]).issubset(square_topics):
                 categories_chosen.append(category)
-            if len(categories_chosen) == page.CATEGORY_SIZE:
+            if len(categories_chosen) == page.CATEGORY_COUNT:
                 break
-        assert len(categories_chosen) == page.CATEGORY_SIZE
+        assert len(categories_chosen) == page.CATEGORY_COUNT
         assert categories_chosen != categories[:4]
 
     @pytest.mark.shuffle
@@ -179,8 +179,8 @@ class TestDeselect:
     def test_deselect_logic(self, page: GamePage):
         """Check clicking the Deselect button deselects any selections.
 
-        Checked for each number of possible selection counts, 1 through 4.
-        Clicking the Deselect button also disables the button.
+        Checked for each number of possible selection counts, 1 through
+        4. Clicking the Deselect button also disables the button.
         """
         deselect_button = page.find(page.DESELECT)
         for i in range(1, page.CATEGORY_SIZE + 1):
@@ -235,7 +235,7 @@ class TestSubmit:
         will be the same color.
         """
         used_colors = []
-        for i in range(page.CATEGORY_SIZE):
+        for i in range(page.CATEGORY_COUNT):
             topics = categories_chosen[i]["topics"]
             squares = page.find_all(page.SQUARES)
             page.select_category(topics, squares)
@@ -254,7 +254,7 @@ class TestSubmit:
         Each category will be revealed over a row of squares. The
         squares in that row will be hidden.
         """
-        for i in range(page.CATEGORY_SIZE):
+        for i in range(page.CATEGORY_COUNT):
             topics = categories_chosen[i]["topics"]
             squares = page.find_all(page.SQUARES)
             page.select_category(topics, squares)
@@ -271,7 +271,7 @@ class TestSubmit:
         Each category will be revealed over a row of squares. Each will
         display the revealed category title and topics.
         """
-        for i in range(page.CATEGORY_SIZE):
+        for i in range(page.CATEGORY_COUNT):
             category = categories_chosen[i]
             topics = category["topics"]
             squares = page.find_all(page.SQUARES)
@@ -295,7 +295,7 @@ class TestSubmit:
         should be no remaining topics in the last loop.
         """
         used_categories = []
-        for i in range(page.CATEGORY_SIZE):
+        for i in range(page.CATEGORY_COUNT):
             category = categories_chosen[i]
             topics = category["topics"]
             squares = page.find_all(page.SQUARES)
@@ -322,12 +322,12 @@ class TestSubmit:
         """
         assert page.tries() == page.START_GUESS_COUNT
 
-        for i in range(1, page.CATEGORY_SIZE + 1):
+        for i in range(1, page.CATEGORY_COUNT + 1):
             for j in range(1, page.CATEGORY_SIZE + 1):
                 page.select_square(i + j)
 
             page.submit()
-            if i != page.CATEGORY_SIZE:
+            if i < page.CATEGORY_COUNT:
                 page.deselect_all()
 
             assert page.tries() == page.START_GUESS_COUNT - i
@@ -345,7 +345,7 @@ class TestGameOver:
         """
         assert page.do_not_find(page.POPUP)
 
-        for i in range(page.CATEGORY_SIZE):
+        for i in range(page.CATEGORY_COUNT):
             topics = categories_chosen[i]["topics"]
             squares = page.find_all(page.SQUARES)
             page.select_category(topics, squares)
@@ -364,7 +364,7 @@ class TestGameOver:
         """
         assert page.find(page.TRIES).text == "Tries left: 🐯🐯🐯🐯"
 
-        for i in range(page.CATEGORY_SIZE):
+        for i in range(page.CATEGORY_COUNT):
             topics = categories_chosen[i]["topics"]
             squares = page.find_all(page.SQUARES)
             page.select_category(topics, squares)
@@ -393,7 +393,7 @@ class TestGameOver:
         page.submit()
         page.deselect_all()
 
-        for i in range(page.CATEGORY_SIZE):
+        for i in range(page.CATEGORY_COUNT):
             topics = categories_chosen[i]["topics"]
             squares = page.find_all(page.SQUARES)
             page.select_category(topics, squares)
@@ -421,11 +421,11 @@ class TestGameOver:
         """
         assert page.do_not_find(page.POPUP)
 
-        for i in range(page.CATEGORY_SIZE):
+        for i in range(page.CATEGORY_COUNT):
             for j in range(1, page.CATEGORY_SIZE + 1):
                 page.select_square(i + j)
             page.submit()
-            if i != page.CATEGORY_SIZE - 1:
+            if i != page.CATEGORY_COUNT - 1:
                 page.deselect_all()
 
         wait = page.create_wait(page.POPUP_TIME)
@@ -434,7 +434,7 @@ class TestGameOver:
         assert page.do_not_find(page.POPUP)
 
         used_colors = []
-        for i in range(page.CATEGORY_SIZE):
+        for i in range(page.CATEGORY_COUNT):
             row = page.find_row(i + 1)
             color = page.get_background_color(row)
 
