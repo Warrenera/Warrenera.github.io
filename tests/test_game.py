@@ -504,3 +504,17 @@ class TestGameOver:
             page.find(page.TRIES).text
             == "Game over 😔 but hopefully you had fun anyway! Refresh the page to play again"
         )
+
+
+class TestShare:
+    """Test the functionality of the Share button."""
+
+    def test_share_clickability(self, page: GamePage, categories_chosen: list[dict]):
+        """Check the Share button only appears once the game ends."""
+        assert page.do_not_find(page.SHARE)
+        for i in range(page.CATEGORY_COUNT):
+            topics = categories_chosen[i]["topics"]
+            squares = page.find_all(page.SQUARES)
+            page.select_category(topics, squares)
+            page.submit()
+        assert page.find(page.SHARE)
