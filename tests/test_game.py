@@ -333,7 +333,9 @@ class TestSubmit:
         """Check submitting 3 topics for a category yields 'One away!'.
 
         This message will appear in the popup that appears at the top of
-        the game page.
+        the game page. Also tests that if an already guessed wrong
+        answer is tried again, a popup appears with a message, 'Already
+        guessed!'
         """
         assert page.do_not_find(page.POPUP)
 
@@ -354,6 +356,11 @@ class TestSubmit:
         wait = page.create_wait(page.POPUP_TIME)
         popup = page.find(page.POPUP, wait)
         assert popup.text.strip() == "One away!"
+
+        page.submit()
+        wait = page.create_wait(page.POPUP_TIME)
+        popup = page.find(page.POPUP, wait)
+        assert popup.text.strip() == "Already guessed!"
 
     def test_submit_incorrect_off_by_more_than_one(
         self,
