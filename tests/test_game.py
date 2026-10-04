@@ -315,7 +315,7 @@ class TestSubmit:
                 used_categories.append(category)
 
     def test_submit_incorrect_category_tries(self, page: GamePage):
-        """Check submitting < all 4 topics of a category removes a try.
+        """Check submitting <4 topics for a category removes a try.
 
         Tries are represented in the 'Tries' text below the game board,
         but above the footer buttons.
@@ -328,6 +328,58 @@ class TestSubmit:
             if i < page.CATEGORY_COUNT:
                 page.deselect_all()
             assert page.tries() == page.START_GUESS_COUNT - i
+
+    def test_submit_incorrect_off_by_one(self, page: GamePage, categories_chosen: list[dict]):
+        """Check submitting 3 topics for a category yields 'One away!'.
+
+        This message will appear in the popup that appears at the top of
+        the game page.
+        """
+        assert page.do_not_find(page.POPUP)
+
+        topics = categories_chosen[1]["topics"]
+        squares = page.find_all(page.SQUARES)
+        matches_selected = 0
+        nonmatches_selected = 0
+        for square in squares:
+            if square.text in topics and matches_selected < page.CATEGORY_SIZE - 1:
+                page.click(square)
+                matches_selected += 1
+            if square.text not in topics and nonmatches_selected < 1:
+                page.click(square)
+                nonmatches_selected += 1
+            if matches_selected == page.CATEGORY_SIZE - 1 and nonmatches_selected == 1:
+                break
+        page.submit()
+        wait = page.create_wait(page.POPUP_TIME)
+        popup = page.find(page.POPUP, wait)
+        assert popup.text.strip() == "One away!"
+
+    def test_submit_incorrect_off_by_more_than_one(
+        self,
+        page: GamePage,
+        categories_chosen: list[dict],
+    ):
+        """Check submitting <3 topics for a category yields 'Not quite'.
+
+        This message will appear in the popup that appears at the top of
+        the game page.
+        """
+        assert page.do_not_find(page.POPUP)
+
+        topics = categories_chosen[1]["topics"]
+        squares = page.find_all(page.SQUARES)
+        selected_count = 0
+        for square in squares:
+            if square.text not in topics:
+                page.click(square)
+                selected_count += 1
+                if selected_count == page.CATEGORY_SIZE:
+                    break
+        page.submit()
+        wait = page.create_wait(page.POPUP_TIME)
+        popup = page.find(page.POPUP, wait)
+        assert popup.text.strip() == "Not quite"
 
 
 class TestGameOver:
