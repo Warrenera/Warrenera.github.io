@@ -321,15 +321,12 @@ class TestSubmit:
         but above the footer buttons.
         """
         assert page.tries() == page.START_GUESS_COUNT
-
         for i in range(1, page.CATEGORY_COUNT + 1):
             for j in range(1, page.CATEGORY_SIZE + 1):
                 page.select_square(i + j)
-
             page.submit()
             if i < page.CATEGORY_COUNT:
                 page.deselect_all()
-
             assert page.tries() == page.START_GUESS_COUNT - i
 
 
@@ -421,11 +418,13 @@ class TestGameOver:
         """
         assert page.do_not_find(page.POPUP)
 
-        for i in range(page.CATEGORY_COUNT):
+        # TODO: find a way to make a method, make_incorrect_guesses(),
+        # that works for here and test_submit_incorrect_category_tries()
+        for i in range(1, page.CATEGORY_COUNT + 1):
             for j in range(1, page.CATEGORY_SIZE + 1):
                 page.select_square(i + j)
             page.submit()
-            if i != page.CATEGORY_COUNT - 1:
+            if i < page.CATEGORY_COUNT:
                 page.deselect_all()
 
         wait = page.create_wait(page.POPUP_TIME)

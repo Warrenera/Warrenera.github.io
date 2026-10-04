@@ -22,11 +22,6 @@ from selenium.webdriver.support.wait import WebDriverWait
 class BasePage:
     """Define page-agnostic utilities for page object models."""
 
-    @staticmethod
-    def overlaps(element_1: WebElement, element_2: WebElement) -> bool:
-        """Determine if two elements are ovelapping."""
-        # TODO: implement
-
     def __init__(self, driver: Firefox, timeout: int = 5):  # noqa: ANN204
         """Set the details for interacting with the page."""
         self.driver = driver
