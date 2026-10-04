@@ -21,8 +21,10 @@ from tests.base_page import BasePage
 class GamePage(BasePage):
     """Represent the cAnnections game page."""
 
+    CATEGORIES_CHOSEN = 4
     CATEGORY_SIZE = 4
     POPUP_TIME = 2
+    START_GUESS_COUNT = 4
 
     url = environ.get("BASE_URL", "https://warrenera.github.io/")
     title = "cAnnections: Connections, but about us"
@@ -101,6 +103,10 @@ class GamePage(BasePage):
         """Click the squares corresponding to the topics in a category."""
         for square in [square for square in squares if square.text in topics]:
             self.click(square)
+
+    def tries(self) -> int:
+        """Get the number of tries left represented on the page."""
+        return len(self.find(self.TRIES).text.split("🐯")[1:])
 
     def shuffle(self):
         """Click the shuffle button, mixing up the category squares.

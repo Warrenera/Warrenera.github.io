@@ -314,6 +314,24 @@ class TestSubmit:
                     assert any(square.text == topic for square in remaining_squares)
                 used_categories.append(category)
 
+    def test_submit_incorrect_category_tries(self, page: GamePage):
+        """Check submitting < all 4 topics of a category removes a try.
+
+        Tries are represented in the 'Tries' text below the game board,
+        but above the footer buttons.
+        """
+        assert page.tries() == page.START_GUESS_COUNT
+
+        for i in range(1, page.CATEGORY_SIZE + 1):
+            for j in range(1, page.CATEGORY_SIZE + 1):
+                page.select_square(i + j)
+
+            page.submit()
+            if i != page.CATEGORY_SIZE:
+                page.deselect_all()
+
+            assert page.tries() == page.START_GUESS_COUNT - i
+
 
 class TestGameOver:
     """Test various endgame scenarios."""
