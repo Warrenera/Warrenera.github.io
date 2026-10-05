@@ -389,6 +389,7 @@ class TestSubmit:
         assert popup.text.strip() == "Not quite"
 
 
+@pytest.mark.game_over
 class TestGameOver:
     """Test various endgame scenarios."""
 
@@ -506,6 +507,7 @@ class TestGameOver:
         )
 
 
+@pytest.mark.share
 class TestShare:
     """Test the functionality of the Share button."""
 
@@ -518,3 +520,25 @@ class TestShare:
             page.select_category(topics, squares)
             page.submit()
         assert page.find(page.SHARE)
+
+    @pytest.mark.requires_clipboard
+    def test_share_clicked_desktop(self, page: GamePage, categories_chosen: list[dict]):
+        """Check the Share button copies Share Text to the clipboard.
+
+        This should only occur on desktop view. If played on a mobile
+        device, the mobile OS share menu should appear.
+        """
+        for i in range(page.CATEGORY_COUNT):
+            topics = categories_chosen[i]["topics"]
+            squares = page.find_all(page.SQUARES)
+            page.select_category(topics, squares)
+            page.submit()
+        page.share()
+
+        clipboard = page.get_clipboard().splitlines()
+        assert (
+            clipboard[0] == "Andrew loves me so much he made a whole game about us ♥ check it out!"
+        )
+        assert clipboard[1] == "cAnnections"
+        assert clipboard[-1] == "https://warrenera.github.io/"
+        assert all(character in "🟨🟩🟦🟪" for guess in clipboard[2:][:-1] for character in guess)

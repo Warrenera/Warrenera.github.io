@@ -12,7 +12,7 @@ from tests.game_page import GamePage
 
 
 @pytest.fixture
-def driver() -> Firefox:
+def driver(request: pytest.FixtureRequest) -> Firefox:
     """Instantiate the Firefox Web driver for the test.
 
     Gracefully close the driver after each test as well.
@@ -21,6 +21,9 @@ def driver() -> Firefox:
     options.add_argument("-headless")
     options.add_argument("-height=1080")
     options.add_argument("-width=1920")
+    if "requires_clipboard" in request.keywords:
+        # Only for marked tests as it's a security concern
+        options.set_preference(name="dom.events.testing.asyncClipboard", value=True)
     webdriver = Firefox(options=options)
     yield webdriver
     webdriver.quit()

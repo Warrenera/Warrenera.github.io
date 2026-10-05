@@ -35,6 +35,9 @@ markers = [
     "body: the test checks the structure or content of the body of the page.",
     "color: the test checks the background-color CSS property of an element.",
     "deselect: the test checks the logic or style of the Deselect button.",
+    "game_over: the test checks various scenarios for game endings.",
+    "requires_clipboard: the test requires clipboard access, necessitating specific permissions.",
+    "share: the test checks the logic of the share button.",
     "shuffle: the test checks the logic of the Shuffle button.",
     "squares: the test checks the logic or style of the selectable square buttons.",
     "submit: the test checks the logic or style of the Submit button."

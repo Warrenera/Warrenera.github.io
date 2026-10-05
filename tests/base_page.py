@@ -45,6 +45,14 @@ class BasePage:
             message=f"Unable to get the background-color of element {element}",
         )
 
+    def get_clipboard(self) -> str:
+        """Inject a line of JS to force return the browser clipboard.
+
+        Requires the Firefox setting dom.events.testing.asyncClipboard
+        be set to True.
+        """
+        return self.driver.execute_script("return navigator.clipboard.readText();")
+
     def click(
         self,
         locator: tuple[ByType, str] | WebElement,
