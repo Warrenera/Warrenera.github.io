@@ -12,7 +12,8 @@ Silenced Ruff checks
 from os import environ
 
 from selenium.webdriver import Firefox
-from selenium.webdriver.common.by import By
+from selenium.webdriver.common.by import By, ByType
+from selenium.webdriver.remote.webelement import WebElement
 
 from tests.base_page import BasePage
 
@@ -20,7 +21,10 @@ from tests.base_page import BasePage
 class GamePage(BasePage):
     """Represent the cAnnections game page."""
 
+    CATEGORY_COUNT = 4
     CATEGORY_SIZE = 4
+    POPUP_TIME = 2
+    START_GUESS_COUNT = 4
 
     url = environ.get("BASE_URL", "https://warrenera.github.io/")
     title = "cAnnections: Connections, but about us"
@@ -33,11 +37,13 @@ class GamePage(BasePage):
     DETAILS_PARAGRAPHS = (By.CSS_SELECTOR, "details > p")
     FOOTER = (By.ID, "footer")
     HEADER = (By.ID, "header")
+    POPUP = (By.ID, "popup")
     SHARE = (By.ID, "share")
     SHUFFLE = (By.ID, "shuffle")
     SQUARES = (By.CLASS_NAME, "square")
     SUBMIT = (By.ID, "submit")
     SUMMARY = (By.ID, "summary")
+    TRIES = (By.ID, "tigers")
 
     def __init__(self, driver: Firefox, timeout: int = 5):  # noqa: ANN204
         """Initialize the BasePage, then determine if on the game page.
@@ -55,14 +61,19 @@ class GamePage(BasePage):
             "purple": "#ba81c5",
         }
 
+    def _get_dynamic_locator(self, element: str, element_id: int) -> tuple[ByType, str]:
+        """Dynamically construct a game element locator for a given ID.
+
+        This avoids having to have 16 idential square locators or 4
+        identical square row locations hard-coded into the POM.
+        """
+        return (By.ID, f"{element}_{element_id}")
+
     def _verify_page(self) -> None:
         """Check the page and all its components loaded correctly."""
         self.verify_url()
-        for element in (self.BODY, self.HEADER, self.FOOTER):
-            assert self.find(element), (  # noqa: S101
-                f"ERROR: critical element with ID '{element[1]}' "
-                "did not load properly. Try increasing the timeout"
-            )
+        for element in (self.HEADER, self.BODY, self.FOOTER):
+            assert self.find(element)  # noqa: S101
 
     def refresh(self):
         """Refresh the page, resetting the game with new categories.
@@ -76,13 +87,26 @@ class GamePage(BasePage):
         """Toggle appearance of the header details drop-down menu."""
         self.click(self.SUMMARY)
 
-    def get_dynamic_locator(self, element: str, element_id: int) -> tuple:
-        """Dynamically construct a game element locator for a given ID.
+    def find_square(self, square_id: int) -> WebElement:
+        """Get the square corresponding to the ID number passed in."""
+        return self.find(self._get_dynamic_locator("square", square_id))
 
-        This avoids having to have 16 idential square locators or 4
-        identical square row locations hard-coded into the POM.
-        """
-        return (By.ID, f"{element}_{element_id}")
+    def select_square(self, square_id: int) -> None:
+        """Click the square corresponding to the ID number passed in."""
+        self.click(self._get_dynamic_locator("square", square_id))
+
+    def find_row(self, row_id: int) -> WebElement:
+        """Get the row corresponding to the ID number passed in."""
+        return self.find(self._get_dynamic_locator("row", row_id))
+
+    def select_category(self, topics: list[str], squares: list[WebElement]) -> None:
+        """Click the squares corresponding to the topics in a category."""
+        for square in [square for square in squares if square.text in topics]:
+            self.click(square)
+
+    def tries(self) -> int:
+        """Get the number of tries left represented on the page."""
+        return len(self.find(self.TRIES).text.split("🐯")[1:])
 
     def shuffle(self):
         """Click the shuffle button, mixing up the category squares.

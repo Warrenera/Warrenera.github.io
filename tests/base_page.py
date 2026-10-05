@@ -22,33 +22,76 @@ from selenium.webdriver.support.wait import WebDriverWait
 class BasePage:
     """Define page-agnostic utilities for page object models."""
 
-    def __init__(self, driver: Firefox, timeout: int = 10):  # noqa: ANN204
+    def __init__(self, driver: Firefox, timeout: int = 5):  # noqa: ANN204
         """Set the details for interacting with the page."""
         self.driver = driver
         self.timeout = timeout
-        self._wait = WebDriverWait(self.driver, self.timeout)
+        self._wait = self.create_wait(timeout)
 
-    def get_background_color(self, element: WebElement) -> str:
+    def create_wait(self, timeout: int | None = None) -> WebDriverWait:
+        """Make a wait timer for waiting on expected conditions.
+
+        For most uses the default self._wait will suffice; however, if a
+        different timeout length is desired a new wait WebDriverWait
+        needs to be created. `timeout` is the number of seconds to wait.
+        """
+        return WebDriverWait(self.driver, timeout or self.timeout)
+
+    def get_background_color(self, element: WebElement, wait: WebDriverWait | None = None) -> str:
         """Get an element's background-color CSS property hex code."""
-        return self._wait.until(
+        waiter = wait or self._wait
+        return waiter.until(
             lambda _: Color.from_string(element.value_of_css_property("background-color")).hex,
+            message=f"Unable to get the background-color of element {element}",
         )
 
-    def click(self, locator: tuple[ByType, str] | WebElement) -> None:
+    def get_clipboard(self) -> str:
+        """Inject a line of JS to force return the browser clipboard.
+
+        Requires the Firefox setting dom.events.testing.asyncClipboard
+        be set to True.
+        """
+        return self.driver.execute_script("return navigator.clipboard.readText();")
+
+    def click(
+        self,
+        locator: tuple[ByType, str] | WebElement,
+        wait: WebDriverWait | None = None,
+    ) -> None:
         """Click the specified UI button."""
-        self._wait.until(element_to_be_clickable(locator)).click()
+        waiter = wait or self._wait
+        waiter.until(
+            element_to_be_clickable(locator),
+            message=f"Unable to click the element with locator {locator}",
+        ).click()
 
-    def do_not_find(self, locator: tuple[ByType, str]) -> bool:
+    def do_not_find(self, locator: tuple[ByType, str], wait: WebDriverWait | None = None) -> bool:
         """Verify element expected to be invisible is invisible."""
-        return self._wait.until(invisibility_of_element_located(locator))
+        waiter = wait or self._wait
+        return waiter.until(
+            invisibility_of_element_located(locator),
+            message=f"Didn't expect to find element with locator {locator}, but found it anyway",
+        )
 
-    def find(self, locator: tuple[ByType, str]) -> WebElement:
+    def find(self, locator: tuple[ByType, str], wait: WebDriverWait | None = None) -> WebElement:
         """Search for the specified UI element and return if found."""
-        return self._wait.until(visibility_of_element_located(locator))
+        waiter = wait or self._wait
+        return waiter.until(
+            message=f"element with locator {locator} not found!",
+            method=visibility_of_element_located(locator),
+        )
 
-    def find_all(self, locator: tuple[ByType, str]) -> list[WebElement]:
+    def find_all(
+        self,
+        locator: tuple[ByType, str],
+        wait: WebDriverWait | None = None,
+    ) -> list[WebElement]:
         """Search for all UI elements and return if found."""
-        return self._wait.until(visibility_of_all_elements_located(locator))
+        waiter = wait or self._wait
+        return waiter.until(
+            visibility_of_all_elements_located(locator),
+            message=f"Unable to get all elements with locator {locator}",
+        )
 
     def refresh(self) -> None:
         """Refresh the page."""

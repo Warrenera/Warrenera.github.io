@@ -12,7 +12,7 @@ from tests.game_page import GamePage
 
 
 @pytest.fixture
-def driver() -> Firefox:
+def driver(request: pytest.FixtureRequest) -> Firefox:
     """Instantiate the Firefox Web driver for the test.
 
     Gracefully close the driver after each test as well.
@@ -21,6 +21,9 @@ def driver() -> Firefox:
     options.add_argument("-headless")
     options.add_argument("-height=1080")
     options.add_argument("-width=1920")
+    if "requires_clipboard" in request.keywords:
+        # Only for marked tests as it's a security concern
+        options.set_preference(name="dom.events.testing.asyncClipboard", value=True)
     webdriver = Firefox(options=options)
     yield webdriver
     webdriver.quit()
@@ -35,39 +38,31 @@ def page(driver: Firefox) -> GamePage:
 
 
 @pytest.fixture
+def initial_squares(page: GamePage) -> list[WebElement]:
+    """Find all the squares on the game board.
+
+    Called the initial squares because if a category is revealed in a
+    row then the squares need to be refound as the remaining topics will
+    have been moved down.
+    """
+    return page.find_all(page.SQUARES)
+
+
+@pytest.fixture
 def categories() -> list[dict]:
     """Get the categories JSON file from the site to have handy."""
     return requests.get(timeout=10, url="https://warrenera.github.io/topics.json").json()
 
 
 @pytest.fixture
-def squares(page: GamePage) -> list[WebElement]:
-    """Find all the squares on the game board."""
-    return page.find_all(page.SQUARES)
-
-
-@pytest.fixture
-def categories_chosen(categories: list[dict], squares: list[WebElement]) -> list[dict]:
+def categories_chosen(initial_squares: list[WebElement], categories: list[dict]) -> list[dict]:
     """Return categories that match text present in the game squares.
 
     All four topics for a category must match for it to count.
     """
-    square_texts = [square.text for square in squares]
+    square_texts = [square.text for square in initial_squares]
     return [
         category
         for category in categories
         if all(topic in square_texts for topic in category["topics"])
     ]
-
-
-@pytest.fixture
-def select_first_category(
-    page: GamePage,
-    categories_chosen: list,
-    squares: list[WebElement],
-) -> None:
-    """Click the squares corresponding to the topics in a category."""
-    # First category chosen arbitrarily
-    topics = categories_chosen[0]["topics"]
-    for square in [square for square in squares if square.text in topics]:
-        page.click(square)

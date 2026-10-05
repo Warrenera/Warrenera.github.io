@@ -51,9 +51,9 @@ class TestSquares:
         for category in categories:
             if set(category["topics"]).issubset(square_topics):
                 categories_chosen.append(category)
-            if len(categories_chosen) == page.CATEGORY_SIZE:
+            if len(categories_chosen) == page.CATEGORY_COUNT:
                 break
-        assert len(categories_chosen) == page.CATEGORY_SIZE
+        assert len(categories_chosen) == page.CATEGORY_COUNT
         assert categories_chosen != categories[:4]
 
     @pytest.mark.shuffle
@@ -80,7 +80,7 @@ class TestSquares:
         assertions. Using pytest.approx() as minute browser rendering
         differences between environments caused this test to fail in CI.
         """
-        square = page.find(page.get_dynamic_locator("square", 1))
+        square = page.find_square(1)
         assert page.get_background_color(square) == "#7aadad"
         height = square.size["height"]
         width = square.size["width"]
@@ -104,14 +104,14 @@ class TestSquares:
         """
         squares = []
         for i in range(1, page.CATEGORY_SIZE + 1):
-            square = page.find(page.get_dynamic_locator("square", i))
+            square = page.find_square(i)
             squares.append(square)
             page.click(square)
         for square in squares:
             assert page.get_background_color(square) == "#f78f91"
 
         # Selecting a fifth square does not work
-        square = page.find(page.get_dynamic_locator("square", page.CATEGORY_SIZE + 1))
+        square = page.find_square(page.CATEGORY_SIZE + 1)
         page.click(square)
         assert page.get_background_color(square) == "#7aadad"
 
@@ -128,7 +128,7 @@ class TestShuffle:
     def test_shuffle_logic(self, page: GamePage):
         """Check clicking the shuffle button randomizes the square text."""
         old_topics = (square.text for square in page.find_all(page.SQUARES))
-        page.click(page.find(page.SHUFFLE))
+        page.shuffle()
         new_topics = (square.text for square in page.find_all(page.SQUARES))
         # Same topics and categories:
         assert set(old_topics) == set(new_topics)
@@ -139,19 +139,19 @@ class TestShuffle:
     @pytest.mark.deselect
     def test_deselect_clickability_on_shuffle(self, page: GamePage):
         """Check clicking the shuffle button deselects selected squares."""
-        square = page.find(page.get_dynamic_locator("square", 1))
+        square = page.find_square(1)
         page.click(square)
         assert page.get_background_color(square) == "#f78f91"
 
         deselect_button = page.find(page.DESELECT)
         assert deselect_button.is_enabled()
 
-        page.click(page.find(page.SHUFFLE))
+        page.shuffle()
         assert not deselect_button.is_enabled()
         # Check all squares to ensure wherever the one that
         # was clicked went, it did not remain clicked
         for i in range(1, page.CATEGORY_SIZE**2 + 1):
-            square = page.find(page.get_dynamic_locator("square", i))
+            square = page.find_square(i)
             assert page.get_background_color(square) == "#7aadad"
 
 
@@ -168,7 +168,7 @@ class TestDeselect:
         """
         deselect_button = page.find(page.DESELECT)
         assert not deselect_button.is_enabled()
-        square = page.find(page.get_dynamic_locator("square", 1))
+        square = page.find_square(1)
         page.click(square)
         assert deselect_button.is_enabled()
         page.click(square)
@@ -179,17 +179,17 @@ class TestDeselect:
     def test_deselect_logic(self, page: GamePage):
         """Check clicking the Deselect button deselects any selections.
 
-        Checked for each number of possible selection counts, 1 through 4.
-        Clicking the Deselect button also disables the button.
+        Checked for each number of possible selection counts, 1 through
+        4. Clicking the Deselect button also disables the button.
         """
         deselect_button = page.find(page.DESELECT)
         for i in range(1, page.CATEGORY_SIZE + 1):
             squares = []
             for j in range(1, i + 1):
-                square = page.find(page.get_dynamic_locator("square", j))
+                square = page.find_square(j)
                 squares.append(square)
                 page.click(square)
-            page.click(deselect_button)
+            page.deselect_all()
             assert not deselect_button.is_enabled()
             for square in squares:
                 assert page.get_background_color(square) == "#7aadad"
@@ -206,9 +206,9 @@ class TestSubmit:
         """
         submit_button = page.find(page.SUBMIT)
         for i in range(1, page.CATEGORY_SIZE):
-            page.click(page.find(page.get_dynamic_locator("square", i)))
+            page.select_square(i)
             assert not submit_button.is_enabled()
-        page.click(page.find(page.get_dynamic_locator("square", page.CATEGORY_SIZE)))
+        page.select_square(page.CATEGORY_SIZE)
         assert submit_button.is_enabled()
 
     def test_submit_refresh_state(self, page: GamePage):
@@ -219,7 +219,7 @@ class TestSubmit:
         See: https://bugzilla.mozilla.org/show_bug.cgi?id=685657.
         """
         for i in range(1, page.CATEGORY_SIZE + 1):
-            page.click(page.find(page.get_dynamic_locator("square", i)))
+            page.select_square(i)
         submit_button = page.find(page.SUBMIT)
         assert submit_button.is_enabled()
         page.refresh()
@@ -230,61 +230,59 @@ class TestSubmit:
     def test_submit_correct_category_colors(self, page: GamePage, categories_chosen: list[dict]):
         """Check that submitting all 4 topics of a category reveals it.
 
-        The category will be revealed over the top row of squares. Each
-        will be one of 4 randomly assigned category colors. No 2
-        categories will be the same color.
-
-        Explicitly requesting the chosen_categories fixture because it
-        is needed to loop over every row instead of hard-codedly using
-        the first row.
-
-        Explicitly recreated the squares fixture logic because they need
-        to be refetched after every submission as the position of the
-        square texts changes.
+        Each category will be revealed over a row of squares. Each will
+        be one of 4 randomly assigned category colors. No 2 categories
+        will be the same color.
         """
         used_colors = []
-        for i in range(page.CATEGORY_SIZE):
+        for i in range(page.CATEGORY_COUNT):
             topics = categories_chosen[i]["topics"]
             squares = page.find_all(page.SQUARES)
-            for square in [square for square in squares if square.text in topics]:
-                page.click(square)
+            page.select_category(topics, squares)
 
-            page.click(page.find(page.SUBMIT))
-            row = page.find(page.get_dynamic_locator("row", i + 1))
+            page.submit()
+            row = page.find_row(i + 1)
             color = page.get_background_color(row)
 
             assert color in page.CATEGORY_COLORS.values()
             assert color not in used_colors
             used_colors.append(color)
 
-    @pytest.mark.usefixtures("select_first_category")
-    def test_submit_correct_category_children(self, page: GamePage):
+    def test_submit_correct_category_children(self, page: GamePage, categories_chosen: list[dict]):
         """Check that submitting all 4 topics of a category reveals it.
 
-        The category will be revealed over the top row of squares. Squares
-        in that row will be hidden.
+        Each category will be revealed over a row of squares. The
+        squares in that row will be hidden.
         """
-        page.click(page.find(page.SUBMIT))
-        row = page.find(page.get_dynamic_locator("row", 1))
-        children = row.find_elements(*page.BUTTONS)
-        for child in children:
-            assert not child.is_displayed()
+        for i in range(page.CATEGORY_COUNT):
+            topics = categories_chosen[i]["topics"]
+            squares = page.find_all(page.SQUARES)
+            page.select_category(topics, squares)
 
-    @pytest.mark.usefixtures("select_first_category")
+            page.submit()
+            row = page.find_row(i + 1)
+            children = row.find_elements(*page.BUTTONS)
+            for child in children:
+                assert not child.is_displayed()
+
     def test_submit_correct_category_text(self, page: GamePage, categories_chosen: list[dict]):
         """Check that submitting all 4 topics of a category reveals it.
 
-        The category will be revealed over the top row of squares. It will
+        Each category will be revealed over a row of squares. Each will
         display the revealed category title and topics.
         """
-        category = categories_chosen[0]  # First category chosen arbitrarily
-        page.click(page.find(page.SUBMIT))
-        row = page.find(page.get_dynamic_locator("row", 1))
-        row_text = row.text.split("\n")
-        assert row_text[0] == category["title"]
-        assert row_text[1] == ", ".join(category["topics"])
+        for i in range(page.CATEGORY_COUNT):
+            category = categories_chosen[i]
+            topics = category["topics"]
+            squares = page.find_all(page.SQUARES)
+            page.select_category(topics, squares)
 
-    @pytest.mark.usefixtures("select_first_category")
+            page.submit()
+            row = page.find_row(i + 1)
+            row_text = row.text.split("\n")
+            assert row_text[0] == category["title"]
+            assert row_text[1] == ", ".join(topics)
+
     def test_submit_correct_category_remaining_topics(
         self,
         page: GamePage,
@@ -292,18 +290,255 @@ class TestSubmit:
     ):
         """Check that submitting all 4 topics of a category reveals it.
 
-        The category will be revealed over the top row of squares. The
-        remaining squares will file down to the remaining 3 rows.
+        Each category will be revealed over a row of squares. The
+        remaining squares will file down to the remaining rows. There
+        should be no remaining topics in the last loop.
         """
-        category = categories_chosen[0]  # First category chosen arbitrarily
-        page.click(page.find(page.SUBMIT))
-        remaining_topics = [
-            topic for cat in categories_chosen if cat != category for topic in cat["topics"]
-        ]
-        remaining_squares = page.find_all(page.SQUARES)
-        for topic in remaining_topics:
-            assert any(square.text == topic for square in remaining_squares)
+        used_categories = []
+        for i in range(page.CATEGORY_COUNT):
+            category = categories_chosen[i]
+            topics = category["topics"]
+            squares = page.find_all(page.SQUARES)
+            page.select_category(topics, squares)
 
-    # @pytest.mark.submit
-    # def test_submit_last_correct_category(page: GamePage, categories: list[dict]):
-    #     """."""
+            page.submit()
+            remaining_topics = [
+                topic
+                for cat in categories_chosen
+                if (cat != category and cat not in used_categories)
+                for topic in cat["topics"]
+            ]
+            if remaining_topics:
+                remaining_squares = page.find_all(page.SQUARES)
+                for topic in remaining_topics:
+                    assert any(square.text == topic for square in remaining_squares)
+                used_categories.append(category)
+
+    def test_submit_incorrect_category_tries(self, page: GamePage):
+        """Check submitting <4 topics for a category removes a try.
+
+        Tries are represented in the 'Tries' text below the game board,
+        but above the footer buttons.
+        """
+        assert page.tries() == page.START_GUESS_COUNT
+        for i in range(1, page.CATEGORY_COUNT + 1):
+            for j in range(1, page.CATEGORY_SIZE + 1):
+                page.select_square(i + j)
+            page.submit()
+            if i < page.CATEGORY_COUNT:
+                page.deselect_all()
+            assert page.tries() == page.START_GUESS_COUNT - i
+
+    def test_submit_incorrect_off_by_one(self, page: GamePage, categories_chosen: list[dict]):
+        """Check submitting 3 topics for a category yields 'One away!'.
+
+        This message will appear in the popup that appears at the top of
+        the game page. Also tests that if an already guessed wrong
+        answer is tried again, a popup appears with a message, 'Already
+        guessed!'
+        """
+        assert page.do_not_find(page.POPUP)
+
+        topics = categories_chosen[1]["topics"]
+        squares = page.find_all(page.SQUARES)
+        matches_selected = 0
+        nonmatches_selected = 0
+        for square in squares:
+            if square.text in topics and matches_selected < page.CATEGORY_SIZE - 1:
+                page.click(square)
+                matches_selected += 1
+            if square.text not in topics and nonmatches_selected < 1:
+                page.click(square)
+                nonmatches_selected += 1
+            if matches_selected == page.CATEGORY_SIZE - 1 and nonmatches_selected == 1:
+                break
+        page.submit()
+        wait = page.create_wait(page.POPUP_TIME)
+        popup = page.find(page.POPUP, wait)
+        assert popup.text.strip() == "One away!"
+
+        page.submit()
+        wait = page.create_wait(page.POPUP_TIME)
+        popup = page.find(page.POPUP, wait)
+        assert popup.text.strip() == "Already guessed!"
+
+    def test_submit_incorrect_off_by_more_than_one(
+        self,
+        page: GamePage,
+        categories_chosen: list[dict],
+    ):
+        """Check submitting <3 topics for a category yields 'Not quite'.
+
+        This message will appear in the popup that appears at the top of
+        the game page.
+        """
+        assert page.do_not_find(page.POPUP)
+
+        topics = categories_chosen[1]["topics"]
+        squares = page.find_all(page.SQUARES)
+        selected_count = 0
+        for square in squares:
+            if square.text not in topics:
+                page.click(square)
+                selected_count += 1
+                if selected_count == page.CATEGORY_SIZE:
+                    break
+        page.submit()
+        wait = page.create_wait(page.POPUP_TIME)
+        popup = page.find(page.POPUP, wait)
+        assert popup.text.strip() == "Not quite"
+
+
+@pytest.mark.game_over
+class TestGameOver:
+    """Test various endgame scenarios."""
+
+    def test_popup(self, page: GamePage, categories_chosen: list[dict]):
+        """Check ending a game shows a popup.
+
+        The popup should appear on submitting the last category. It
+        should remain on the page for a couple seconds before
+        disappearing again.
+        """
+        assert page.do_not_find(page.POPUP)
+
+        for i in range(page.CATEGORY_COUNT):
+            topics = categories_chosen[i]["topics"]
+            squares = page.find_all(page.SQUARES)
+            page.select_category(topics, squares)
+            page.submit()
+
+        wait = page.create_wait(page.POPUP_TIME)
+        assert page.find(page.POPUP, wait)
+        assert page.do_not_find(page.POPUP)
+
+    def test_perfect_win(self, page: GamePage, categories_chosen: list[dict]):
+        """Check that winning a perfect game shows a 'Perfect!' popup.
+
+        Submitting a fourth guess ends the game. A popup message appears
+        temporarily. The 'Tries' text will change to a congratulatory
+        message for winning the game.
+        """
+        assert page.find(page.TRIES).text == "Tries left: 🐯🐯🐯🐯"
+
+        for i in range(page.CATEGORY_COUNT):
+            topics = categories_chosen[i]["topics"]
+            squares = page.find_all(page.SQUARES)
+            page.select_category(topics, squares)
+            page.submit()
+
+        wait = page.create_wait(page.POPUP_TIME)
+        popup = page.find(page.POPUP, wait)
+        assert popup.text.strip() == "Perfect!"
+        assert (
+            page.find(page.TRIES).text
+            == "You win! You know so much about us :) Refresh the page to play again"
+        )
+
+    def test_imperfect_win(self, page: GamePage, categories_chosen: list[dict]):
+        """Check that winning a game shows a 'You did it!' popup.
+
+        At least one incorrect guess has to have been submitted.
+        Submitting a fourth guess ends the game. A popup message appears
+        temporarily. The 'Tries' text will change to a congratulatory
+        message for winning the game.
+        """
+        assert page.do_not_find(page.POPUP)
+
+        for i in range(1, page.CATEGORY_SIZE + 1):
+            page.select_square(i)
+        page.submit()
+        page.deselect_all()
+
+        for i in range(page.CATEGORY_COUNT):
+            topics = categories_chosen[i]["topics"]
+            squares = page.find_all(page.SQUARES)
+            page.select_category(topics, squares)
+            page.submit()
+
+        wait = page.create_wait(page.POPUP_TIME)
+        popup = page.find(page.POPUP, wait)
+        assert popup.text.strip() == "You did it!"
+        assert page.do_not_find(page.POPUP)
+
+        assert (
+            page.find(page.TRIES).text
+            == "You win! You know so much about us :) Refresh the page to play again"
+        )
+
+    def test_loss(self, page: GamePage):
+        """Check that losing a game shows a 'Next time!' popup.
+
+        Four incorrect guess have to be submitted. Submitting the fourth
+        guess ends the game. A popup message appears temporarily. Each
+        category will be revealed over a row of squares. Each will be
+        one of 4 randomly assigned category colors. No 2 categories will
+        be the same color. The 'Tries' text will change to a consolatory
+        message for losing the game.
+        """
+        assert page.do_not_find(page.POPUP)
+
+        # TODO: find a way to make a method, make_incorrect_guesses(),
+        # that works for here and test_submit_incorrect_category_tries()
+        for i in range(1, page.CATEGORY_COUNT + 1):
+            for j in range(1, page.CATEGORY_SIZE + 1):
+                page.select_square(i + j)
+            page.submit()
+            if i < page.CATEGORY_COUNT:
+                page.deselect_all()
+
+        wait = page.create_wait(page.POPUP_TIME)
+        popup = page.find(page.POPUP, wait)
+        assert popup.text.strip() == "Next time!"
+        assert page.do_not_find(page.POPUP)
+
+        used_colors = []
+        for i in range(page.CATEGORY_COUNT):
+            row = page.find_row(i + 1)
+            color = page.get_background_color(row)
+
+            assert color in page.CATEGORY_COLORS.values()
+            assert color not in used_colors
+            used_colors.append(color)
+
+        assert (
+            page.find(page.TRIES).text
+            == "Game over 😔 but hopefully you had fun anyway! Refresh the page to play again"
+        )
+
+
+@pytest.mark.share
+class TestShare:
+    """Test the functionality of the Share button."""
+
+    def test_share_clickability(self, page: GamePage, categories_chosen: list[dict]):
+        """Check the Share button only appears once the game ends."""
+        assert page.do_not_find(page.SHARE)
+        for i in range(page.CATEGORY_COUNT):
+            topics = categories_chosen[i]["topics"]
+            squares = page.find_all(page.SQUARES)
+            page.select_category(topics, squares)
+            page.submit()
+        assert page.find(page.SHARE)
+
+    @pytest.mark.requires_clipboard
+    def test_share_clicked_desktop(self, page: GamePage, categories_chosen: list[dict]):
+        """Check the Share button copies Share Text to the clipboard.
+
+        This should only occur on desktop view. If played on a mobile
+        device, the mobile OS share menu should appear.
+        """
+        for i in range(page.CATEGORY_COUNT):
+            topics = categories_chosen[i]["topics"]
+            squares = page.find_all(page.SQUARES)
+            page.select_category(topics, squares)
+            page.submit()
+        page.share()
+
+        clipboard = page.get_clipboard().splitlines()
+        assert (
+            clipboard[0] == "Andrew loves me so much he made a whole game about us ♥ check it out!"
+        )
+        assert clipboard[1] == "cAnnections"
+        assert clipboard[-1] == "https://warrenera.github.io/"
+        assert all(character in "🟨🟩🟦🟪" for guess in clipboard[2:][:-1] for character in guess)
