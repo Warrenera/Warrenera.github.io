@@ -244,14 +244,13 @@ const colors = [
 	}
 ]
 const state = {
-	selectCount: 0,
-	selections: [],
-	tries: 4,
+	categories: await setCategories(colors),
 	categoriesShown: 0,
 	priorGuesses: [],
 	results: 'cAnnections',
-	categories: setCategories(),
-	unselectedTopics: []
+	selections: [],
+	tries: 4,
+	unselectedTopics: [],
 };
 unselectedTopics = shuffle(state.categories);
 
