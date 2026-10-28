@@ -69,6 +69,10 @@ function buttonLogic(button, selections, unselectedTopics) {
 }
 
 function addText(buttons, unselectedTopics) {
+    const visibleButtons = [...buttons].filter(button => button.style.visibility !== 'hidden');
+    visibleButtons.forEach((button, i) => button.textContent = unselectedTopics[i]);
+}
+
 /**
  * Unselect all previously selected squares.
  * @param {*} deselectButton the Deselect button
