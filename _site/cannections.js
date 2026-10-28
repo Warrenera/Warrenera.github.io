@@ -238,17 +238,23 @@ function endGame(state, ui, endMessage,) {
 	ui.shuffleButton.disabled = true;
 	ui.deselectButton.disabled = true;
 
-	const shareObject = {
-		text: 'Andrew loves me so much he made a whole game about us ♥ check it out!\n' + state.results,
-		title: 'cAnnections',
-		url: 'https://warrenera.github.io/'
-	}
 	for (const category of state.categories) {
 		showCategory(category, state.categoriesShown);
 	}
 	const tigers = document.querySelector('#tigers');
 	tigers.textContent = endMessage + ' Refresh the page to play again';
-	const shareButton = document.querySelector('#share');
+	setUpShare(state.results);
+}
+/**
+ * Construct the share object and handle how it should be used depending on OS
+ * @param {*} results the emoji representation of the player's guesses
+ */
+function setUpShare(results) {
+	const shareObject = {
+		text: 'Andrew loves me so much he made a whole game about us ♥ check it out!\n' + results,
+		title: 'cAnnections',
+		url: 'https://warrenera.github.io/'
+	}
 	shareButton.hidden = false;
 	shareButton.addEventListener('click', async () => {
 		try {
