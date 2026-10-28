@@ -37,67 +37,77 @@ function shuffle(categories) {
 	const columns = Array.from({length: 4}, (_, i) =>
 		shuffleArray(categories.map(category => category.topics[i]))
 	);
-	// Transposes columns back to columns and shuffles rows
+	// Transposes 'columns' back to actual columns and shuffles rows
 	const rows = columns[0].map((_, i) => 
 		shuffleArray(columns.map(column => column[i]))
 	);
 	return rows.flat();
 }
 
-function buttonLogic(button, unselectedTopics, state) {
+/**
+ * Determine whether to click or unclick a button.
+ * @param {*} button the buton to which logic is applied
+ * @param {*} selections the choices the player has made so far
+ * @param {*} unselectedTopics the choices the player hasn't chosen yet
+ */
+function buttonLogic(button, selections, unselectedTopics) {
 	const classes = button.classList;
-	const idsMatch = state.selections.some(selection => selection.id == button.id);
+	const idsMatch = selections.some(selection => selection.id == button.id);
 	if (idsMatch) {
 		// Remove selection from state.selections since it's been clicked again
-		const index = state.selections.findIndex(selection => selection.id == button.id);
-		state.selections.splice(index, 1);
-		state.selectCount--;
+		const index = selections.findIndex(selection => selection.id == button.id);
+		selections.splice(index, 1);
 		classes.remove('selected');
-		state.unselectedTopics.push(button.textContent);
-	} else if (state.selectCount < 4) {
+		unselectedTopics.push(button.textContent);
+	} else if (selections.length < 4) {
 		// Add selection to state.selections if there aren't four already
-		state.selections.push({id: button.id, text: button.textContent});
-		state.selectCount++;
+		selections.push({id: button.id, text: button.textContent});
 		classes.add('selected');
 		const index = state.unselectedTopics.indexOf(button.textContent);
-		state.unselectedTopics.splice(index, 1);
+		unselectedTopics.splice(index, 1);
 	}
 }
 
 function addText(buttons, unselectedTopics) {
-	let i = 0;
-	for (const button of buttons) {
-		if (button.style.visibility === 'hidden') {
-			continue;
-		} else {
-			button.textContent = unselectedTopics[i];
-			i++;
-		}
-	}
-}
-
-function deselectAll(deselectButton, submitButton, state, postSubmit = false) {
-	for (const selection of state.selections) {
+/**
+ * Unselect all previously selected squares.
+ * @param {*} deselectButton the Deselect button
+ * @param {*} submitButton the Submit button
+ * @param {*} selections the choices the player has made so far
+ * @param {*} unselectedTopics the choices the player hasn't chosen yet
+ * @param {*} postSubmit whether or not this deselection occurs after the player presses the Submit button
+ */
+function deselectAll(
+	deselectButton,
+	submitButton,
+	selections,
+	unselectedTopics,
+	postSubmit = false,
+) {
+	for (const selection of selections) {
 		if (!postSubmit) {
-			state.unselectedTopics.push(selection.text);				
+			unselectedTopics.push(selection.text);				
 		}
 		const square = document.querySelector('#' + selection.id);
 		try {
 			square.classList.remove('selected');			
-		}
-		catch(TypeError) {
+		} catch(TypeError) {
 			console.warn('Could not remove "selected" class style from selection.');
 		}
 	}
-	state.selections = [];
-	state.selectCount = 0;
+	selections = [];
 	deselectButton.disabled = true;
 	submitButton.disabled = true;
 }
 
-function showCategory(category, state) {
-	state.categoriesShown++;
-	const id = 'row_' + state.categoriesShown;
+/**
+ * Reveal a category, either when guessed, or when the game is lost.
+ * @param {*} category the category to reveal
+ * @param {*} categoriesShown categories which have already been shown
+ */
+function showCategory(category, categoriesShown) {
+	categoriesShown++;
+	const id = 'row_' + categoriesShown;
 	const row = document.querySelector('#' + id);
 	try {		
 		for (const button of row.children) {		
@@ -107,8 +117,7 @@ function showCategory(category, state) {
 		row.style.background = category.color.hex;
 		const topics = category.topics.join(', ');
 		row.innerHTML = `<div><strong>${category.title}</strong><br>${topics}</div>`;
-	}
-	catch(TypeError) {
+	} catch(TypeError) {
 		console.warn('TypeError received while revealing categories.');
 	}
 }
@@ -124,12 +133,16 @@ function displayPopup(message) {
 	setTimeout(fade, 2000, classes);
 }
 
-function determineMatch(selectionTexts, state) {
-	let oneAway = false;
-	let match = null;
-	let resultRow = '';
+/**
+ * Determine whether or not the player has guessed correctly.
+ * @param {*} selectionTexts texts the player guessed
+ * @param {*} categories the game categories
+ * @returns whether or not the guess matches a game category
+ */
+function determineMatchResult(selectionTexts, categories) {
+	oneAway = false;
 
-	for (const category of state.categories) {
+	for (const category of categories) {
 		let matchCount = category.topics.filter(
 			topic => selectionTexts.includes(topic)
 		).length;
@@ -138,31 +151,41 @@ function determineMatch(selectionTexts, state) {
 		// If some category was already one off, don't overwrite it
 		if (!oneAway) oneAway = (matchCount === 3);
 	}
-	state.results += '\n' + resultRow;
-	return {match, oneAway};
-}
-
-function endTurn(match, oneAway, buttons, selectionTexts, state) {
+/**
+ * End a player's turn by deciding whether or not they guessed correctly
+ * @param {*} match the matching category, if the guess did match
+ * @param {*} oneAway whether or not the guess was one topic away from being correct
+ * @param {*} selectionTexts texts the player guessed
+ * @param {*} state an object containing the game's state
+ * @param {*} ui an object containing the game's interactable UI
+ */
+function endTurn(match, oneAway, selectionTexts, state, ui) {
 	if (match !== null) {
-		rightGuess(match, buttons, state);
+		rightGuess(match, ui.buttons, state);
 		// Removes match from state.categories so shuffle works
 		const index = state.categories.findIndex(category => category.title === match.title);
 		state.categories.splice(index, 1);
 		if (state.categoriesShown >= 4) {
-			endGame(state, 'You win! You know so much about us :)');
+			endGame(state, ui, 'You win! You know so much about us :)');
 		} else {
-			deselectAll(deselectButton, submitButton, state, true);
+			deselectAll(
+				deselectButton,
+				submitButton,
+				state.selections,
+				state.unselectedTopics,
+				true,
+			);
 		}
 	} else {
-		wrongGuess(oneAway, selectionTexts, state);
+		wrongGuess(oneAway, selectionTexts, state.priorGuesses, state.tries);
 		if (state.tries <= 0) {
-			endGame(state, 'Game over 😔 but hopefully you had fun anyway!');
+			endGame(state, ui, 'Game over 😔 but hopefully you had fun anyway!');
 		}
 	}
 }
 
 function rightGuess(match, buttons, state) {
-	showCategory(match, state);
+	showCategory(match, state.categoriesShown);
 	addText(buttons, state.unselectedTopics);
 	if (state.categoriesShown === 4) {
 		const message = (state.tries === 4) ? 'Perfect!' : 'You did it!';
@@ -170,32 +193,45 @@ function rightGuess(match, buttons, state) {
 	}
 }
 
-function wrongGuess(oneAway, selectionTexts, state) {
-	const guessedPrior = state.priorGuesses.some(priorGuess => {
+/**
+ * Take action when the user incorrectly guessed a category
+ * @param {*} oneAway whether or not the guess was one topic away from being correct
+ * @param {*} selectionTexts texts the player guessed
+ * @param {*} priorGuesses combinations the player has previously guessed
+ * @param {*} tries the number of guesses the player has left
+ */
+function wrongGuess(oneAway, selectionTexts, priorGuesses, tries) {
+	const guessedPrior = priorGuesses.some(priorGuess => {
 		return priorGuess.every(guess => selectionTexts.includes(guess));
 	});
 	let message;
 	if (guessedPrior) {
 		message = 'Already guessed!';
 	} else {
-		state.tries--;
+		tries--;
 		const tigers = document.querySelector('#tigers');
 		// Needs to be -2. Think 🐯 has two Unicode points
 		tigers.textContent = tigers.textContent.slice(0, -2);
-		if (state.tries <= 0) {
+		if (tries <= 0) {
 			message = 'Next time!';
 		} else {
 			message = (oneAway) ? 'One away!' : 'Not quite';
-			state.priorGuesses.push(selectionTexts);
+			priorGuesses.push(selectionTexts);
 		}
 	}
 	displayPopup(message);
 }
 
-function endGame(state, endMessage) {
-	submitButton.disabled = true;
-	shuffleButton.disabled = true;
-	deselectButton.disabled = true;
+/**
+ * Take action to close out the game
+ * @param {*} state an object containing the game's state
+ * @param {*} ui an object containing the game's interactable UI
+ * @param {*} endMessage the win/lose portion of the final message shown to the player
+ */
+function endGame(state, ui, endMessage,) {
+	ui.submitButton.disabled = true;
+	ui.shuffleButton.disabled = true;
+	ui.deselectButton.disabled = true;
 
 	const shareObject = {
 		text: 'Andrew loves me so much he made a whole game about us ♥ check it out!\n' + state.results,
@@ -203,7 +239,7 @@ function endGame(state, endMessage) {
 		url: 'https://warrenera.github.io/'
 	}
 	for (const category of state.categories) {
-		showCategory(category, state);
+		showCategory(category, state.categoriesShown);
 	}
 	const tigers = document.querySelector('#tigers');
 	tigers.textContent = endMessage + ' Refresh the page to play again';
@@ -252,32 +288,35 @@ const state = {
 	tries: 4,
 	unselectedTopics: [],
 };
-unselectedTopics = shuffle(state.categories);
+state.unselectedTopics = shuffle(state.categories);
+const ui = {
+	buttons: document.querySelectorAll('.square'),
+    deselectButton: document.querySelector('#deselect'),
+    shareButton: document.querySelector('#share'),
+    shuffleButton: document.querySelector('#shuffle'),
+    submitButton: document.querySelector('#submit'),
+};
 
-const buttons = document.querySelectorAll('.square');
-addText(buttons, state.unselectedTopics);
-for (const button of buttons) {
+addText(ui.buttons, state.unselectedTopics);
+for (const button of ui.buttons) {
 	button.addEventListener('click', () => {
-		buttonLogic(button, state);
-		submitButton.disabled = (state.selectCount === 4);
-		deselectButton.disabled = (state.selectCount === 0);
+		buttonLogic(button, state.selections, state.unselectedTopics);
+		ui.submitButton.disabled = (state.selections.length !== 4);
+		ui.deselectButton.disabled = (state.selections.length === 0);
 	});
 }
 
-const deselectButton = document.querySelector('#deselect');
-deselectButton.addEventListener('click', () => {
-	deselectAll(deselectButton, submitButton, state);
+ui.deselectButton.addEventListener('click', () => {
+	deselectAll(ui.deselectButton, ui.submitButton, state.selections, state.unselectedTopics);
 });
 
-const shuffleButton = document.querySelector('#shuffle');
-shuffleButton.addEventListener('click', () => {
-	deselectAll(deselectButton, submitButton, state);
+ui.shuffleButton.addEventListener('click', () => {
+	deselectAll(ui.deselectButton, ui.submitButton, state.selections, state.unselectedTopics);
 	state.unselectedTopics = shuffle(state.categories);
-	addText(buttons, state.unselectedTopics);
+	addText(ui.buttons, state.unselectedTopics);
 });
 	
-const submitButton = document.querySelector('#submit');
-submitButton.addEventListener('click', () => {
+ui.submitButton.addEventListener('click', () => {
 	const selectionTexts = state.selections.map(selection => selection.text);
 	const {match, oneAway} = determineMatch(selectionTexts, state);
 	endTurn(match, oneAway, buttons, selectionTexts, state);
@@ -285,4 +324,4 @@ submitButton.addEventListener('click', () => {
 
 /* Needed for Firefox. Otherwise, it keeps button state on page
    refresh: https://bugzilla.mozilla.org/show_bug.cgi?id=685657 */
-submitButton.disabled = true;
+ui.submitButton.disabled = true;
