@@ -8,6 +8,11 @@ async function getData() {
 	return await response.json();
 }
 
+/**
+ * Shuffle the array using a version of the Fisher-Yates algorithm.
+ * @param {array} array the array to shuffle
+ * @returns a sufficiently shuffled array 
+ */
 function shuffleArray(array) {
 	// Implementation of the Fisher–Yates shuffle
 	for (let i = array.length - 1; i >= 0; i--) {
@@ -32,6 +37,11 @@ async function setCategories(colors) {
 	return categories;
 }
 
+/**
+ * Shuffle the categories passed in together so they are pseudo-random.
+ * @param {array} categories the categories to shuffle
+ * @returns a shuffled array of objects to populate the game board with
+ */
 function shuffle(categories) {
 	// Grabs each column of 2D array and shuffles it
 	const columns = Array.from({length: 4}, (_, i) =>
@@ -68,6 +78,11 @@ function buttonLogic(button, selections, unselectedTopics) {
 	}
 }
 
+/**
+ * Add a category topic's text to a square button.
+ * @param {*} buttons the squares to which texts are applied
+ * @param {*} unselectedTopics topics which have not been guessed yet
+ */
 function addText(buttons, unselectedTopics) {
     const visibleButtons = [...buttons].filter(button => button.style.visibility !== 'hidden');
     visibleButtons.forEach((button, i) => button.textContent = unselectedTopics[i]);
@@ -126,7 +141,15 @@ function showCategory(category, categoriesShown) {
 	}
 }
 
+/**
+ * Show a quick message to the player.
+ * @param {*} message the message to show the player
+ */
 function displayPopup(message) {
+	/**
+	 * Cause the display popup to fade into and out of view.
+	 * @param {*} classes the list of classes containing the fade class
+	 */
 	function fade(classes) {
 		classes.toggle('fade');
 	}
@@ -193,6 +216,12 @@ function endTurn(match, oneAway, selectionTexts, state, ui) {
 	}
 }
 
+/**
+ * Take action when the user correctly guessed a category
+ * @param {*} match the matching category
+ * @param {*} buttons the remaining buttons to shuffle remaining topics into
+ * @param {*} state an object containing the game's state
+ */
 function rightGuess(match, buttons, state) {
 	showCategory(match, state.categoriesShown);
 	addText(buttons, state.unselectedTopics);
