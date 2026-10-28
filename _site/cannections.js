@@ -141,16 +141,21 @@ function displayPopup(message) {
  */
 function determineMatchResult(selectionTexts, categories) {
 	oneAway = false;
+	match = null;
+	emojiRow = '';
 
 	for (const category of categories) {
 		let matchCount = category.topics.filter(
 			topic => selectionTexts.includes(topic)
 		).length;
-		if (matchCount > 0) resultRow += category.color.emoji;
+		if (matchCount > 0) emojiRow += category.color.emoji;
 		if (matchCount === 4) match = category;
 		// If some category was already one off, don't overwrite it
 		if (!oneAway) oneAway = (matchCount === 3);
 	}
+	return {match, oneAway, emojiRow};
+}
+
 /**
  * End a player's turn by deciding whether or not they guessed correctly
  * @param {*} match the matching category, if the guess did match
@@ -318,8 +323,9 @@ ui.shuffleButton.addEventListener('click', () => {
 	
 ui.submitButton.addEventListener('click', () => {
 	const selectionTexts = state.selections.map(selection => selection.text);
-	const {match, oneAway} = determineMatch(selectionTexts, state);
-	endTurn(match, oneAway, buttons, selectionTexts, state);
+	const result = determineMatchResult(selectionTexts, state.categories);
+	state.results += '\n' + result.emojiRow;
+	endTurn(result.match, result.oneAway, selectionTexts, state, ui);
 });
 
 /* Needed for Firefox. Otherwise, it keeps button state on page
