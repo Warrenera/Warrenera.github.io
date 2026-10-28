@@ -17,8 +17,13 @@ function shuffleArray(array) {
 	return array;
 }
 
-async function setCategories() {
-	categories = shuffleArray(await getData()).slice(0, 4);
+/**
+ * Choose which categories to use for the game and set their colors.
+ * @param {object} colors the color objects to assign to the categories
+ * @returns an array of category objects to use in the game
+ */
+async function setCategories(colors) {
+	const categories = shuffleArray(await getData()).slice(0, 4);
 	/* Colors assigned dynamically/randomly. No
    correlation to difficulty unlike the real game */
 	for (let i = 0; i < categories.length; i++) {
