@@ -9,8 +9,7 @@ Silenced Ruff checks
 - S101:   (in-line) Assertions are necessary as this is a test framework
 """
 
-from os import environ
-
+from dotenv import dotenv_values
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By, ByType
 from selenium.webdriver.remote.webelement import WebElement
@@ -26,7 +25,8 @@ class GamePage(BasePage):
     POPUP_TIME = 2
     START_GUESS_COUNT = 4
 
-    url = environ.get("BASE_URL", "https://warrenera.github.io/")
+    env = dotenv_values("./.env")
+    url = env.get("BASE_URL", "https://warrenera.github.io/")
     title = "cAnnections: Connections, but about us"
 
     # Static Locators

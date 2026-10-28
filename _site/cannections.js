@@ -1,5 +1,10 @@
-async function getData() {	
-	const response = await fetch('https://warrenera.github.io/topics.json');
+/**
+ * Fetch all game categories from the specified URL. 
+ * @async
+ * @returns a promise for a JSON object of all possible categories
+ */
+async function getData() {
+	const response = await fetch(window.location.href + 'topics.json');
 	return await response.json();
 }
 

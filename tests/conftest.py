@@ -1,14 +1,50 @@
 """Provide fixtures for the test framework."""
 
-from os import environ
+import threading
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from time import sleep
 
 import pytest  # pytest convention, see Ruff PT013
 import requests
+from dotenv import dotenv_values
 from selenium.webdriver import Firefox
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.remote.webelement import WebElement
 
 from tests.game_page import GamePage
+
+
+@pytest.fixture(autouse=True, scope="session")
+def server() -> str:
+    """Spin up a local web server if the BASE_URL is a local address.
+
+    Use a BASE_URL of 'http://127.0.0.1:8000' to test game changes
+    locally. Can use the GitHub Pages URL if just testing test framework
+    changes. Defaults to the GitHub Pages URL. Yields the webpage URL.
+    """
+    env = dotenv_values("./.env")
+    url = env.get("BASE_URL", "https://warrenera.github.io").rstrip("/")
+    if localhost := url == "http://127.0.0.1:8000":
+        print(f"INFO: URL set to '{url}'. Using local http.server")
+        path = Path("./_site").resolve()
+        if not path.exists():
+            raise FileNotFoundError(path)
+
+        server_address = ("127.0.0.1", 8_000)
+        handler_factory = partial(SimpleHTTPRequestHandler, directory=path)
+        httpd = ThreadingHTTPServer(server_address, handler_factory)
+
+        server_thread = threading.Thread(daemon=True, target=httpd.serve_forever)
+        server_thread.start()
+        sleep(1)
+
+    yield url
+
+    if localhost:
+        httpd.shutdown()
+        server_thread.join()
 
 
 @pytest.fixture
@@ -30,10 +66,9 @@ def driver(request: pytest.FixtureRequest) -> Firefox:
 
 
 @pytest.fixture
-def page(driver: Firefox) -> GamePage:
+def page(driver: Firefox, server: str) -> GamePage:
     """Instantiate the Firefox webpage for the test."""
-    url = environ.get("BASE_URL", "https://warrenera.github.io/")
-    driver.get(url)
+    driver.get(server)
     return GamePage(driver)
 
 
@@ -49,9 +84,9 @@ def initial_squares(page: GamePage) -> list[WebElement]:
 
 
 @pytest.fixture
-def categories() -> list[dict]:
+def categories(server: str) -> list[dict]:
     """Get the categories JSON file from the site to have handy."""
-    return requests.get(timeout=10, url="https://warrenera.github.io/topics.json").json()
+    return requests.get(timeout=5, url=f"{server}/topics.json").json()
 
 
 @pytest.fixture

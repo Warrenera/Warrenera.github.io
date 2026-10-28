@@ -56,15 +56,9 @@ jobs:
       - name: Set up Firefox
         uses: browser-actions/setup-firefox@v1
 
-      - name: Serve site locally
-        run: python -m http.server -d _site &
-
-      - name: Wait for server
-        run: sleep 2
-      
       - name: Run tests
         env:
-          BASE_URL: "http://localhost:8000/"
+          BASE_URL: "http://127.0.0.1:8000"
           CI: true
         run: uv run pytest tests/ -v
 

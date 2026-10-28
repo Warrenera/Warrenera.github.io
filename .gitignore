@@ -1,4 +1,5 @@
 cannections.txt
+.env
 .venv
 .vscode/
 *.pyc
